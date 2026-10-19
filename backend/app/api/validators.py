@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from typing import Annotated
 
-from pydantic import AfterValidator, BeforeValidator
+from pydantic import AfterValidator, BeforeValidator, Field
 from pydantic_core import PydanticCustomError
 
 from app.core.clock import BRASILIA_TZ
@@ -89,6 +89,7 @@ def parse_brasilia_datetime(value: object) -> datetime:
 
 
 StrictInt = Annotated[int, BeforeValidator(parse_strict_integer)]
+PositiveId = Annotated[StrictInt, Field(ge=1)]
 PlayerName = Annotated[str, AfterValidator(validate_player_name)]
 ClubName = Annotated[str, AfterValidator(validate_club_name)]
 Acronym = Annotated[str, AfterValidator(validate_acronym)]

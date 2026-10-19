@@ -1,16 +1,16 @@
-from typing import Annotated, Self
+from typing import Self
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from app.api.schemas.common import BrasiliaDateTime, Money
-from app.api.validators import BrasiliaInputDateTime, StrictInt
+from app.api.validators import BrasiliaInputDateTime, PositiveId
 from app.domain.enums import ContractStatus, TransactionType
 from app.models import Transaction
 from app.services.market_views import PurchaseResult, SaleResult
 
 
 class PurchaseRequest(BaseModel):
-    club_id: Annotated[StrictInt, Field(ge=1)]
+    club_id: PositiveId
     loyalty_until: BrasiliaInputDateTime
 
 

@@ -3,12 +3,10 @@ from typing import Annotated, Self
 from pydantic import BaseModel, Field, field_validator
 
 from app.api.schemas.players import PlayerResponse
-from app.api.validators import StrictInt
+from app.api.validators import PositiveId
 from app.domain.enums import Formation
 from app.domain.lineup import LINEUP_SIZE
 from app.services.lineup_views import LineupView
-
-PositiveId = Annotated[StrictInt, Field(ge=1)]
 
 
 class LineupRequest(BaseModel):
