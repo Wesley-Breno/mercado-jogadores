@@ -2,13 +2,14 @@ import type { ButtonHTMLAttributes } from 'react'
 
 import { cn } from '../../lib/cn'
 
-type Variant = 'primary' | 'outline' | 'ghost'
+type Variant = 'primary' | 'outline' | 'ghost' | 'destructive'
 type Size = 'sm' | 'md'
 
 const VARIANTS: Record<Variant, string> = {
   primary: 'bg-blue-600 text-white shadow-xs hover:bg-blue-700',
   outline: 'border border-zinc-200 bg-white text-zinc-900 shadow-xs hover:bg-zinc-50',
   ghost: 'text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950',
+  destructive: 'bg-red-600 text-white shadow-xs hover:bg-red-700',
 }
 
 const SIZES: Record<Size, string> = {

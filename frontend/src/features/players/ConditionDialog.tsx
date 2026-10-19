@@ -7,7 +7,7 @@ import type { Condition, Player } from '../../api/types'
 import { Alert } from '../../components/ui/Alert'
 import { Badge } from '../../components/ui/Badge'
 import { Dialog } from '../../components/ui/Dialog'
-import { FormActions } from '../../components/ui/FormActions'
+import { DialogActions } from '../../components/ui/DialogActions'
 import { Fieldset } from '../../components/ui/Field'
 import { useToast } from '../../components/ui/toastContext'
 import { formatMoney } from '../../lib/format'
@@ -66,10 +66,10 @@ export function ConditionDialog({ player, onClose }: ConditionDialogProps) {
       description="A condição muda o desconto do valor de mercado, recalculado ao salvar."
       onClose={() => !isSubmitting && onClose()}
       footer={
-        <FormActions
+        <DialogActions
           formId={formId}
-          submitLabel="Salvar condição"
-          isSubmitting={isSubmitting}
+          confirmLabel="Salvar condição"
+          isPending={isSubmitting}
           error={errors.root?.message}
           onCancel={onClose}
         />

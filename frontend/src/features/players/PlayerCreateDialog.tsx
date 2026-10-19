@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 
 import type { Player, PlayerCreate } from '../../api/types'
 import { Dialog } from '../../components/ui/Dialog'
-import { FormActions } from '../../components/ui/FormActions'
+import { DialogActions } from '../../components/ui/DialogActions'
 import { Field, Input } from '../../components/ui/Field'
 import { EMPTY_PLAYER, INDICATORS, type PlayerCreateFields, playerCreateSchema } from './playerForm'
 import { PlayerBasicFields } from './PlayerBasicFields'
@@ -51,10 +51,10 @@ export function PlayerCreateDialog({ onClose, onCreated }: PlayerCreateDialogPro
       description="Preencha os dados e os indicadores técnicos. O valor base, o overall e o valor de mercado são calculados ao salvar."
       onClose={() => !isSubmitting && onClose()}
       footer={
-        <FormActions
+        <DialogActions
           formId={formId}
-          submitLabel="Salvar jogador"
-          isSubmitting={isSubmitting}
+          confirmLabel="Salvar jogador"
+          isPending={isSubmitting}
           error={errors.root?.message}
           note={
             <p className="mr-auto flex items-center gap-1.5 text-xs text-zinc-500">

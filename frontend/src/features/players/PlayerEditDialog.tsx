@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 
 import type { Player, PlayerUpdate } from '../../api/types'
 import { Dialog } from '../../components/ui/Dialog'
-import { FormActions } from '../../components/ui/FormActions'
+import { DialogActions } from '../../components/ui/DialogActions'
 import { useToast } from '../../components/ui/toastContext'
 import { formatMoney } from '../../lib/format'
 import { PlayerBasicFields } from './PlayerBasicFields'
@@ -52,10 +52,10 @@ export function PlayerEditDialog({ player, onClose }: PlayerEditDialogProps) {
       size="lg"
       onClose={() => !isSubmitting && onClose()}
       footer={
-        <FormActions
+        <DialogActions
           formId={formId}
-          submitLabel="Salvar alterações"
-          isSubmitting={isSubmitting}
+          confirmLabel="Salvar alterações"
+          isPending={isSubmitting}
           error={errors.root?.message}
           onCancel={onClose}
         />
