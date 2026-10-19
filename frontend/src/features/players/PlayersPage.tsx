@@ -16,6 +16,7 @@ import { useDebouncedValue } from '../../hooks/useDebouncedValue'
 import { useClubs } from '../clubs/queries'
 import { ConditionDialog } from './ConditionDialog'
 import { CreatePlayer } from './CreatePlayer'
+import { DeletePlayerDialog } from './DeletePlayerDialog'
 import { COMBINATION_NOTE, SORT_LABELS } from './labels'
 import { PlayerEditDialog } from './PlayerEditDialog'
 import { PlayerFilters } from './PlayerFilters'
@@ -173,6 +174,9 @@ export function PlayersPage() {
       )}
       {action?.kind === 'condition' && (
         <ConditionDialog player={action.player} onClose={() => setAction(null)} />
+      )}
+      {action?.kind === 'delete' && (
+        <DeletePlayerDialog player={action.player} onClose={() => setAction(null)} />
       )}
     </>
   )

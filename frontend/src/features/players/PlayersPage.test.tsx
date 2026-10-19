@@ -60,12 +60,18 @@ function json(body: unknown): Response {
   return new Response(JSON.stringify(body), { status: 200 })
 }
 
-/** Answers like the API: `free` and `club_id` filter, `page` and `limit` slice. */
-function fakeApi(players: Player[] = PLAYERS) {
-  const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+/** Answers like the API: `free` and `club_id` filter, `page` and `limit` slice, DELETE removes. */
+function fakeApi(initial: Player[] = PLAYERS) {
+  let players = initial
+  const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = new URL(String(input))
     if (url.pathname.endsWith('/clubs')) {
       return json(CLUBS)
+    }
+    if (init?.method === 'DELETE') {
+      const id = Number(url.pathname.split('/').pop())
+      players = players.filter((item) => item.id !== id)
+      return new Response(null, { status: 204 })
     }
     const free = url.searchParams.get('free')
     const clubId = url.searchParams.get('club_id')
@@ -259,6 +265,33 @@ describe('PlayersPage', () => {
     await user.click(screen.getByRole('menuitem', { name: 'Alterar condição' }))
 
     expect(screen.getByRole('dialog', { name: 'Alterar condição física' })).toBeInTheDocument()
+  })
+
+  it('exclui um jogador livre, que sai da lista', async () => {
+    const user = userEvent.setup()
+    fakeApi()
+    renderPage()
+    await screen.findByText('Mostrando 1–10 de 23 jogadores')
+
+    await user.click(screen.getByRole('button', { name: 'Ações de Danilo Freitas' }))
+    await user.click(screen.getByRole('menuitem', { name: 'Excluir' }))
+    await user.click(screen.getByRole('button', { name: 'Excluir jogador' }))
+
+    expect(await screen.findByText('Jogador excluído')).toBeInTheDocument()
+    expect(await screen.findByText('Mostrando 1–10 de 22 jogadores')).toBeInTheDocument()
+    expect(screen.queryByRole('row', { name: /Danilo Freitas/ })).not.toBeInTheDocument()
+  })
+
+  it('só oferece a exclusão de jogador livre', async () => {
+    const user = userEvent.setup()
+    fakeApi()
+    renderPage()
+    await screen.findByText('Mostrando 1–10 de 23 jogadores')
+
+    await user.click(screen.getByRole('button', { name: 'Ações de André Lacerda' }))
+
+    expect(screen.getByRole('menuitem', { name: 'Excluir' })).toBeDisabled()
+    expect(screen.getByText('Só jogador livre pode ser excluído.')).toBeInTheDocument()
   })
 
   it('mostra a lista vazia', async () => {

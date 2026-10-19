@@ -1,6 +1,7 @@
 import { Ellipsis, type LucideIcon } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useId, useRef } from 'react'
 
+import { cn } from '../../lib/cn'
 import { focusFirstItem, moveFocusWithArrows } from './menuFocus'
 import { Popover } from './Popover'
 
@@ -8,6 +9,9 @@ type RowAction = {
   label: string
   icon: LucideIcon
   onSelect: () => void
+  danger?: boolean
+  disabled?: boolean
+  note?: string
 }
 
 type ActionListProps = {
@@ -18,6 +22,7 @@ type ActionListProps = {
 
 function ActionList({ title, actions, onPick }: ActionListProps) {
   const menuRef = useRef<HTMLDivElement>(null)
+  const menuId = useId()
 
   useEffect(() => {
     focusFirstItem(menuRef.current)
@@ -34,17 +39,34 @@ function ActionList({ title, actions, onPick }: ActionListProps) {
       <p aria-hidden className="truncate px-2 py-1.5 text-xs text-zinc-500">
         {title}
       </p>
-      {actions.map((action) => (
-        <button
+      {actions.map((action, index) => (
+        <div
           key={action.label}
-          type="button"
-          role="menuitem"
-          onClick={() => onPick(action)}
-          className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:outline-none"
+          className={cn(action.danger && 'mt-1 border-t border-zinc-200 pt-1')}
         >
-          <action.icon aria-hidden className="size-4 text-zinc-500" />
-          {action.label}
-        </button>
+          <button
+            type="button"
+            role="menuitem"
+            disabled={action.disabled}
+            aria-describedby={action.note ? `${menuId}-${index}` : undefined}
+            onClick={() => onPick(action)}
+            className={cn(
+              'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
+              action.danger && 'text-red-600',
+            )}
+          >
+            <action.icon
+              aria-hidden
+              className={cn('size-4', action.danger ? 'text-red-600' : 'text-zinc-500')}
+            />
+            {action.label}
+          </button>
+          {action.note && (
+            <p id={`${menuId}-${index}`} className="px-2 pb-1 pl-8 text-xs text-zinc-500">
+              {action.note}
+            </p>
+          )}
+        </div>
       ))}
     </div>
   )

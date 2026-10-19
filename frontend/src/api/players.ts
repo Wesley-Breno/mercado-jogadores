@@ -1,4 +1,4 @@
-import { apiGet, apiSend } from './client'
+import { apiDelete, apiGet, apiSend } from './client'
 import type {
   Condition,
   Player,
@@ -33,4 +33,8 @@ export function updatePlayer(id: number, player: PlayerUpdate): Promise<Player> 
 
 export function changeCondition(id: number, condition: Condition): Promise<Player> {
   return apiSend<Player>('PATCH', `/players/${id}/condition`, { condition })
+}
+
+export function deletePlayer(id: number): Promise<void> {
+  return apiDelete(`/players/${id}`)
 }

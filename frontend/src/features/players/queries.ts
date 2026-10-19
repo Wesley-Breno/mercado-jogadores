@@ -1,6 +1,12 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { changeCondition, createPlayer, listPlayers, updatePlayer } from '../../api/players'
+import {
+  changeCondition,
+  createPlayer,
+  deletePlayer,
+  listPlayers,
+  updatePlayer,
+} from '../../api/players'
 import type { Condition, PlayerQuery, PlayerUpdate } from '../../api/types'
 import { clubKeys } from '../clubs/queries'
 import { type Availability, countRequest } from './playerQuery'
@@ -84,4 +90,9 @@ export function useChangeCondition() {
       changeCondition(id, condition),
     onSettled: refresh,
   })
+}
+
+export function useDeletePlayer() {
+  const refresh = useRefreshMarket()
+  return useMutation({ mutationFn: deletePlayer, onSettled: refresh })
 }

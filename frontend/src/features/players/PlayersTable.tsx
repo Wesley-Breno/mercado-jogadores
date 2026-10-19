@@ -1,4 +1,4 @@
-import { HeartPulse, Pencil } from 'lucide-react'
+import { HeartPulse, Pencil, Trash2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import type { Club, Player } from '../../api/types'
@@ -11,7 +11,7 @@ import { POSITION_LABELS } from './labels'
 import { AgilityMeter, ConditionBadge } from './PlayerBadges'
 
 export type PlayerAction = {
-  kind: 'edit' | 'condition'
+  kind: 'edit' | 'condition' | 'delete'
   player: Player
 }
 
@@ -112,6 +112,17 @@ function playerColumns(
               label: 'Alterar condição',
               icon: HeartPulse,
               onSelect: () => onAction({ kind: 'condition', player }),
+            },
+            {
+              label: 'Excluir',
+              icon: Trash2,
+              danger: true,
+              disabled: player.club_id !== null,
+              note:
+                player.club_id === null
+                  ? 'Disponível porque o jogador está livre.'
+                  : 'Só jogador livre pode ser excluído.',
+              onSelect: () => onAction({ kind: 'delete', player }),
             },
           ]}
         />
