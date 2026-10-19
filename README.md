@@ -301,6 +301,14 @@ cp .env.example .env
 - Criação de clube: a tela confere o nome (3 a 60 caracteres) e a sigla (3 letras), e envia a sigla em
   maiúsculas. As regras de palavras, de caracteres e de correspondência entre sigla e nome, o nome repetido
   (RN10), a sigla repetida e o limite de 20 clubes ficam na API, e o `message` aparece no formulário.
+- Página do clube (F07, `/clubes/:id`): caixa, valor do elenco e patrimônio vêm de `GET /clubs/{id}`, e o elenco
+  aparece na ordem devolvida (RN11), com valor de mercado, valor de compra, fim da fidelidade (data e hora de
+  Brasília), dias restantes e % de multa da resposta; nada é calculado na tela. O contador "N de 12" só conta os
+  jogadores devolvidos. Id inexistente no endereço mostra "Clube não encontrado" (a API responde 404).
+- Depois de criar um clube, a tela abre a página dele, como no mockup. O nome do clube na tabela de jogadores
+  leva à página do clube.
+- Datas aparecem como `07/11/2026 10:30` (sem vírgula), sempre no fuso `America/Sao_Paulo`; números inteiros
+  grandes com separador de milhar (`1.089` dias).
 - Menus que abrem sobre a página (filtros, ordenação e o "⋯" de cada linha) acompanham o botão quando a página
   rola e não são cortados pela tabela; no celular, aparecem como painel no pé da tela.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
@@ -333,8 +341,8 @@ cp .env.example .env
 - **Backend:** nenhuma. Os 19 endpoints do enunciado estão implementados e documentados no Swagger.
 - **Frontend:** em desenvolvimento. Já existem o layout com o menu, o cliente da API, a lista de jogadores com
   busca, filtros, ordenação e paginação (F01 e F02), a exclusão (F03), o cadastro, a edição e a alteração de
-  condição de jogador (F04) e a lista e a criação de clubes (F05); a página do clube, o mercado, o histórico e a
-  liga vêm a seguir.
+  condição de jogador (F04), a lista e a criação de clubes (F05) e a página do clube com o elenco e os contratos
+  (parte do F07); a compra, a venda, o histórico e a liga vêm a seguir.
 
 ## 9. Uso de inteligência artificial
 
@@ -346,7 +354,8 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
   modelos, migration inicial e testes do schema (`backend/app/models`, `backend/migrations`, `backend/tests/db`);
   regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios;
   base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout, cliente da API,
-  componentes de interface, a tela de jogadores (lista, cadastro, edição, condição e exclusão) e a de clubes.
+  componentes de interface, a tela de jogadores (lista, cadastro, edição, condição e exclusão), a de clubes e a
+  página do clube.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
