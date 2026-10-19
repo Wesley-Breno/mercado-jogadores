@@ -1,9 +1,16 @@
 from datetime import datetime, timedelta
+from decimal import Decimal
 
 import pytest
 
 from app.core.clock import BRASILIA_TZ
-from app.domain.market import penalty_rate, remaining_loyalty_days
+from app.domain.market import (
+    exceeds_cash_limit,
+    is_valid_loyalty_end,
+    penalty_rate,
+    purchase_fee,
+    remaining_loyalty_days,
+)
 
 SALE_MOMENT = datetime(2026, 11, 5, 16, 40, tzinfo=BRASILIA_TZ)
 
@@ -40,3 +47,41 @@ def test_example_of_the_sale_endpoint() -> None:
     loyalty_until = datetime(2027, 3, 2, 10, 15, tzinfo=BRASILIA_TZ)
 
     assert remaining_loyalty_days(loyalty_until, SALE_MOMENT) == 117
+
+
+@pytest.mark.parametrize(
+    ("cash", "market_value", "fee", "accepted"),
+    [
+        # Tabela da RN13
+        ("300.00", "28.00", "0.00", True),
+        ("300.00", "30.00", "0.00", True),
+        ("300.00", "30.01", "1.50", True),
+        ("100.00", "47.62", "2.38", True),
+        ("100.00", "48.00", "2.40", False),
+        # Ficha de avaliação de exemplo (B10): limite de 94,705 sem arredondar
+        ("189.41", "90.20", "4.51", False),
+        ("189.41", "90.19", "4.51", True),
+        ("261.15", "124.36", "6.22", False),
+    ],
+)
+def test_purchase_fee_and_half_cash_limit(
+    cash: str, market_value: str, fee: str, accepted: bool
+) -> None:
+    value = Decimal(market_value)
+
+    assert purchase_fee(value) == Decimal(fee)
+    assert exceeds_cash_limit(value + purchase_fee(value), Decimal(cash)) is not accepted
+
+
+@pytest.mark.parametrize(
+    ("loyalty_left", "valid"),
+    [
+        (timedelta(0), False),
+        (timedelta(minutes=-1), False),
+        (timedelta(minutes=1), True),
+        (timedelta(days=1095), True),
+        (timedelta(days=1095, minutes=1), False),
+    ],
+)
+def test_loyalty_end_is_future_and_at_most_1095_days(loyalty_left: timedelta, valid: bool) -> None:
+    assert is_valid_loyalty_end(SALE_MOMENT + loyalty_left, SALE_MOMENT) is valid
