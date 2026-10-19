@@ -10,6 +10,8 @@ from app.domain.market import (
     penalty_rate,
     purchase_fee,
     remaining_loyalty_days,
+    sale_commission,
+    settle_sale,
 )
 
 SALE_MOMENT = datetime(2026, 11, 5, 16, 40, tzinfo=BRASILIA_TZ)
@@ -85,3 +87,68 @@ def test_purchase_fee_and_half_cash_limit(
 )
 def test_loyalty_end_is_future_and_at_most_1095_days(loyalty_left: timedelta, valid: bool) -> None:
     assert is_valid_loyalty_end(SALE_MOMENT + loyalty_left, SALE_MOMENT) is valid
+
+
+@pytest.mark.parametrize(
+    ("profit", "commission"),
+    [
+        # Tabela de comissão da RN16
+        ("3.00", "0.30"),
+        ("3.85", "0.39"),
+        ("10.00", "1.00"),
+        ("10.01", "1.00"),
+        ("15.00", "2.00"),
+        ("-7.50", "0.00"),
+        ("0.00", "0.00"),
+    ],
+)
+def test_progressive_commission_only_with_profit(profit: str, commission: str) -> None:
+    assert sale_commission(Decimal(profit)) == Decimal(commission)
+
+
+@pytest.mark.parametrize(
+    ("purchase", "sale", "days_left", "penalty", "profit", "commission", "credit", "status"),
+    [
+        # Tabela de venda da RN16 (dias que dão o percentual de multa da tabela)
+        ("37.00", "40.00", 100, "4.00", "3.00", "0.30", "35.70", "RESCINDIDO"),
+        ("50.00", "42.50", 200, "8.50", "-7.50", "0.00", "34.00", "RESCINDIDO"),
+        ("26.15", "30.00", 10, "1.50", "3.85", "0.39", "28.11", "RESCINDIDO"),
+        ("25.00", "25.00", 0, "0.00", "0.00", "0.00", "25.00", "ENCERRADO"),
+        ("60.00", "75.00", 200, "10.00", "15.00", "2.00", "63.00", "RESCINDIDO"),
+    ],
+)
+def test_sale_settlement(
+    purchase: str,
+    sale: str,
+    days_left: int,
+    penalty: str,
+    profit: str,
+    commission: str,
+    credit: str,
+    status: str,
+) -> None:
+    settlement = settle_sale(
+        Decimal(sale), Decimal(purchase), SALE_MOMENT + timedelta(days=days_left), SALE_MOMENT
+    )
+
+    assert settlement.penalty == Decimal(penalty)
+    assert settlement.profit == Decimal(profit)
+    assert settlement.commission == Decimal(commission)
+    assert settlement.credit == Decimal(credit)
+    assert settlement.contract_status == status
+
+
+def test_sale_example_of_the_statement() -> None:
+    settlement = settle_sale(
+        Decimal("40.00"),
+        Decimal("37.00"),
+        datetime(2027, 3, 2, 10, 15, tzinfo=BRASILIA_TZ),
+        SALE_MOMENT,
+    )
+
+    assert (settlement.remaining_days, settlement.penalty_rate) == (117, 10)
+    assert (settlement.penalty, settlement.commission, settlement.credit) == (
+        Decimal("4.00"),
+        Decimal("0.30"),
+        Decimal("35.70"),
+    )
