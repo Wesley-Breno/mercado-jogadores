@@ -345,6 +345,15 @@ cp .env.example .env
   tela e salva a resposta da API como está (`transacoes-clube-<id>.csv`), sem montar nem converter o arquivo no
   navegador; conferido byte a byte contra a API, sem BOM. Se a API recusar o filtro, o `message` aparece abaixo
   do botão.
+- Partidas (F13): "Nova partida" pede o mandante e o visitante (clubes diferentes, conferido antes de enviar) e
+  envia `POST /matches`. A resposta abre a página da partida (`/partidas/:id`) direto do cache, sem novo pedido:
+  placar, formações, resultado e os 6 duelos, separados pelo clube que ataca, com atacante, defensor, posição,
+  condição do momento, atributo, valor (já com o efeito da condição) e gol, todos como a API devolveu. Clube sem
+  escalação completa é recusado pela API (409), e o `message` aparece no diálogo.
+- Histórico de partidas (parte do F14): tabela com data e hora, mandante, placar, visitante e resultado, na
+  ordem da API (da mais recente para a mais antiga), filtro por clube no endereço (`/partidas?club_id=2`, que
+  envia `GET /matches?club_id=2`) e "Ver duelos" em cada partida, que abre a partida com `GET /matches/{id}`.
+  A última partida aparece em destaque no topo, como no mockup.
 - Menus que abrem sobre a página (filtros, ordenação e o "⋯" de cada linha) acompanham o botão quando a página
   rola e não são cortados pela tabela; no celular, aparecem como painel no pé da tela.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
@@ -381,7 +390,8 @@ cp .env.example .env
   busca, filtros, ordenação e paginação (F01 e F02), a exclusão (F03), o cadastro, a edição e a alteração de
   condição de jogador (F04), a lista e a criação de clubes (F05) e a página do clube com o elenco e os contratos
   (parte do F07), a compra (F06), a venda (F08), o histórico com filtros, totais e exportação em CSV (F09 a
-  F11) e a escalação (F12); as partidas e a classificação vêm a seguir.
+  F11), a escalação (F12), as partidas (F13) e o histórico de partidas (parte do F14); a classificação vem a
+  seguir.
 
 ## 9. Uso de inteligência artificial
 
@@ -394,7 +404,7 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
   regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios;
   base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout, cliente da API,
   componentes de interface, a tela de jogadores (lista, cadastro, edição, condição e exclusão), a de clubes e a
-  página do clube, a compra, a venda, o histórico e a escalação.
+  página do clube, a compra, a venda, o histórico, a escalação e as partidas.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
