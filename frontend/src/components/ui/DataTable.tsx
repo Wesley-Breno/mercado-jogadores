@@ -58,7 +58,7 @@ export function DataTable<Row>({
                 key={column.key}
                 scope="col"
                 className={cn(
-                  'px-3 py-2.5 font-medium whitespace-nowrap first:pl-4 last:pr-4',
+                  'px-3 py-2.5 align-bottom font-medium first:pl-4 last:pr-4',
                   column.align === 'right' && 'text-right',
                 )}
               >

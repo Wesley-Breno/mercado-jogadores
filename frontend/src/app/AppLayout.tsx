@@ -1,15 +1,18 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { ChevronRight, Clock, RefreshCw } from 'lucide-react'
+import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router'
 
 import { Logo } from '../components/ui/Logo'
 import { cn } from '../lib/cn'
+import { BreadcrumbContext } from './breadcrumbContext'
 import { NAVIGATION, breadcrumbFor } from './navigation'
 
 export function AppLayout() {
   const { pathname } = useLocation()
   const queryClient = useQueryClient()
-  const breadcrumb = breadcrumbFor(pathname)
+  const [tail, setTail] = useState<string>()
+  const breadcrumb = [...breadcrumbFor(pathname), ...(tail ? [tail] : [])]
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[15rem_1fr]">
@@ -77,7 +80,9 @@ export function AppLayout() {
             </button>
           </header>
           <main className="px-4 py-6 lg:px-8 lg:py-7">
-            <Outlet />
+            <BreadcrumbContext.Provider value={setTail}>
+              <Outlet />
+            </BreadcrumbContext.Provider>
           </main>
         </div>
       </div>
