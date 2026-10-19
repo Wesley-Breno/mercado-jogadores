@@ -20,7 +20,7 @@ async function send<T>(method: string, path: string, body?: unknown): Promise<T>
   if (!response.ok) {
     throw new Error(`${method} ${path} → ${response.status}: ${await response.text()}`)
   }
-  return (await response.json()) as T
+  return (response.status === 204 ? undefined : await response.json()) as T
 }
 
 export function get<T>(path: string): Promise<T> {
@@ -52,6 +52,61 @@ export async function createPlayer({
 
 export async function createClub(name: string, acronym: string) {
   return send<{ id: number; name: string }>('POST', '/clubs', { name, acronym })
+}
+
+/** RN01: the end of loyalty `days` from now, typed in Brasília time, with -03:00. */
+export function loyaltyIn(days: number): string {
+  const { year, month, day } = brasiliaParts(new Date(Date.now() + days * 86_400_000))
+  return `${year}-${month}-${day}T15:00-03:00`
+}
+
+export async function buyPlayer(playerId: number, clubId: number, days = 120) {
+  return send('POST', `/players/${playerId}/buy`, {
+    club_id: clubId,
+    loyalty_until: loyaltyIn(days),
+  })
+}
+
+export async function sellPlayer(playerId: number) {
+  return send('POST', `/players/${playerId}/sell`)
+}
+
+export async function deletePlayer(playerId: number) {
+  return send('DELETE', `/players/${playerId}`)
+}
+
+export async function setCondition(playerId: number, condition: string) {
+  return send('PATCH', `/players/${playerId}/condition`, { condition })
+}
+
+export async function saveLineup(clubId: number, formation: string, playerIds: number[]) {
+  return send('PUT', `/clubs/${clubId}/lineup`, { formation, player_ids: playerIds })
+}
+
+/** A club that buys one player per position (cheap ones) and saves the 2-1-1 lineup. */
+export async function clubReadyToPlay(name: string, acronym: string, names: string[]) {
+  const club = await createClub(name, acronym)
+  const positions: Position[] = ['GOL', 'ZAG', 'LAT', 'MEI', 'ATA']
+  const ids: number[] = []
+  for (const [index, position] of positions.entries()) {
+    const player = await createPlayer({ name: names[index], position, level: 50 + index * 3 })
+    await buyPlayer(player.id, club.id)
+    ids.push(player.id)
+  }
+  await saveLineup(club.id, '2-1-1', ids)
+  return club
+}
+
+/** Date and time parts of an instant in Brasília, with two digits ("05", "09"). */
+export function brasiliaParts(instant: Date) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(instant)
+  const part = (type: string) => parts.find((item) => item.type === type)?.value ?? ''
+  return { year: part('year'), month: part('month'), day: part('day') }
 }
 
 /** The E2E specs follow the evaluation script, which starts from a recreated database. */
