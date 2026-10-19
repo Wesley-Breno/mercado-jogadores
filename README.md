@@ -72,7 +72,8 @@ backend/
     main.py       cria a aplicação (factory), registra CORS, erros, logs e rotas
     core/         configuração, fuso de Brasília, exceções de domínio, tratamento central de erros e log
     api/          roteador com o prefixo /api/v1 e as rotas de cada recurso
-    domain/       regras de negócio puras, sem framework nem banco (listas de valores do enunciado)
+    domain/       regras de negócio puras, sem framework nem banco: listas de valores, texto (V4, acentos,
+                  ordem alfabética, busca) e dinheiro (Decimal e arredondamento)
     models/       modelos do ORM: tabelas e colunas em português, atributos em inglês
   migrations/     migrations do Alembic (versions/ guarda cada versão do schema)
   tests/          testes automatizados (pytest): api/ (HTTP) e db/ (schema e restrições)
@@ -137,6 +138,12 @@ cp .env.example .env
 - Log: uma linha por requisição, com data e hora de Brasília, método, caminho e status, pelo módulo `logging` da
   biblioteca padrão. O log de acesso do Uvicorn fica desligado (`--no-access-log`) para não duplicar a linha.
 - Endpoint adicional `GET /api/v1/health`, usado para saber quando a API está no ar.
+- Dinheiro sempre em `Decimal`, nunca em `float`. O arredondamento para 2 casas usa `ROUND_HALF_UP`, que no Python
+  leva o 5 para longe do zero também nos negativos (−0,385 → −0,39), e é feito uma vez, no resultado final.
+- V4: só o espaço U+0020 é removido das pontas e compactado; outros espaços Unicode (como o U+00A0) são mantidos,
+  e caracteres de controle (categoria `Cc`, como tabulação e quebra de linha) são recusados.
+- Ordem alfabética e busca por nome são calculadas no Python (minúsculas, sem acentos, comparação por code point),
+  e não pela collation do banco, para seguir a regra das Premissas em qualquer ambiente.
 - Banco: as 7 tabelas e colunas com os nomes do enunciado; o ORM liga os atributos em inglês às colunas em
   português. Ids inteiros com autoincremento (`SERIAL`), moeda em `NUMERIC` com a precisão do enunciado e datas em
   `TIMESTAMP WITH TIME ZONE`, para guardar o instante exato.
