@@ -1,8 +1,9 @@
 import type { Club, Condition, PlayerQuery, PlayerSort, Position } from '../../api/types'
 import { formatMoney } from '../../lib/format'
+import { normalizeSpaces } from '../../lib/text'
 import { CONDITION_LABELS, POSITION_LABELS } from './labels'
 
-export const POSITIONS: Position[] = ['GOL', 'ZAG', 'LAT', 'MEI', 'ATA']
+export const POSITIONS = ['GOL', 'ZAG', 'LAT', 'MEI', 'ATA'] as const satisfies readonly Position[]
 export const CONDITIONS: Condition[] = ['APTO', 'MAL_CONDICIONADO', 'DOENTE']
 export const SORTS: PlayerSort[] = [
   'name',
@@ -52,10 +53,6 @@ function positiveInteger(raw: string | null): number | undefined {
 
 function oneOf<T extends string>(raw: string | null, accepted: readonly T[]): T | undefined {
   return accepted.find((value) => value === raw)
-}
-
-function normalizeSpaces(text: string): string {
-  return text.trim().replace(/\s+/g, ' ')
 }
 
 /** Age typed or read from the address: a whole number from 16 to 45. */

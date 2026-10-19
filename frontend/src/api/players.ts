@@ -1,5 +1,5 @@
-import { apiGet } from './client'
-import type { PlayerPage, PlayerQuery } from './types'
+import { apiGet, apiSend } from './client'
+import type { Player, PlayerCreate, PlayerPage, PlayerQuery } from './types'
 
 export function toSearchParams(query: PlayerQuery): string {
   const params = new URLSearchParams()
@@ -14,4 +14,8 @@ export function toSearchParams(query: PlayerQuery): string {
 
 export function listPlayers(query: PlayerQuery): Promise<PlayerPage> {
   return apiGet<PlayerPage>(`/players${toSearchParams(query)}`)
+}
+
+export function createPlayer(player: PlayerCreate): Promise<Player> {
+  return apiSend<Player>('POST', '/players', player)
 }

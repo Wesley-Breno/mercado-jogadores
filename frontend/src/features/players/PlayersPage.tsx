@@ -13,6 +13,7 @@ import { SegmentedControl } from '../../components/ui/SegmentedControl'
 import { EmptyState } from '../../components/ui/States'
 import { useDebouncedValue } from '../../hooks/useDebouncedValue'
 import { useClubs } from '../clubs/queries'
+import { CreatePlayer } from './CreatePlayer'
 import { COMBINATION_NOTE, SORT_LABELS } from './labels'
 import { PlayerFilters } from './PlayerFilters'
 import {
@@ -99,6 +100,7 @@ export function PlayersPage() {
         icon={Users}
         title="Jogadores"
         description="Cadastre jogadores, acompanhe os indicadores e compre os que estão livres."
+        action={<CreatePlayer />}
       />
       <PlayerFilters query={query} clubs={clubs.data ?? []} active={active} onChange={update} />
       <Card>

@@ -21,6 +21,21 @@ export type Player = {
   club_id: number | null
 }
 
+export type PlayerCreate = Pick<
+  Player,
+  | 'name'
+  | 'position'
+  | 'agility'
+  | 'age'
+  | 'pace'
+  | 'shooting'
+  | 'passing'
+  | 'dribbling'
+  | 'defending'
+  | 'physical'
+  | 'potential'
+>
+
 type PageMeta = {
   page: number
   limit: number

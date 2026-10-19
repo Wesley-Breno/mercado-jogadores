@@ -1,11 +1,12 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { listPlayers } from '../../api/players'
+import { createPlayer, listPlayers } from '../../api/players'
 import type { PlayerQuery } from '../../api/types'
 import { type Availability, countRequest } from './playerQuery'
 
 const playerKeys = {
-  list: (query: PlayerQuery) => ['players', 'list', query] as const,
+  all: ['players'] as const,
+  list: (query: PlayerQuery) => [...playerKeys.all, 'list', query] as const,
 }
 
 /** While another page or filter loads, the previous rows stay on the screen. */
@@ -43,4 +44,13 @@ export function useAvailabilityCounts(
     free: current === 'free' ? currentTotal : free.data,
     owned: current === 'owned' ? currentTotal : owned.data,
   }
+}
+
+/** The lists are fetched again before the success shows, so the new player is already there. */
+export function useCreatePlayer() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: createPlayer,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: playerKeys.all }),
+  })
 }
