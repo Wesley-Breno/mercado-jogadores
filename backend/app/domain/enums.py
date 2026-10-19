@@ -9,6 +9,20 @@ class Position(StrEnum):
     FORWARD = "ATA"
 
 
+# RN07 and RN11: positions are ordered from back to front, not alphabetically.
+POSITION_ORDER = (
+    Position.GOALKEEPER,
+    Position.CENTER_BACK,
+    Position.FULL_BACK,
+    Position.MIDFIELDER,
+    Position.FORWARD,
+)
+
+
+def position_rank(position: Position) -> int:
+    return POSITION_ORDER.index(position)
+
+
 class Condition(StrEnum):
     FIT = "APTO"
     UNFIT = "MAL_CONDICIONADO"

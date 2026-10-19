@@ -1,0 +1,12 @@
+"""Limits of each player field ("Limites de cada campo"), shared by validation and filters."""
+
+MIN_AGE = 16
+MAX_AGE = 45
+MIN_AGILITY = 1
+MAX_AGILITY = 100
+MIN_INDICATOR = 1
+MAX_INDICATOR = 99
+MAX_ATTRIBUTE_SUM = 480
+POTENTIAL_EQUALS_MAX_ATTRIBUTE_AGE = 33
+VETERAN_AGILITY_AGE = 35
+VETERAN_MAX_AGILITY = 85
