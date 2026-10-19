@@ -332,6 +332,10 @@ cp .env.example .env
   marcada não pode ser desmarcada. O filtro de jogador lista os jogadores que aparecem no histórico do clube
   (com o nome mais recente) e envia `player_id`. Se a API recusar o filtro (jogador excluído → 404), a tela
   mostra "O filtro foi recusado" com o `message` e esconde tabela e totais. Os filtros ficam no endereço.
+- Exportar CSV (F11): o botão pede `GET /clubs/{id}/transactions/export` com os mesmos `type` e `player_id` da
+  tela e salva a resposta da API como está (`transacoes-clube-<id>.csv`), sem montar nem converter o arquivo no
+  navegador; conferido byte a byte contra a API, sem BOM. Se a API recusar o filtro, o `message` aparece abaixo
+  do botão.
 - Menus que abrem sobre a página (filtros, ordenação e o "⋯" de cada linha) acompanham o botão quando a página
   rola e não são cortados pela tabela; no celular, aparecem como painel no pé da tela.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
@@ -367,8 +371,8 @@ cp .env.example .env
 - **Frontend:** em desenvolvimento. Já existem o layout com o menu, o cliente da API, a lista de jogadores com
   busca, filtros, ordenação e paginação (F01 e F02), a exclusão (F03), o cadastro, a edição e a alteração de
   condição de jogador (F04), a lista e a criação de clubes (F05) e a página do clube com o elenco e os contratos
-  (parte do F07), a compra (F06), a venda (F08) e o histórico com filtros e totais (F09 e F10); a exportação em
-  CSV e a liga vêm a seguir.
+  (parte do F07), a compra (F06), a venda (F08) e o histórico com filtros, totais e exportação em CSV (F09 a
+  F11); a escalação, as partidas e a classificação vêm a seguir.
 
 ## 9. Uso de inteligência artificial
 
