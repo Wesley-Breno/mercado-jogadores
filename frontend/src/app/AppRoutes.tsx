@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router'
 
+import { ClubPage } from '../features/clubs/ClubPage'
 import { ClubsPage } from '../features/clubs/ClubsPage'
 import { PlayersPage } from '../features/players/PlayersPage'
 import { AppLayout } from './AppLayout'
@@ -12,6 +13,7 @@ export function AppRoutes() {
         <Route index element={<Navigate to="/jogadores" replace />} />
         <Route path="jogadores" element={<PlayersPage />} />
         <Route path="clubes" element={<ClubsPage />} />
+        <Route path="clubes/:clubId" element={<ClubPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

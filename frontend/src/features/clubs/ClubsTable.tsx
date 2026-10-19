@@ -1,4 +1,6 @@
+import { ChevronRight } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { Link } from 'react-router'
 
 import type { Club } from '../../api/types'
 import { Badge } from '../../components/ui/Badge'
@@ -30,6 +32,21 @@ const COLUMNS: Column<Club>[] = [
     header: 'Patrimônio',
     align: 'right',
     cell: (club) => <span className="font-semibold">{formatMoney(club.net_worth)}</span>,
+  },
+  {
+    key: 'open',
+    header: <span className="sr-only">Abrir</span>,
+    align: 'right',
+    cell: (club) => (
+      <Link
+        to={`/clubes/${club.id}`}
+        aria-label={`Ver clube ${club.name}`}
+        className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm font-medium text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950"
+      >
+        Ver clube
+        <ChevronRight aria-hidden className="size-4" />
+      </Link>
+    ),
   },
 ]
 

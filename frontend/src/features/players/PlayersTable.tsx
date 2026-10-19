@@ -1,5 +1,6 @@
 import { HeartPulse, Pencil, Trash2 } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { Link } from 'react-router'
 
 import type { Club, Player } from '../../api/types'
 import { Avatar } from '../../components/ui/Avatar'
@@ -32,7 +33,12 @@ function ClubTag({ club, clubId }: { club: Club | undefined; clubId: number | nu
   return (
     <span className="inline-flex items-center gap-2">
       <Badge>{club?.acronym ?? '···'}</Badge>
-      <span>{club?.name}</span>
+      <Link
+        to={`/clubes/${clubId}`}
+        className="underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-950"
+      >
+        {club?.name}
+      </Link>
     </span>
   )
 }

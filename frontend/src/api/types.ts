@@ -82,3 +82,15 @@ export type Club = {
   squad_value: number
   net_worth: number
 }
+
+/** RN11: the contract as it would be if the player were sold now. */
+export type Contract = {
+  purchase_value: number
+  loyalty_until: string
+  remaining_days: number
+  penalty_rate: number
+}
+
+export type SquadPlayer = Player & { contract: Contract }
+
+export type ClubDetail = Club & { players: SquadPlayer[] }

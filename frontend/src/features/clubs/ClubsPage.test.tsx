@@ -53,6 +53,10 @@ describe('ClubsPage', () => {
     expect(within(aguias).getByText('222,68')).toBeInTheDocument()
     expect(within(aguias).getByText('274,26')).toBeInTheDocument()
     expect(screen.getByText('2 de 20')).toBeInTheDocument()
+    expect(within(aguias).getByRole('link', { name: 'Ver clube Águias FC' })).toHaveAttribute(
+      'href',
+      '/clubes/1',
+    )
     expect(sentRequest(fetchMock).path).toBe('/clubs')
     expect(String(fetchMock.mock.calls[0][0])).toMatch(/\?sort=name$/)
   })
