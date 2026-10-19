@@ -40,7 +40,7 @@ const CREATED = {
 }
 
 async function openForm(user: UserEvent) {
-  renderWithProviders(<CreatePlayer />)
+  renderWithProviders(<CreatePlayer onShowDetails={vi.fn()} />)
   await user.click(screen.getByRole('button', { name: 'Novo jogador' }))
   return screen.getByRole('dialog', { name: 'Novo jogador' })
 }
@@ -135,6 +135,25 @@ describe('CreatePlayer', () => {
 
     await screen.findByRole('dialog', { name: 'Jogador cadastrado' })
     expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('desenha a prévia com os valores digitados e pede correção dos inválidos', async () => {
+    const user = userEvent.setup()
+    respondWith(201, CREATED)
+    const dialog = await openForm(user)
+    const preview = within(dialog).getByRole('complementary', { name: 'Prévia dos atributos' })
+
+    await user.type(within(dialog).getByLabelText('Velocidade'), '70')
+    await user.type(within(dialog).getByLabelText('Potencial'), '86')
+
+    expect(within(preview).getByText('Velocidade').nextSibling?.nextSibling).toHaveTextContent('70')
+    expect(within(preview).getByText(/Até o potencial \(86\)/)).toBeInTheDocument()
+
+    await user.type(within(dialog).getByLabelText('Passe'), '120')
+
+    expect(
+      within(preview).getByText('Corrija os valores destacados para ver a prévia.'),
+    ).toBeInTheDocument()
   })
 
   it('abre com o foco no nome', async () => {

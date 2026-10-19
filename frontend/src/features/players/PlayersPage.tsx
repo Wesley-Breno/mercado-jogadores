@@ -20,6 +20,7 @@ import { ConditionDialog } from './ConditionDialog'
 import { CreatePlayer } from './CreatePlayer'
 import { DeletePlayerDialog } from './DeletePlayerDialog'
 import { COMBINATION_NOTE, SORT_LABELS } from './labels'
+import { PlayerDetails } from './PlayerDetails'
 import { PlayerEditDialog } from './PlayerEditDialog'
 import { PlayerFilters } from './PlayerFilters'
 import {
@@ -103,7 +104,7 @@ export function PlayersPage() {
         icon={Users}
         title="Jogadores"
         description="Cadastre jogadores, acompanhe os indicadores e compre os que estão livres."
-        action={<CreatePlayer />}
+        action={<CreatePlayer onShowDetails={(player) => setAction({ kind: 'details', player })} />}
       />
       <PlayerFilters query={query} clubs={clubs.data ?? []} active={active} onChange={update} />
       <Card>
@@ -167,6 +168,14 @@ export function PlayersPage() {
         Overall e valor de mercado são calculados pela API a cada consulta. A busca ignora
         maiúsculas, minúsculas e acentos.
       </p>
+      {action?.kind === 'details' && (
+        <PlayerDetails
+          player={action.player}
+          club={action.player.club_id === null ? undefined : clubsById.get(action.player.club_id)}
+          onClose={() => setAction(null)}
+          onAction={(kind) => setAction({ kind, player: action.player })}
+        />
+      )}
       {action?.kind === 'edit' && (
         <PlayerEditDialog player={action.player} onClose={() => setAction(null)} />
       )}

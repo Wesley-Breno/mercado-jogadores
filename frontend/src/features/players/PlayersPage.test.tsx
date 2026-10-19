@@ -308,6 +308,21 @@ describe('PlayersPage', () => {
     expect(screen.getByText('Só jogador livre pode ser excluído.')).toBeInTheDocument()
   })
 
+  it('abre os detalhes do jogador pelo menu da linha', async () => {
+    const user = userEvent.setup()
+    fakeApi()
+    renderPage()
+    await screen.findByText('Mostrando 1–10 de 23 jogadores')
+
+    await user.click(screen.getByRole('button', { name: 'Ações de André Lacerda' }))
+    await user.click(screen.getByRole('menuitem', { name: 'Ver detalhes' }))
+
+    const panel = screen.getByRole('dialog', { name: 'André Lacerda' })
+    expect(within(panel).getByRole('group', { name: 'Valor base' })).toHaveTextContent('26,00')
+    await user.click(within(panel).getByRole('button', { name: 'Editar' }))
+    expect(screen.getByRole('dialog', { name: 'Editar jogador' })).toBeInTheDocument()
+  })
+
   it('mostra a lista vazia', async () => {
     fakeApi([])
     renderPage()

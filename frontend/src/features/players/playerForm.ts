@@ -16,6 +16,17 @@ export const INDICATORS = [
   { name: 'potential', label: 'Potencial' },
 ] as const
 
+/** The six attributes, without the potential, for the bars of the preview and of the details. */
+export const ATTRIBUTES = INDICATORS.filter((indicator) => indicator.name !== 'potential')
+
+const TYPED_INDICATOR = /^\d{1,2}$/
+
+/** What the preview draws for a typed indicator: a value from 1 to 99, or nothing. */
+export function typedIndicator(text: string | undefined): number | undefined {
+  const trimmed = (text ?? '').trim()
+  return TYPED_INDICATOR.test(trimmed) && Number(trimmed) >= 1 ? Number(trimmed) : undefined
+}
+
 const NAME_LENGTH = 'Use de 3 a 100 caracteres.'
 
 /** A whole number typed in a text box, within the limits of a single field. */

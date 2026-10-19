@@ -7,7 +7,7 @@ import { PlayerCreateDialog } from './PlayerCreateDialog'
 import { PlayerCreatedDialog } from './PlayerCreatedDialog'
 
 /** "Novo jogador": the form and, after saving, the values calculated by the API. */
-export function CreatePlayer() {
+export function CreatePlayer({ onShowDetails }: { onShowDetails: (player: Player) => void }) {
   const [isFormOpen, setFormOpen] = useState(false)
   const [created, setCreated] = useState<Player | null>(null)
 
@@ -26,7 +26,16 @@ export function CreatePlayer() {
           }}
         />
       )}
-      {created && <PlayerCreatedDialog player={created} onClose={() => setCreated(null)} />}
+      {created && (
+        <PlayerCreatedDialog
+          player={created}
+          onClose={() => setCreated(null)}
+          onShowDetails={() => {
+            setCreated(null)
+            onShowDetails(created)
+          }}
+        />
+      )}
     </>
   )
 }

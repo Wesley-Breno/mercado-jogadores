@@ -1,4 +1,4 @@
-import { HeartPulse, Pencil, ShoppingCart, Trash2 } from 'lucide-react'
+import { Eye, HeartPulse, Pencil, ShoppingCart, Trash2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 
@@ -13,7 +13,7 @@ import { POSITION_LABELS } from './labels'
 import { AgilityMeter, ConditionBadge } from './PlayerBadges'
 
 export type PlayerAction = {
-  kind: 'edit' | 'condition' | 'delete' | 'buy'
+  kind: 'details' | 'edit' | 'condition' | 'delete' | 'buy'
   player: Player
 }
 
@@ -126,6 +126,11 @@ function playerColumns(
         <RowActions
           title={player.name}
           actions={[
+            {
+              label: 'Ver detalhes',
+              icon: Eye,
+              onSelect: () => onAction({ kind: 'details', player }),
+            },
             {
               label: 'Editar',
               icon: Pencil,

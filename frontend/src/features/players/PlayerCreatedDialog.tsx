@@ -1,3 +1,5 @@
+import { Eye } from 'lucide-react'
+
 import type { Player } from '../../api/types'
 import { Button } from '../../components/ui/Button'
 import { Dialog } from '../../components/ui/Dialog'
@@ -8,10 +10,11 @@ import { CONDITION_LABELS, POSITION_LABELS } from './labels'
 type PlayerCreatedDialogProps = {
   player: Player
   onClose: () => void
+  onShowDetails: () => void
 }
 
 /** J07: the values come from the API response, as they were calculated when saving. */
-export function PlayerCreatedDialog({ player, onClose }: PlayerCreatedDialogProps) {
+export function PlayerCreatedDialog({ player, onClose, onShowDetails }: PlayerCreatedDialogProps) {
   const situation = player.club_id === null ? 'livre' : 'com clube'
   return (
     <Dialog
@@ -20,9 +23,15 @@ export function PlayerCreatedDialog({ player, onClose }: PlayerCreatedDialogProp
       description={`${player.name} entrou ${situation} e ${CONDITION_LABELS[player.condition]}. Valores em moedas, calculados pela API ao salvar.`}
       onClose={onClose}
       footer={
-        <Button variant="primary" onClick={onClose}>
-          Fechar
-        </Button>
+        <>
+          <Button onClick={onShowDetails}>
+            <Eye aria-hidden />
+            Ver detalhes
+          </Button>
+          <Button variant="primary" onClick={onClose}>
+            Fechar
+          </Button>
+        </>
       }
     >
       <ResultList

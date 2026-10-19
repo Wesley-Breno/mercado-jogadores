@@ -8,6 +8,7 @@ import { Dialog } from '../../components/ui/Dialog'
 import { DialogActions } from '../../components/ui/DialogActions'
 import { Field, Input } from '../../components/ui/Field'
 import { EMPTY_PLAYER, INDICATORS, type PlayerCreateFields, playerCreateSchema } from './playerForm'
+import { AttributePreview } from './AttributePreview'
 import { PlayerBasicFields } from './PlayerBasicFields'
 import { useCreatePlayer } from './queries'
 
@@ -30,6 +31,7 @@ export function PlayerCreateDialog({ onClose, onCreated }: PlayerCreateDialogPro
   const createPlayer = useCreatePlayer()
   const {
     register,
+    control,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
@@ -90,22 +92,25 @@ export function PlayerCreateDialog({ onClose, onCreated }: PlayerCreateDialogPro
               atributos não pode passar de 480.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {INDICATORS.map(({ name, label }) => (
-              <Field
-                key={name}
-                label={label}
-                hint={
-                  name === 'potential'
-                    ? 'Pelo menos o maior atributo; igual a ele com 33 anos ou mais.'
-                    : undefined
-                }
-                error={errors[name]?.message}
-              >
-                {(control) => <Input {...control} inputMode="numeric" {...register(name)} />}
-              </Field>
-            ))}
-            <CalculatedField label="Overall" hint="Calculado pela API." />
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_15rem]">
+            <div className="grid grid-cols-2 content-start gap-4 sm:grid-cols-4">
+              {INDICATORS.map(({ name, label }) => (
+                <Field
+                  key={name}
+                  label={label}
+                  hint={
+                    name === 'potential'
+                      ? 'Pelo menos o maior atributo; igual a ele com 33 anos ou mais.'
+                      : undefined
+                  }
+                  error={errors[name]?.message}
+                >
+                  {(control) => <Input {...control} inputMode="numeric" {...register(name)} />}
+                </Field>
+              ))}
+              <CalculatedField label="Overall" hint="Calculado pela API." />
+            </div>
+            <AttributePreview control={control} />
           </div>
         </section>
       </form>
