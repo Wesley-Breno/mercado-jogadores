@@ -74,17 +74,13 @@ export function PlayerFilters({ query, clubs, active, onChange }: PlayerFiltersP
   return (
     <div className="mb-5 grid gap-3">
       <Card className="flex flex-wrap gap-2 p-2">
-        <label className="relative min-w-56 flex-1">
+        <label className="min-w-56 flex-1">
           <span className="sr-only">Buscar por nome</span>
-          <Search
-            aria-hidden
-            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-500"
-          />
           <Input
             type="search"
+            icon={Search}
             placeholder="Buscar por nome"
             maxLength={SEARCH_MAX_LENGTH}
-            className="pl-9"
             value={query.search ?? ''}
             onChange={(event) => onChange({ search: event.target.value }, { replace: true })}
           />
