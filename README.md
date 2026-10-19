@@ -317,6 +317,8 @@ cp .env.example .env
   2.3.1 do enunciado, e é conferido antes de buscar o jogador e o clube.
 - Mensagens de recusa citam os valores em formato brasileiro (`O custo da compra (50,40) passa do limite de 50% do
   caixa (50,00).`).
+- Nome ou sigla de clube repetidos: a mensagem cita o clube já cadastrado (`Já existe um clube com o nome "Águias
+  FC".`, `A sigla AGU já é do clube "Águias FC".`), para quem digitou "águias fc" entender com qual nome bateu.
 - Valores em moedas saem como números JSON (`40.0`), e não como texto, que é o padrão do Pydantic para `Decimal`.
 - Overall e valor de mercado são calculados a cada consulta, num único lugar (`services/valuation.py`, que usa
   `domain/pricing.py`); o valor base é calculado uma vez, no cadastro, e gravado.
