@@ -18,18 +18,20 @@ histórico de transações, escalação, partidas e classificação.
 
 ## 2. Banco de dados
 
-O banco é criado pelo Compose, vazio, no volume `db-data`. Para criar (na raiz do repositório):
+PostgreSQL 16 em contêiner, com os dados no volume `db-data`. O banco é criado vazio pelos comandos da seção 3: ao
+subir, a API aplica as migrations versionadas do Alembic (`backend/migrations/versions`) antes de iniciar o servidor.
+Nenhum dado de exemplo é carregado.
+
+Para recriar do zero, apagando todos os dados e aplicando as migrations de novo, com a aplicação no ar (na raiz do
+repositório):
 
 ```bash
-docker compose up -d db
+docker compose exec backend alembic downgrade base
+docker compose exec backend alembic upgrade head
 ```
 
-Para recriar do zero, apagando todos os dados (na raiz do repositório):
-
-```bash
-docker compose down -v
-docker compose up -d --build
-```
+A API continua no ar durante a recriação, e os ids voltam a começar em 1. Outra forma, que também apaga o volume:
+`docker compose down -v` seguido de `docker compose up -d --build`.
 
 ## 3. Instalar e executar
 
@@ -59,6 +61,8 @@ se o `.env` não existir. Para executar a API fora do Docker, o modelo é [`back
 | `POSTGRES_PASSWORD` | `db` | Senha do PostgreSQL (só para o ambiente local) |
 | `POSTGRES_DB` | `db` | Nome do banco da aplicação |
 | `CORS_ORIGIN` | `backend` | Única origem liberada no CORS: a URL do frontend |
+| `DATABASE_URL` | `backend` | Conexão da API e das migrations com o PostgreSQL; no Compose, montada a partir das variáveis `POSTGRES_*` |
+| `TEST_DATABASE_URL` | testes | Banco usado pelos testes (padrão: `mercado_test` em `localhost`); no Compose, aponta para o serviço `db` |
 
 ## 5. Estrutura de pastas e bibliotecas
 
@@ -68,7 +72,10 @@ backend/
     main.py       cria a aplicação (factory), registra CORS, erros, logs e rotas
     core/         configuração, fuso de Brasília, exceções de domínio, tratamento central de erros e log
     api/          roteador com o prefixo /api/v1 e as rotas de cada recurso
-  tests/          testes automatizados (pytest)
+    domain/       regras de negócio puras, sem framework nem banco (listas de valores do enunciado)
+    models/       modelos do ORM: tabelas e colunas em português, atributos em inglês
+  migrations/     migrations do Alembic (versions/ guarda cada versão do schema)
+  tests/          testes automatizados (pytest): api/ (HTTP) e db/ (schema e restrições)
 docs/             enunciado, barema, glossário, ficha de exemplo, mockup e registro do uso de IA
 docker-compose.yml
 ```
@@ -101,16 +108,19 @@ docker compose --profile test run --rm --build backend-test ruff check .
 docker compose --profile test run --rm --build backend-test ruff format --check .
 ```
 
-Os comandos terminam sozinhos; o de formatação só verifica, sem alterar arquivos. A integração contínua
+Os comandos terminam sozinhos; o de formatação só verifica, sem alterar arquivos. Os testes de banco usam o banco
+`mercado_test`, criado e migrado por eles no mesmo PostgreSQL, sem tocar no banco da aplicação. A integração contínua
 (`.github/workflows/ci.yml`) executa as mesmas verificações em Ubuntu 24.04 a cada envio.
 
-Alternativa no host, para desenvolvimento (Python 3.12 com `venv`), na pasta `backend`:
+Alternativa no host, para desenvolvimento (Python 3.12 com `venv`), com o banco no ar (`docker compose up -d db`),
+na pasta `backend`:
 
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -r requirements-dev.txt
-.venv/bin/pytest
 cp .env.example .env
+.venv/bin/pytest
+.venv/bin/alembic upgrade head
 .venv/bin/uvicorn app.main:create_app --factory --reload --no-access-log
 ```
 
@@ -127,6 +137,14 @@ cp .env.example .env
 - Log: uma linha por requisição, com data e hora de Brasília, método, caminho e status, pelo módulo `logging` da
   biblioteca padrão. O log de acesso do Uvicorn fica desligado (`--no-access-log`) para não duplicar a linha.
 - Endpoint adicional `GET /api/v1/health`, usado para saber quando a API está no ar.
+- Banco: as 7 tabelas e colunas com os nomes do enunciado; o ORM liga os atributos em inglês às colunas em
+  português. Ids inteiros com autoincremento (`SERIAL`), moeda em `NUMERIC` com a precisão do enunciado e datas em
+  `TIMESTAMP WITH TIME ZONE`, para guardar o instante exato.
+- RN10 no banco: índice único em `lower(nome)`. O nome é gravado já normalizado pela V4, então o índice ignora
+  maiúsculas e minúsculas, mas não acentos ("águias fc" repete "Águias FC"; "Aguias FC" não repete).
+- Restrições além das exigidas, como defesa extra: `CHECK` nas listas de valores (posição, condição, situação do
+  contrato, tipo de transação e formação) e índice único parcial que permite um só contrato `ATIVO` por jogador.
+  Os limites numéricos ficam só na API, como a banca indicou (issue #3).
 
 ## 8. Funcionalidades não implementadas
 
@@ -138,7 +156,8 @@ Ferramenta: **Claude Code** (modelo Claude Opus 5.5, da Anthropic), no terminal 
 ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`docs/ai-log.md`](docs/ai-log.md).
 
 - **Onde:** estrutura do repositório, configuração do Docker, do Ruff, do pytest e da integração contínua;
-  configuração, CORS, tratamento central de erros e log de requisições da API (`backend/app/core`).
+  configuração, CORS, tratamento central de erros e log de requisições da API (`backend/app/core`);
+  modelos, migration inicial e testes do schema (`backend/app/models`, `backend/migrations`, `backend/tests/db`).
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
