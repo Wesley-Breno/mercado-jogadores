@@ -25,6 +25,7 @@ type Route = {
   path: string
   status?: number
   body?: unknown
+  text?: string
 }
 
 /**
@@ -46,6 +47,9 @@ export function fakeRoutes(routes: Route[]) {
       return new Response(JSON.stringify({ message: 'Rota não encontrada.' }), { status: 404 })
     }
     const status = route.status ?? 200
+    if (route.text !== undefined) {
+      return new Response(route.text, { status, headers: { 'Content-Type': 'text/csv' } })
+    }
     return new Response(status === 204 ? null : JSON.stringify(route.body), { status })
   })
   vi.stubGlobal('fetch', fetchMock)

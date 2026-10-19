@@ -6,6 +6,7 @@ import { Card } from '../../components/ui/Card'
 import { Select } from '../../components/ui/Field'
 import { EmptyState } from '../../components/ui/States'
 import { cn } from '../../lib/cn'
+import { ExportCsvButton } from './ExportCsvButton'
 import { checkedTypes, playersInHistory, readHistoryFilters, toggleType } from './historyFilters'
 import { useTransactions } from './queries'
 import { TransactionsTable } from './TransactionsTable'
@@ -14,8 +15,9 @@ import { TransactionTotals } from './TransactionTotals'
 const TYPE_LABELS: Record<TransactionType, string> = { COMPRA: 'Compra', VENDA: 'Venda' }
 
 /**
- * F09 and F10: the history of the club with the filters by type and by player, kept in the
- * address. A refused filter (a deleted player, for example) shows the `message` of the API.
+ * F09 to F11: the history of the club with the filters by type and by player, kept in the address,
+ * and the CSV with the same filters. A refused filter (a deleted player, for example) shows the
+ * `message` of the API.
  */
 export function TransactionHistory({ clubId }: { clubId: string }) {
   const [params, setParams] = useSearchParams()
@@ -49,6 +51,11 @@ export function TransactionHistory({ clubId }: { clubId: string }) {
               operação.
             </p>
           </div>
+          <ExportCsvButton
+            clubId={clubId}
+            filters={filters}
+            playerName={players.find((player) => player.id === filters.player_id)?.name}
+          />
         </div>
         <div className="flex flex-wrap items-center gap-2 px-4 py-3 text-sm">
           <span className="text-zinc-500">Tipo</span>

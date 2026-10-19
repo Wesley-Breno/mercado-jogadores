@@ -1,6 +1,6 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ClubDetail, Transaction, TransactionHistory } from '../../api/types'
 import { AppRoutes } from '../../app/AppRoutes'
@@ -74,8 +74,25 @@ function historyUrls(fetchMock: ReturnType<typeof fakeRoutes>): string[] {
     .map((url) => url.search)
 }
 
+const CSV = 'data_hora;tipo;jogador;valor;taxa_ou_comissao;multa;lucro;variacao_caixa\n'
+
+/** jsdom has no file downloads: the object URL and the link click are recorded instead. */
+const downloads: string[] = []
+
+beforeEach(() => {
+  downloads.length = 0
+  URL.createObjectURL = vi.fn(() => 'blob:csv')
+  URL.revokeObjectURL = vi.fn()
+  vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function click(
+    this: HTMLAnchorElement,
+  ) {
+    downloads.push(this.download)
+  })
+})
+
 afterEach(() => {
   vi.unstubAllGlobals()
+  vi.restoreAllMocks()
 })
 
 describe('Histórico de transações', () => {
@@ -171,5 +188,47 @@ describe('Histórico de transações', () => {
     expect(within(screen.getByLabelText('Totais do histórico')).getAllByText('0,00')).toHaveLength(
       5,
     )
+  })
+})
+
+describe('Exportar CSV', () => {
+  it('baixa o arquivo da API pedido com os filtros aplicados', async () => {
+    const user = userEvent.setup()
+    const fetchMock = fakeHistory([
+      { path: '/clubs/1/transactions?type=VENDA', body: ONLY_SALES },
+      { path: '/clubs/1/transactions/export?type=VENDA', text: CSV },
+    ])
+    renderWithProviders(<AppRoutes />, '/clubes/1?aba=historico&type=VENDA')
+    await screen.findByRole('row', { name: /Venda/ })
+
+    await user.click(screen.getByRole('button', { name: 'Exportar CSV' }))
+
+    expect(await screen.findByText('CSV baixado')).toBeInTheDocument()
+    expect(
+      screen.getByText('transacoes-clube-1.csv, com o filtro de tipo Venda aplicado.'),
+    ).toBeInTheDocument()
+    expect(downloads).toEqual(['transacoes-clube-1.csv'])
+    expect(
+      fetchMock.mock.calls.map(([input]) => String(input)).filter((url) => url.includes('export')),
+    ).toEqual(['http://localhost:8000/api/v1/clubs/1/transactions/export?type=VENDA'])
+  })
+
+  it('mostra o message da API quando a exportação é recusada', async () => {
+    const user = userEvent.setup()
+    fakeHistory([
+      { path: '/clubs/1/transactions?player_id=9', body: EVERYTHING },
+      {
+        path: '/clubs/1/transactions/export?player_id=9',
+        status: 404,
+        body: { message: 'Jogador não encontrado.' },
+      },
+    ])
+    renderWithProviders(<AppRoutes />, '/clubes/1?aba=historico&player_id=9')
+    await screen.findByRole('row', { name: /Venda/ })
+
+    await user.click(screen.getByRole('button', { name: 'Exportar CSV' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Jogador não encontrado.')
+    expect(downloads).toEqual([])
   })
 })
