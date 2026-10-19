@@ -48,3 +48,13 @@ class PlayerRepository:
     def count_in_club(self, club_id: int) -> int:
         statement = select(func.count()).select_from(Player).where(Player.club_id == club_id)
         return self.session.scalar(statement)
+
+    def find_active_many(self, player_ids: Sequence[int]) -> dict[int, Player]:
+        """Locks the players in id order, the same order every operation uses (no deadlocks)."""
+        statement = (
+            select(Player)
+            .where(Player.id.in_(player_ids), Player.deleted_at.is_(None))
+            .order_by(Player.id)
+            .with_for_update()
+        )
+        return {player.id: player for player in self.session.scalars(statement)}

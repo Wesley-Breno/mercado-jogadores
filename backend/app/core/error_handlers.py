@@ -46,6 +46,10 @@ def describe_validation_error(error: dict) -> str:
         return f"Campo '{field}': valor fora da lista aceita ({accepted})."
     if error_type == "string_type":
         return f"Campo '{field}': deve ser um texto."
+    if error_type == "list_type":
+        return f"Campo '{field}': deve ser uma lista."
+    if error_type in {"too_short", "too_long"}:
+        return f"Campo '{field}': quantidade de itens fora do aceito."
     return f"O campo '{field}' é inválido."
 
 

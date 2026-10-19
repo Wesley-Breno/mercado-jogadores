@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.routers import clubs, health, market, players, transactions
+from app.api.routers import clubs, health, lineups, market, players, transactions
 
 API_PREFIX = "/api/v1"
 
@@ -10,3 +10,4 @@ api_router.include_router(players.router)
 api_router.include_router(clubs.router)
 api_router.include_router(market.router)
 api_router.include_router(transactions.router)
+api_router.include_router(lineups.router)
