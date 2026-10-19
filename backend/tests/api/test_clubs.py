@@ -79,7 +79,7 @@ def test_name_is_unique_ignoring_case_but_not_accents(client: TestClient) -> Non
     without_accent = client.post(CLUBS_URL, json={"name": "Aguias FC", "acronym": "AGI"})
 
     assert repeated.status_code == 409
-    assert repeated.json()["message"]
+    assert repeated.json()["message"] == 'Já existe um clube com o nome "Águias FC".'
     assert without_accent.status_code == 201
 
 
@@ -89,6 +89,7 @@ def test_acronym_is_unique(client: TestClient, engine: Engine) -> None:
     response = client.post(CLUBS_URL, json={"name": "Aguerridos do Norte", "acronym": "AGU"})
 
     assert response.status_code == 409
+    assert response.json()["message"] == 'A sigla AGU já é do clube "Águias FC".'
     assert count_rows(engine, "clubes") == 1
 
 

@@ -49,10 +49,12 @@ class ClubService:
         self.clubs.lock_for_creation()
         if self.clubs.count() >= MAX_CLUBS:
             raise ConflictError(f"A liga já tem o máximo de {MAX_CLUBS} clubes.")
-        if self.clubs.name_taken(data.name):
-            raise ConflictError(f"Já existe um clube com o nome {data.name}.")
-        if self.clubs.acronym_taken(data.acronym):
-            raise ConflictError(f"Já existe um clube com a sigla {data.acronym}.")
+        same_name = self.clubs.find_by_name(data.name)
+        if same_name is not None:
+            raise ConflictError(f'Já existe um clube com o nome "{same_name.name}".')
+        same_acronym = self.clubs.find_by_acronym(data.acronym)
+        if same_acronym is not None:
+            raise ConflictError(f'A sigla {data.acronym} já é do clube "{same_acronym.name}".')
         club = self.clubs.add(Club(name=data.name, acronym=data.acronym, cash=INITIAL_CASH))
         self.session.commit()
         return summarize(club, [])

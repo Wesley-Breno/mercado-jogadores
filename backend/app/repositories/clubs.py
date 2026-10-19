@@ -23,13 +23,12 @@ class ClubRepository:
     def count(self) -> int:
         return self.session.scalar(select(func.count()).select_from(Club))
 
-    def name_taken(self, name: str) -> bool:
+    def find_by_name(self, name: str) -> Club | None:
         """RN10: same expression as the unique index uq_clubes_nome (ignores case, not accents)."""
-        statement = select(Club.id).where(func.lower(Club.name) == func.lower(name))
-        return self.session.scalar(statement) is not None
+        return self.session.scalar(select(Club).where(func.lower(Club.name) == func.lower(name)))
 
-    def acronym_taken(self, acronym: str) -> bool:
-        return self.session.scalar(select(Club.id).where(Club.acronym == acronym)) is not None
+    def find_by_acronym(self, acronym: str) -> Club | None:
+        return self.session.scalar(select(Club).where(Club.acronym == acronym))
 
     def find(self, club_id: int, *, for_update: bool = False) -> Club | None:
         if club_id > MAX_INTEGER_ID:
