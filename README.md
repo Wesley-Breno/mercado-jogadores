@@ -177,6 +177,10 @@ cp .env.example .env
   acima de 30,00; o limite compara `custo × 2` com o caixa, para não arredondar a metade (caixa 261,15 → limite
   130,575). Ordem das recusas: dados inválidos (400), jogador ou clube inexistente (404) e regras de negócio
   (409: jogador não livre, recompra pelo clube que vendeu, elenco com 12, custo acima do limite).
+- Venda (RN15 e RN16): todos os valores (dias restantes, percentual e multa com teto de 10,00, lucro, comissão
+  progressiva arredondada uma vez e crédito) saem de uma única função do domínio, `settle_sale`. O contrato vira
+  `RESCINDIDO` quando há multa e `ENCERRADO` quando a fidelidade foi cumprida; o jogador volta a ficar livre, sai
+  da escalação e a transação `VENDA` é gravada, tudo na mesma transação do banco. Caixa baixo não impede venda.
 - Fim da fidelidade fora da janela (não futuro ou mais de 1.095 dias depois da compra) é 400, como manda o item
   2.3.1 do enunciado, e é conferido antes de buscar o jogador e o clube.
 - Mensagens de recusa citam os valores em formato brasileiro (`O custo da compra (50,40) passa do limite de 50% do
@@ -203,7 +207,7 @@ cp .env.example .env
 ## 8. Funcionalidades não implementadas
 
 Projeto em desenvolvimento. Já implementados: módulo de jogadores completo (`POST`, `GET`, `PUT` e `DELETE` em
-`/players`, e `PATCH /players/{id}/condition`) clubes (`POST /clubs`, `GET /clubs` e `GET /clubs/{id}`) e compra (`POST /players/{id}/buy`). As demais funcionalidades do enunciado ainda não foram implementadas.
+`/players`, e `PATCH /players/{id}/condition`) clubes (`POST /clubs`, `GET /clubs` e `GET /clubs/{id}`) compra e venda (`POST /players/{id}/buy` e `POST /players/{id}/sell`). As demais funcionalidades do enunciado ainda não foram implementadas.
 
 ## 9. Uso de inteligência artificial
 
