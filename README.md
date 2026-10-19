@@ -397,12 +397,8 @@ cp .env.example .env
 ## 8. Funcionalidades não implementadas
 
 - **Backend:** nenhuma. Os 19 endpoints do enunciado estão implementados e documentados no Swagger.
-- **Frontend:** em desenvolvimento. Já existem o layout com o menu, o cliente da API, a lista de jogadores com
-  busca, filtros, ordenação e paginação (F01 e F02), a exclusão (F03), o cadastro, a edição e a alteração de
-  condição de jogador (F04), a lista e a criação de clubes (F05) e a página do clube com o elenco e os contratos
-  (parte do F07), a compra (F06), a venda (F08), o histórico com filtros, totais e exportação em CSV (F09 a
-  F11), a escalação (F12), as partidas (F13) e o histórico de partidas e a classificação (F14). Seguem os
-  testes de ponta a ponta do roteiro inteiro e os extras do mockup.
+- **Frontend:** nenhuma. As telas cobrem os itens F01 a F14 do roteiro da interface, e os testes de ponta a ponta
+  (`frontend/e2e`) percorrem cada um deles contra a aplicação no ar.
 
 ## 9. Uso de inteligência artificial
 
