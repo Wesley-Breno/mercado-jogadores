@@ -121,3 +121,21 @@ export type Purchase = Transaction & {
   contract: { purchase_value: number; loyalty_until: string; status: 'ATIVO' }
   club_cash: number
 }
+
+export type Sale = Transaction & {
+  purchase_value: number
+  remaining_days: number
+  penalty_rate: number
+  contract_status: 'RESCINDIDO' | 'ENCERRADO'
+  club_cash: number
+}
+
+export type Formation = '3-1' | '2-2' | '2-1-1' | '1-2-1'
+
+/** RN19: the saved lineup; a starter who was sold or fell sick leaves it and `complete` turns false. */
+export type Lineup = {
+  club_id: number
+  formation: Formation | null
+  complete: boolean
+  players: Player[]
+}

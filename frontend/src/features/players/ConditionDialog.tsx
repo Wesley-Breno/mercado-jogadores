@@ -11,6 +11,7 @@ import { DialogActions } from '../../components/ui/DialogActions'
 import { Fieldset } from '../../components/ui/Field'
 import { useToast } from '../../components/ui/toastContext'
 import { formatMoney } from '../../lib/format'
+import { useIsStarter } from '../clubs/queries'
 import { CONDITION_LABELS } from './labels'
 import { ConditionBadge } from './PlayerBadges'
 import { type ConditionFields, conditionSchema } from './playerForm'
@@ -30,7 +31,10 @@ type ConditionDialogProps = {
   onClose: () => void
 }
 
-/** J10: from DOENTE straight to APTO is refused by the API, so that option is disabled. */
+/**
+ * J10: from DOENTE straight to APTO is refused by the API, so that option is disabled. J16: a
+ * starter who becomes DOENTE leaves the lineup, and the dialog says so before saving.
+ */
 export function ConditionDialog({ player, onClose }: ConditionDialogProps) {
   const formId = useId()
   const toast = useToast()
@@ -46,6 +50,7 @@ export function ConditionDialog({ player, onClose }: ConditionDialogProps) {
     defaultValues: { condition: player.condition },
   })
   const chosen = useWatch({ control, name: 'condition' })
+  const isStarter = useIsStarter(player)
 
   const submit = handleSubmit(({ condition }) =>
     changeCondition.mutateAsync({ id: player.id, condition }).then(
@@ -111,10 +116,11 @@ export function ConditionDialog({ player, onClose }: ConditionDialogProps) {
             })}
           </div>
         </Fieldset>
-        {chosen === 'DOENTE' && player.condition !== 'DOENTE' && player.club_id !== null && (
+        {chosen === 'DOENTE' && player.condition !== 'DOENTE' && isStarter && (
           <Alert tone="warning">
-            Se {player.name} for titular, sai da escalação ao passar a Doente, e o clube só volta a
-            jogar depois de escalar de novo os 5 titulares.
+            <strong className="block font-medium">{player.name} é titular</strong>
+            Ao passar a Doente, ele sai da escalação, e o clube só volta a jogar partidas depois de
+            escalar de novo os 5 titulares.
           </Alert>
         )}
       </form>

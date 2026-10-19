@@ -11,3 +11,8 @@ export const clubKeys = {
   list: (sort: ClubSort) => [...clubKeys.all, 'list', sort] as const,
   detail: (id: string) => [...clubKeys.all, 'detail', id] as const,
 }
+
+export const lineupKeys = {
+  all: ['lineups'] as const,
+  detail: (clubId: string) => [...lineupKeys.all, clubId] as const,
+}
