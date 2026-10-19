@@ -4,7 +4,13 @@ from fastapi import APIRouter, Depends, Request, Response, status
 
 from app.api.deps import PlayerId, PlayerServiceDep
 from app.api.params import player_list_query
-from app.api.schemas.players import PlayerCreate, PlayerPageResponse, PlayerResponse
+from app.api.schemas.players import (
+    ConditionChange,
+    PlayerCreate,
+    PlayerPageResponse,
+    PlayerResponse,
+    PlayerUpdate,
+)
 from app.domain.player_listing import PlayerListQuery
 
 router = APIRouter(prefix="/players", tags=["Jogadores"])
@@ -39,3 +45,26 @@ def create_player(
 )
 def get_player(player_id: PlayerId, service: PlayerServiceDep) -> PlayerResponse:
     return PlayerResponse.from_valued(service.get(player_id))
+
+
+@router.put("/{player_id}", summary="Edita nome, posição, agilidade e idade (RN08)")
+def update_player(
+    player_id: PlayerId, payload: PlayerUpdate, service: PlayerServiceDep
+) -> PlayerResponse:
+    return PlayerResponse.from_valued(service.update(player_id, payload))
+
+
+@router.patch("/{player_id}/condition", summary="Altera a condição física do jogador")
+def change_condition(
+    player_id: PlayerId, payload: ConditionChange, service: PlayerServiceDep
+) -> PlayerResponse:
+    return PlayerResponse.from_valued(service.change_condition(player_id, payload.condition))
+
+
+@router.delete(
+    "/{player_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Exclusão lógica de jogador livre (RN09)",
+)
+def delete_player(player_id: PlayerId, service: PlayerServiceDep) -> None:
+    service.delete(player_id)

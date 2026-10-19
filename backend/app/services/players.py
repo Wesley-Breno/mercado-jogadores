@@ -1,14 +1,17 @@
 from sqlalchemy.orm import Session
 
-from app.api.schemas.players import PlayerCreate
-from app.core.errors import NotFoundError
+from app.api.schemas.players import PlayerCreate, PlayerUpdate
+from app.core.clock import Clock
+from app.core.errors import ConflictError, NotFoundError
 from app.domain.attributes import AttributeSet
 from app.domain.enums import Condition
 from app.domain.pagination import page_items, total_pages
 from app.domain.player_listing import PlayerListQuery
+from app.domain.player_rules import is_forbidden_condition_change
 from app.domain.pricing import calculate_base_value, calculate_overall
 from app.models import Player
 from app.repositories.clubs import ClubRepository
+from app.repositories.lineups import LineupRepository
 from app.repositories.players import PlayerRepository
 from app.services.messages import CLUB_NOT_FOUND, PLAYER_NOT_FOUND
 from app.services.player_listing import PlayerPage, matches_value_and_search, sort_players
@@ -16,10 +19,12 @@ from app.services.valuation import ValuedPlayer, value_player
 
 
 class PlayerService:
-    def __init__(self, session: Session) -> None:
+    def __init__(self, session: Session, clock: Clock) -> None:
         self.session = session
+        self.clock = clock
         self.players = PlayerRepository(session)
         self.clubs = ClubRepository(session)
+        self.lineups = LineupRepository(session)
 
     def register(self, data: PlayerCreate) -> ValuedPlayer:
         attributes = AttributeSet(*data.attributes)
@@ -62,8 +67,43 @@ class PlayerService:
     def get(self, player_id: int) -> ValuedPlayer:
         return value_player(self.require_active(player_id))
 
-    def require_active(self, player_id: int) -> Player:
-        player = self.players.find_active(player_id)
+    def update(self, player_id: int, data: PlayerUpdate) -> ValuedPlayer:
+        """RN08: base value and indicators stay; a player with a club keeps the position."""
+        player = self.require_active(player_id, for_update=True)
+        if player.club_id is not None and data.position != player.position:
+            raise ConflictError("Jogador com clube não pode mudar de posição.")
+        if data.age < player.age:
+            raise ConflictError(f"A idade não pode diminuir: a idade atual é {player.age}.")
+        player.name = data.name
+        player.position = data.position
+        player.agility = data.agility
+        player.age = data.age
+        self.session.commit()
+        return value_player(player)
+
+    def change_condition(self, player_id: int, condition: Condition) -> ValuedPlayer:
+        player = self.require_active(player_id, for_update=True)
+        if is_forbidden_condition_change(player.condition, condition):
+            raise ConflictError(
+                "Jogador DOENTE não pode passar direto para APTO: passe antes por MAL_CONDICIONADO."
+            )
+        if condition != player.condition:
+            player.condition = condition
+            if condition is Condition.SICK:
+                self.lineups.remove_player(player.id)
+            self.session.commit()
+        return value_player(player)
+
+    def delete(self, player_id: int) -> None:
+        """RN09: logical deletion of a free player; history keeps the old records."""
+        player = self.require_active(player_id, for_update=True)
+        if player.club_id is not None:
+            raise ConflictError("Só jogador livre pode ser excluído: este jogador está num clube.")
+        player.deleted_at = self.clock.now()
+        self.session.commit()
+
+    def require_active(self, player_id: int, *, for_update: bool = False) -> Player:
+        player = self.players.find_active(player_id, for_update=for_update)
         if player is None:
             raise NotFoundError(PLAYER_NOT_FOUND)
         return player

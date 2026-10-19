@@ -1,5 +1,7 @@
 """Limits of each player field ("Limites de cada campo"), shared by validation and filters."""
 
+from app.domain.enums import Condition
+
 MIN_AGE = 16
 MAX_AGE = 45
 MIN_AGILITY = 1
@@ -10,3 +12,8 @@ MAX_ATTRIBUTE_SUM = 480
 POTENTIAL_EQUALS_MAX_ATTRIBUTE_AGE = 33
 VETERAN_AGILITY_AGE = 35
 VETERAN_MAX_AGILITY = 85
+
+
+def is_forbidden_condition_change(current: Condition, new: Condition) -> bool:
+    """A sick player cannot go straight back to fit (it passes through MAL_CONDICIONADO)."""
+    return current is Condition.SICK and new is Condition.FIT

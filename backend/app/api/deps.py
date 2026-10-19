@@ -5,6 +5,7 @@ from typing import Annotated
 from fastapi import Depends, Request
 from sqlalchemy.orm import Session
 
+from app.core.clock import Clock
 from app.core.errors import NotFoundError
 from app.models.base import MAX_INTEGER_ID
 from app.services.messages import PLAYER_NOT_FOUND
@@ -33,8 +34,16 @@ def player_id_from_path(player_id: str) -> int:
     return parse_resource_id(player_id, PLAYER_NOT_FOUND)
 
 
-def get_player_service(session: Annotated[Session, Depends(get_session)]) -> PlayerService:
-    return PlayerService(session)
+def get_clock() -> Clock:
+    return Clock()
+
+
+SessionDep = Annotated[Session, Depends(get_session)]
+ClockDep = Annotated[Clock, Depends(get_clock)]
+
+
+def get_player_service(session: SessionDep, clock: ClockDep) -> PlayerService:
+    return PlayerService(session, clock)
 
 
 PlayerId = Annotated[int, Depends(player_id_from_path)]

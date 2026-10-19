@@ -73,6 +73,24 @@ class PlayerCreate(BaseModel):
         return self
 
 
+class PlayerUpdate(BaseModel):
+    """RN08: only these four fields change; indicators, potential and base value stay (V7)."""
+
+    name: PlayerName
+    position: Position
+    agility: Agility
+    age: Age
+
+    @model_validator(mode="after")
+    def check_rules_between_fields(self) -> Self:
+        check_veteran_agility(self.age, self.agility)
+        return self
+
+
+class ConditionChange(BaseModel):
+    condition: Condition
+
+
 class PlayerResponse(BaseModel):
     id: int
     name: str
