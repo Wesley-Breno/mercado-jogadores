@@ -11,7 +11,7 @@ from fastapi import Query
 
 from app.core.errors import BadRequestError
 from app.domain.club_rules import ClubSort
-from app.domain.enums import Condition, Position
+from app.domain.enums import Condition, Position, TransactionType
 from app.domain.player_listing import (
     DEFAULT_LIMIT,
     DEFAULT_PAGE,
@@ -25,6 +25,7 @@ from app.domain.player_listing import (
 )
 from app.domain.player_rules import MAX_AGE, MIN_AGE
 from app.domain.text import has_control_character, normalize_spaces
+from app.domain.transaction_filters import TransactionFilters
 
 POSITIVE_INTEGER = re.compile(r"[1-9][0-9]*")
 DECIMAL_VALUE = re.compile(r"(0|[1-9][0-9]*)(\.[0-9]{1,2})?")
@@ -160,3 +161,24 @@ def club_sort(
 ) -> ClubSort:
     """RN11: a single value; unlike the player list, it does not take two criteria."""
     return parse_optional(sort, partial(parse_choice, "sort", choices=ClubSort), ClubSort.NAME)
+
+
+def parse_transaction_types(raw: str) -> frozenset[TransactionType]:
+    """One or more of COMPRA and VENDA, separated by commas, without spaces or repetition."""
+    names = raw.split(",")
+    accepted = {kind.value for kind in TransactionType}
+    if any(name not in accepted for name in names) or len(set(names)) < len(names):
+        raise invalid("type", "use COMPRA, VENDA ou COMPRA,VENDA, sem espaços e sem repetir.")
+    return frozenset(TransactionType(name) for name in names)
+
+
+def transaction_filters(
+    type: Annotated[
+        str | None, Query(description="COMPRA, VENDA ou os dois, separados por vírgula")
+    ] = None,
+    player_id: Annotated[str | None, Query(description="Só as transações desse jogador")] = None,
+) -> TransactionFilters:
+    return TransactionFilters(
+        types=parse_optional(type, parse_transaction_types, None),
+        player_id=parse_optional(player_id, partial(parse_positive_int, "player_id"), None),
+    )

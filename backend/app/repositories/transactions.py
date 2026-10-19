@@ -1,7 +1,10 @@
+from collections.abc import Sequence
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.domain.enums import TransactionType
+from app.domain.transaction_filters import TransactionFilters
 from app.models import Transaction
 
 
@@ -22,3 +25,13 @@ class TransactionRepository:
             Transaction.type == TransactionType.SALE,
         )
         return self.session.scalar(statement.limit(1)) is not None
+
+    def list_for_club(self, club_id: int, filters: TransactionFilters) -> Sequence[Transaction]:
+        """RN17: from the most recent to the oldest; same instant, higher id first."""
+        statement = select(Transaction).where(Transaction.club_id == club_id)
+        if filters.types is not None:
+            statement = statement.where(Transaction.type.in_(filters.types))
+        if filters.player_id is not None:
+            statement = statement.where(Transaction.player_id == filters.player_id)
+        statement = statement.order_by(Transaction.created_at.desc(), Transaction.id.desc())
+        return self.session.scalars(statement).all()

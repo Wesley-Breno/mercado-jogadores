@@ -12,6 +12,7 @@ from app.services.clubs import ClubService
 from app.services.market import MarketService
 from app.services.messages import CLUB_NOT_FOUND, PLAYER_NOT_FOUND
 from app.services.players import PlayerService
+from app.services.transactions import TransactionService
 
 RESOURCE_ID_PATTERN = re.compile(r"[1-9][0-9]*")
 
@@ -69,3 +70,10 @@ def get_market_service(session: SessionDep, clock: ClockDep) -> MarketService:
 
 
 MarketServiceDep = Annotated[MarketService, Depends(get_market_service)]
+
+
+def get_transaction_service(session: SessionDep) -> TransactionService:
+    return TransactionService(session)
+
+
+TransactionServiceDep = Annotated[TransactionService, Depends(get_transaction_service)]
