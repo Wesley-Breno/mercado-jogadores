@@ -290,7 +290,6 @@ cp .env.example .env
 - Depois de editar ou de mudar a condição, a lista de jogadores e a de clubes (valor do elenco e patrimônio) são
   buscadas de novo, também quando a API recusa, porque a recusa pode vir de dados que mudaram depois de a tela
   abrir. O aviso de sucesso mostra o valor de mercado devolvido pela API.
-- Ao escolher `DOENTE` para um jogador com clube, a tela avisa que, se ele for titular, sai da escalação (RN19).
 - Exclusão (F03): o item Excluir do menu da linha fica ativo só para jogador livre, como pede o enunciado; para
   jogador com clube ele aparece desabilitado, com o motivo. A confirmação mostra o jogador, e o botão fica
   desabilitado desde o clique, então um clique duplo envia um só `DELETE`. Se a API recusar (jogador que entrou
@@ -317,6 +316,14 @@ cp .env.example .env
   do momento e fica na API, assim como o limite de 50% do caixa, o elenco cheio e a recompra.
 - O resultado da compra mostra o valor, a taxa, o fim da fidelidade, o contrato e o novo caixa da resposta da
   API; o custo total é a soma de valor e taxa, a única conta feita na tela, como o enunciado permite.
+- Venda (F08): botão Vender em cada jogador do elenco, na página do clube, com confirmação que mostra o contrato
+  como a página o recebeu (valor de compra, fim da fidelidade, dias restantes e % de multa se vender agora). O
+  `POST /players/{id}/sell` vai sem corpo, e o resultado mostra valor de compra, valor de venda, dias restantes,
+  multa, lucro (com sinal), comissão, crédito no caixa (com sinal), situação do contrato e novo caixa, todos da
+  resposta; as explicações ao lado de cada valor só o descrevem.
+- Titular: a confirmação da venda e a mudança para `DOENTE` consultam a escalação salva do clube
+  (`GET /clubs/{id}/lineup`) e avisam quando o jogador é titular, porque ele sai da escalação (RN19). Depois de
+  vender, comprar ou mudar a condição, a escalação também é buscada de novo.
 - Menus que abrem sobre a página (filtros, ordenação e o "⋯" de cada linha) acompanham o botão quando a página
   rola e não são cortados pela tabela; no celular, aparecem como painel no pé da tela.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
@@ -352,7 +359,7 @@ cp .env.example .env
 - **Frontend:** em desenvolvimento. Já existem o layout com o menu, o cliente da API, a lista de jogadores com
   busca, filtros, ordenação e paginação (F01 e F02), a exclusão (F03), o cadastro, a edição e a alteração de
   condição de jogador (F04), a lista e a criação de clubes (F05) e a página do clube com o elenco e os contratos
-  (parte do F07) e a compra (F06); a venda, o histórico e a liga vêm a seguir.
+  (parte do F07), a compra (F06) e a venda (F08); o histórico e a liga vêm a seguir.
 
 ## 9. Uso de inteligência artificial
 
@@ -365,7 +372,7 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
   regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios;
   base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout, cliente da API,
   componentes de interface, a tela de jogadores (lista, cadastro, edição, condição e exclusão), a de clubes e a
-  página do clube e a compra.
+  página do clube, a compra e a venda.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
