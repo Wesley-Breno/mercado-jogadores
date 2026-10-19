@@ -69,6 +69,7 @@ se o `.env` não existir. Para executar fora do Docker, os modelos são [`backen
 | `TEST_DATABASE_URL` | testes | Banco usado pelos testes (padrão: `mercado_test` em `localhost`); no Compose, aponta para o serviço `db` |
 | `VITE_API_URL` | `frontend` | Endereço da API com `/api/v1`, usado pelo navegador; entra no build da interface |
 | `E2E_BASE_URL` | testes E2E | URL da interface testada pelo Playwright (padrão: `http://localhost:5173`) |
+| `E2E_API_URL` | testes E2E | Endereço da API, com `/api/v1`, usado para preparar os dados (padrão: `http://localhost:8000/api/v1`) |
 
 ## 5. Estrutura de pastas e bibliotecas
 
@@ -100,7 +101,8 @@ frontend/
     hooks/        hooks genéricos (atraso da busca enquanto se digita)
     lib/          formatação de moeda e data no padrão brasileiro e utilitários
     test/         configuração dos testes de componente (Vitest + Testing Library)
-  e2e/            testes de ponta a ponta (Playwright) contra a aplicação no ar
+  e2e/            testes de ponta a ponta (Playwright) contra a aplicação no ar, um arquivo por
+                  módulo do roteiro da interface (F01 a F14), com a preparação pela API em support/
   Dockerfile      build com Node e entrega dos arquivos estáticos com nginx
 docs/             enunciado, barema, glossário, ficha de exemplo, mockup e registro do uso de IA
 docker-compose.yml
@@ -170,12 +172,17 @@ npm run format:check
 ```
 
 Os três terminam sozinhos, sem modo de observação; o de formatação só verifica. Testes de ponta a ponta
-(Playwright), com a aplicação no ar (`docker compose up -d --build`), na pasta `frontend`:
+(Playwright), com a aplicação no ar (`docker compose up -d --build`) e o **banco recriado** (seção 2), porque
+seguem o roteiro da interface a partir da liga vazia; na pasta `frontend`:
 
 ```bash
 npx playwright install chromium
 npm run test:e2e
 ```
+
+Eles preparam pela API só o que cada item não verifica na tela e, se o banco não estiver vazio, param antes de
+começar com a instrução de recriá-lo. Na integração contínua, o job `compose-e2e` sobe a aplicação com os
+comandos da seção 3 em Ubuntu 24.04 e roda esses testes.
 
 Alternativa no host para o backend (Python 3.12 com `venv`), com o banco no ar (`docker compose up -d db`),
 na pasta `backend`:
