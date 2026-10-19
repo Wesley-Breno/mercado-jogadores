@@ -6,6 +6,9 @@ from sqlalchemy import DateTime, Enum, MetaData
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.types import TypeEngine
 
+# Largest value of a PostgreSQL INTEGER column, the type of every id (V8).
+MAX_INTEGER_ID = 2_147_483_647
+
 NAMING_CONVENTION = {
     "ix": "ix_%(table_name)s_%(column_0_name)s",
     "uq": "uq_%(table_name)s_%(column_0_name)s",

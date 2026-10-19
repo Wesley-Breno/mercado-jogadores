@@ -1,9 +1,20 @@
-from fastapi import APIRouter, Request, Response, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Request, Response, status
 
 from app.api.deps import PlayerId, PlayerServiceDep
-from app.api.schemas.players import PlayerCreate, PlayerResponse
+from app.api.params import player_list_query
+from app.api.schemas.players import PlayerCreate, PlayerPageResponse, PlayerResponse
+from app.domain.player_listing import PlayerListQuery
 
 router = APIRouter(prefix="/players", tags=["Jogadores"])
+
+
+@router.get("", summary="Lista jogadores com busca, filtros, ordenação e paginação (RN07)")
+def list_players(
+    query: Annotated[PlayerListQuery, Depends(player_list_query)], service: PlayerServiceDep
+) -> PlayerPageResponse:
+    return PlayerPageResponse.from_page(service.list_players(query))
 
 
 @router.post(

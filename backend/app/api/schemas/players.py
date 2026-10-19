@@ -5,16 +5,24 @@ from pydantic import BaseModel, Field, model_validator
 from app.api.schemas.common import Money
 from app.api.validators import PlayerName, StrictInt
 from app.domain.enums import Condition, Position
+from app.domain.player_rules import (
+    MAX_AGE,
+    MAX_AGILITY,
+    MAX_ATTRIBUTE_SUM,
+    MAX_INDICATOR,
+    MIN_AGE,
+    MIN_AGILITY,
+    MIN_INDICATOR,
+    POTENTIAL_EQUALS_MAX_ATTRIBUTE_AGE,
+    VETERAN_AGILITY_AGE,
+    VETERAN_MAX_AGILITY,
+)
+from app.services.player_listing import PlayerPage
 from app.services.valuation import ValuedPlayer
 
-MAX_ATTRIBUTE_SUM = 480
-POTENTIAL_EQUALS_MAX_ATTRIBUTE_AGE = 33
-VETERAN_AGILITY_AGE = 35
-VETERAN_MAX_AGILITY = 85
-
-Agility = Annotated[StrictInt, Field(ge=1, le=100)]
-Age = Annotated[StrictInt, Field(ge=16, le=45)]
-Indicator = Annotated[StrictInt, Field(ge=1, le=99)]
+Agility = Annotated[StrictInt, Field(ge=MIN_AGILITY, le=MAX_AGILITY)]
+Age = Annotated[StrictInt, Field(ge=MIN_AGE, le=MAX_AGE)]
+Indicator = Annotated[StrictInt, Field(ge=MIN_INDICATOR, le=MAX_INDICATOR)]
 
 
 def check_veteran_agility(age: int, agility: int) -> None:
@@ -105,4 +113,28 @@ class PlayerResponse(BaseModel):
             potential=player.potential,
             overall=valued.overall,
             club_id=player.club_id,
+        )
+
+
+class PageMeta(BaseModel):
+    page: int
+    limit: int
+    total_items: int
+    total_pages: int
+
+
+class PlayerPageResponse(BaseModel):
+    data: list[PlayerResponse]
+    meta: PageMeta
+
+    @classmethod
+    def from_page(cls, page: PlayerPage) -> Self:
+        return cls(
+            data=[PlayerResponse.from_valued(valued) for valued in page.players],
+            meta=PageMeta(
+                page=page.page,
+                limit=page.limit,
+                total_items=page.total_items,
+                total_pages=page.total_pages,
+            ),
         )

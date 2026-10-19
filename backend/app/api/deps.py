@@ -6,9 +6,10 @@ from fastapi import Depends, Request
 from sqlalchemy.orm import Session
 
 from app.core.errors import NotFoundError
-from app.services.players import PLAYER_NOT_FOUND, PlayerService
+from app.models.base import MAX_INTEGER_ID
+from app.services.messages import PLAYER_NOT_FOUND
+from app.services.players import PlayerService
 
-MAX_RESOURCE_ID = 2_147_483_647
 RESOURCE_ID_PATTERN = re.compile(r"[1-9][0-9]*")
 
 
@@ -23,7 +24,7 @@ def get_session(request: Request) -> Iterator[Session]:
 
 def parse_resource_id(raw_id: str, not_found_message: str) -> int:
     """V8: an id that is not a positive integer without leading zeros or is above the limit: 404."""
-    if not RESOURCE_ID_PATTERN.fullmatch(raw_id) or int(raw_id) > MAX_RESOURCE_ID:
+    if not RESOURCE_ID_PATTERN.fullmatch(raw_id) or int(raw_id) > MAX_INTEGER_ID:
         raise NotFoundError(not_found_message)
     return int(raw_id)
 
