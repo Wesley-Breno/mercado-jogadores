@@ -191,6 +191,14 @@ cp .env.example .env
   são travados antes do clube, a mesma ordem da venda, para evitar deadlock entre as duas operações. `complete` é
   `true` só com a formação salva e os 5 titulares; titular vendido ou que passa a `DOENTE` sai da escalação e não
   volta sozinho.
+- Partida (RN20): o motor é uma função pura do domínio (`domain/match_engine.py`), sem sorteio. Os titulares seguem a
+  ordem do elenco (o único GOL primeiro e os jogadores de linha do mais recuado ao mais avançado); o efeito de
+  `MAL_CONDICIONADO` é `(atributo × 85 + 50) // 100`, em inteiros, para arredondar o meio para cima sem erro de
+  ponto flutuante. A partida e os 6 duelos, com nomes, posições, condições, atributos e valores do momento, são
+  gravados numa transação; as consultas leem o que foi gravado e não recalculam nada.
+- Ordem das recusas da partida: corpo ou ids inválidos e mandante igual ao visitante (400), clube inexistente
+  (404) e escalação incompleta em qualquer um dos lados (409). O nome do clube na resposta é o atual, porque o
+  enunciado não prevê edição de clube.
 - Fim da fidelidade fora da janela (não futuro ou mais de 1.095 dias depois da compra) é 400, como manda o item
   2.3.1 do enunciado, e é conferido antes de buscar o jogador e o clube.
 - Mensagens de recusa citam os valores em formato brasileiro (`O custo da compra (50,40) passa do limite de 50% do
@@ -218,8 +226,8 @@ cp .env.example .env
 
 Projeto em desenvolvimento. Já implementados: módulo de jogadores completo (`POST`, `GET`, `PUT` e `DELETE` em
 `/players`, e `PATCH /players/{id}/condition`) clubes (`POST /clubs`, `GET /clubs` e `GET /clubs/{id}`) compra e venda (`POST /players/{id}/buy` e `POST /players/{id}/sell`) histórico com exportação
-(`GET /clubs/{id}/transactions` e `GET /clubs/{id}/transactions/export`) e escalação (`PUT` e
-`GET /clubs/{id}/lineup`). As demais funcionalidades do enunciado ainda não foram implementadas.
+(`GET /clubs/{id}/transactions` e `GET /clubs/{id}/transactions/export`) escalação (`PUT` e
+`GET /clubs/{id}/lineup`) e partidas (`POST /matches`, `GET /matches` e `GET /matches/{id}`). As demais funcionalidades do enunciado ainda não foram implementadas.
 
 ## 9. Uso de inteligência artificial
 
