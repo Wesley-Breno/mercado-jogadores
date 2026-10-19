@@ -157,6 +157,12 @@ cp .env.example .env
   evita duplicar em SQL a fórmula do valor de mercado.
 - Na ordenação, os critérios pedidos vêm primeiro, e o empate é desfeito pelo nome (ordem das Premissas) e
   depois pelo id; os dois sentidos de valor e de idade são o mesmo campo, então `value_asc,value_desc` é 400.
+- Edição, condição e exclusão de jogador travam a linha do jogador (`SELECT ... FOR UPDATE`) durante a operação,
+  para que duas operações simultâneas sobre o mesmo jogador não se sobreponham.
+- Alteração de condição: enviar a condição atual responde 200 sem gravar nada; passar a `DOENTE` tira o jogador
+  da escalação na mesma transação (RN19); de `DOENTE` direto para `APTO` é 409.
+- O instante do servidor vem de um relógio injetável (`core/clock.py`), sempre em -03:00, usado por todas as regras
+  de data; nos testes, ele pode ser trocado por um relógio fixo.
 - Valores em moedas saem como números JSON (`40.0`), e não como texto, que é o padrão do Pydantic para `Decimal`.
 - Overall e valor de mercado são calculados a cada consulta, num único lugar (`services/valuation.py`, que usa
   `domain/pricing.py`); o valor base é calculado uma vez, no cadastro, e gravado.
@@ -178,8 +184,8 @@ cp .env.example .env
 
 ## 8. Funcionalidades não implementadas
 
-Projeto em desenvolvimento. Já implementados: cadastro, consulta e listagem de jogadores (`POST /players`,
-`GET /players/{id}` e `GET /players`). As demais funcionalidades do enunciado ainda não foram implementadas.
+Projeto em desenvolvimento. Já implementado: módulo de jogadores completo (`POST`, `GET`, `PUT` e `DELETE` em
+`/players`, e `PATCH /players/{id}/condition`). As demais funcionalidades do enunciado ainda não foram implementadas.
 
 ## 9. Uso de inteligência artificial
 
