@@ -73,7 +73,8 @@ backend/
     core/         configuração, fuso de Brasília, exceções de domínio, tratamento central de erros e log
     api/          roteador com o prefixo /api/v1 e as rotas de cada recurso
     domain/       regras de negócio puras, sem framework nem banco: listas de valores, texto (V4, acentos,
-                  ordem alfabética, busca) e dinheiro (Decimal e arredondamento)
+                  ordem alfabética, busca), dinheiro (Decimal e arredondamento) e valores do jogador
+                  (overall, valor base e valor de mercado)
     models/       modelos do ORM: tabelas e colunas em português, atributos em inglês
   migrations/     migrations do Alembic (versions/ guarda cada versão do schema)
   tests/          testes automatizados (pytest): api/ (HTTP) e db/ (schema e restrições)
