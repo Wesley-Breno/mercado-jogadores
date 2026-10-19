@@ -5,16 +5,18 @@ jogadores de uma liga de futebol fictícia, com jogadores, clubes, compra e vend
 histórico de transações, escalação, partidas e classificação.
 
 - `backend/`: API REST em Python com FastAPI, SQLAlchemy e PostgreSQL.
+- `frontend/`: interface em React com TypeScript, criada com Vite.
 - `docs/`: enunciado, barema, glossário, mockup e registro do uso de IA.
 
 ## 1. Pré-requisitos
 
 | Ferramenta | Versão | Uso |
 | --- | --- | --- |
-| Docker Engine | 27 ou superior | Sobe banco e API em contêineres |
+| Docker Engine | 27 ou superior | Sobe banco, API e interface em contêineres |
 | Docker Compose | v2 | Orquestra os serviços com um comando |
 | PostgreSQL | 16 | Imagem pública `postgres:16.15-alpine3.24`, iniciada pelo Compose (não precisa instalar) |
 | Python | 3.12 | Imagem pública `python:3.12.15-slim-bookworm`; no host, só para desenvolvimento e testes |
+| Node.js (com npm) | 22 LTS | Imagem pública `node:22.23.3-alpine3.24` no build da interface; no host, para os testes, o lint e a formatação do frontend |
 
 ## 2. Banco de dados
 
@@ -44,6 +46,7 @@ docker compose up -d --build
 
 | Serviço | Endereço |
 | --- | --- |
+| Interface (frontend) | http://localhost:5173 |
 | Origem da API (o prefixo `/api/v1` é acrescentado pelas rotas) | http://localhost:8000 |
 | Documentação interativa (Swagger) | http://localhost:8000/docs |
 | Verificação de saúde da API | http://localhost:8000/api/v1/health |
@@ -53,7 +56,8 @@ Para parar: `docker compose down`.
 ## 4. Variáveis de ambiente
 
 Modelo em [`.env.example`](.env.example), na raiz, lido pelo Compose; o Compose usa os mesmos valores como padrão
-se o `.env` não existir. Para executar a API fora do Docker, o modelo é [`backend/.env.example`](backend/.env.example).
+se o `.env` não existir. Para executar fora do Docker, os modelos são [`backend/.env.example`](backend/.env.example) e
+[`frontend/.env.example`](frontend/.env.example).
 
 | Variável | Usada por | Função |
 | --- | --- | --- |
@@ -63,6 +67,8 @@ se o `.env` não existir. Para executar a API fora do Docker, o modelo é [`back
 | `CORS_ORIGIN` | `backend` | Única origem liberada no CORS: a URL do frontend |
 | `DATABASE_URL` | `backend` | Conexão da API e das migrations com o PostgreSQL; no Compose, montada a partir das variáveis `POSTGRES_*` |
 | `TEST_DATABASE_URL` | testes | Banco usado pelos testes (padrão: `mercado_test` em `localhost`); no Compose, aponta para o serviço `db` |
+| `VITE_API_URL` | `frontend` | Endereço da API com `/api/v1`, usado pelo navegador; entra no build da interface |
+| `E2E_BASE_URL` | testes E2E | URL da interface testada pelo Playwright (padrão: `http://localhost:5173`) |
 
 ## 5. Estrutura de pastas e bibliotecas
 
@@ -82,6 +88,15 @@ backend/
     models/       modelos do ORM: tabelas e colunas em português, atributos em inglês
   migrations/     migrations do Alembic (versions/ guarda cada versão do schema)
   tests/          testes automatizados (pytest): api/ (HTTP) e db/ (schema e restrições)
+frontend/
+  src/
+    app/          providers (React Query e rotas), layout com o menu e as rotas das telas
+    api/          cliente HTTP (fetch) com o tratamento central do `message` das recusas
+    components/   componentes reutilizáveis de interface (ui/)
+    lib/          formatação de moeda e data no padrão brasileiro e utilitários
+    test/         configuração dos testes de componente (Vitest + Testing Library)
+  e2e/            testes de ponta a ponta (Playwright) contra a aplicação no ar
+  Dockerfile      build com Node e entrega dos arquivos estáticos com nginx
 docs/             enunciado, barema, glossário, ficha de exemplo, mockup e registro do uso de IA
 docker-compose.yml
 ```
@@ -104,6 +119,27 @@ docker-compose.yml
 As versões de todas as dependências, inclusive as transitivas, estão fixadas em `backend/requirements.txt` e
 `backend/requirements-dev.txt`.
 
+### Frontend
+
+| Biblioteca | Versão | Motivo |
+| --- | --- | --- |
+| React e React DOM | 19.3.1 | Interface (exigido pela stack) |
+| Vite e @vitejs/plugin-react | 8.3.4 e 6.1.2 | Projeto criado com o template oficial `react-ts`; servidor de desenvolvimento e build |
+| TypeScript | 6.0.3 | Tipagem estrita (`strict: true`) do código da interface |
+| React Router | 8.4.0 | Navegação entre as telas, no modo declarativo (biblioteca), sem o modo framework |
+| TanStack Query | 5.104.4 | Busca e cache dos dados da API, estado de envio dos botões e atualização após cada ação |
+| React Hook Form | 7.90.0 | Formulários com validação antes do envio e mensagem junto ao campo |
+| Zod e @hookform/resolvers | 4.6.7 e 5.9.2 | Esquemas de validação dos formulários ligados ao React Hook Form |
+| Tailwind CSS e @tailwindcss/vite | 4.3.3 | Estilos e responsividade; a paleta padrão (zinc e blue) é a mesma do mockup |
+| lucide-react | 1.59.0 | Ícones do menu e das telas, do mesmo estilo do mockup |
+| Vitest e jsdom | 5.0.5 e 30.1.3 | Testes de componente e de funções, sem modo de observação (desenvolvimento) |
+| Testing Library (react, dom, user-event, jest-dom) | 16.3.3, 10.4.2, 14.6.8 e 7.0.1 | Testar os componentes como o usuário os usa (desenvolvimento) |
+| Playwright | 1.64.1 | Testes de ponta a ponta no Chrome, na janela de 1366 × 768 da banca (desenvolvimento) |
+| oxlint | 1.88.0 | Lint do código TypeScript e das regras de hooks do React (desenvolvimento) |
+| Prettier | 3.9.10 | Formatação e verificação da formatação (desenvolvimento) |
+
+As versões estão fixadas no `frontend/package.json` e no `frontend/package-lock.json`.
+
 ## 6. Testes, lint e formatação
 
 Backend, em contêiner (só precisa do Docker), na raiz do repositório:
@@ -118,7 +154,24 @@ Os comandos terminam sozinhos; o de formatação só verifica, sem alterar arqui
 `mercado_test`, criado e migrado por eles no mesmo PostgreSQL, sem tocar no banco da aplicação. A integração contínua
 (`.github/workflows/ci.yml`) executa as mesmas verificações em Ubuntu 24.04 a cada envio.
 
-Alternativa no host, para desenvolvimento (Python 3.12 com `venv`), com o banco no ar (`docker compose up -d db`),
+Frontend, no host (Node.js 22 com npm), na pasta `frontend`:
+
+```bash
+npm ci
+npm test
+npm run lint
+npm run format:check
+```
+
+Os três terminam sozinhos, sem modo de observação; o de formatação só verifica. Testes de ponta a ponta
+(Playwright), com a aplicação no ar (`docker compose up -d --build`), na pasta `frontend`:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+Alternativa no host para o backend (Python 3.12 com `venv`), com o banco no ar (`docker compose up -d db`),
 na pasta `backend`:
 
 ```bash
@@ -199,6 +252,10 @@ cp .env.example .env
 - Ordem das recusas da partida: corpo ou ids inválidos e mandante igual ao visitante (400), clube inexistente
   (404) e escalação incompleta em qualquer um dos lados (409). O nome do clube na resposta é o atual, porque o
   enunciado não prevê edição de clube.
+- Frontend servido por nginx a partir do build do Vite (arquivos estáticos), com todas as rotas apontando para o
+  `index.html` (rotas da SPA). A URL da API entra no build (`VITE_API_URL`). A raiz `/` abre a lista de jogadores.
+- Lint do frontend com o oxlint, que é o padrão do template oficial do Vite (`create-vite`), e formatação com o
+  Prettier.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
   jogaram aparecem zerados) e a ordem pontos, saldo, gols marcados, nome (ordem das Premissas) e id.
 - Fim da fidelidade fora da janela (não futuro ou mais de 1.095 dias depois da compra) é 400, como manda o item
@@ -227,7 +284,7 @@ cp .env.example .env
 ## 8. Funcionalidades não implementadas
 
 - **Backend:** nenhuma. Os 19 endpoints do enunciado estão implementados e documentados no Swagger.
-- **Frontend:** em desenvolvimento (próxima etapa do projeto).
+- **Frontend:** em desenvolvimento. Já existem o layout com o menu e o cliente da API; as telas vêm a seguir.
 
 ## 9. Uso de inteligência artificial
 
@@ -237,7 +294,8 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
 - **Onde:** estrutura do repositório, configuração do Docker, do Ruff, do pytest e da integração contínua;
   configuração, CORS, tratamento central de erros e log de requisições da API (`backend/app/core`);
   modelos, migration inicial e testes do schema (`backend/app/models`, `backend/migrations`, `backend/tests/db`);
-  regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios.
+  regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios;
+  base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout e cliente da API.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
