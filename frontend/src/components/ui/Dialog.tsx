@@ -76,7 +76,7 @@ export function Dialog({
           <button
             type="button"
             onClick={onClose}
-            aria-label="Fechar"
+            aria-label="Fechar janela"
             className="absolute top-4 right-4 rounded-md p-1 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950 focus-visible:ring-3 focus-visible:ring-blue-600/30 focus-visible:outline-none"
           >
             <X aria-hidden className="size-4" />

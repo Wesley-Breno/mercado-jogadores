@@ -50,7 +50,7 @@ export function DeletePlayerDialog({ player, onClose }: DeletePlayerDialogProps)
     >
       <PlayerSummary
         player={player}
-        badge={<Badge tone="neutral">{player.club_id === null ? 'Livre' : 'Com clube'}</Badge>}
+        aside={<Badge tone="neutral">{player.club_id === null ? 'Livre' : 'Com clube'}</Badge>}
       />
     </Dialog>
   )

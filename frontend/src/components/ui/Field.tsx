@@ -1,5 +1,5 @@
-import type { LucideIcon } from 'lucide-react'
-import { type InputHTMLAttributes, type ReactNode, useId } from 'react'
+import { ChevronDown, type LucideIcon } from 'lucide-react'
+import { type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, useId } from 'react'
 
 import { cn } from '../../lib/cn'
 
@@ -98,6 +98,40 @@ export function Input({ className, icon: Icon, ...props }: InputProps) {
         className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-500"
       />
       {input}
+    </span>
+  )
+}
+
+type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
+  icon?: LucideIcon
+}
+
+/** Native select, so it works inside dialogs and with the keyboard and screen readers as is. */
+export function Select({ className, icon: Icon, children, ...props }: SelectProps) {
+  return (
+    <span className="relative block">
+      {Icon && (
+        <Icon
+          aria-hidden
+          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-500"
+        />
+      )}
+      <select
+        className={cn(
+          'h-9 w-full min-w-0 appearance-none rounded-lg border border-zinc-200 bg-white pr-9 pl-3 text-sm shadow-xs transition-colors',
+          'focus-visible:border-blue-600 focus-visible:ring-3 focus-visible:ring-blue-600/20 focus-visible:outline-none',
+          'aria-invalid:border-red-500 aria-invalid:ring-red-500/20 disabled:bg-zinc-50 disabled:text-zinc-500',
+          Icon && 'pl-9',
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </select>
+      <ChevronDown
+        aria-hidden
+        className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-zinc-500"
+      />
     </span>
   )
 }

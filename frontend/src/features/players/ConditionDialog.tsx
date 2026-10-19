@@ -76,7 +76,7 @@ export function ConditionDialog({ player, onClose }: ConditionDialogProps) {
       }
     >
       <form id={formId} noValidate onSubmit={submit} className="grid gap-4">
-        <PlayerSummary player={player} badge={<ConditionBadge condition={player.condition} />} />
+        <PlayerSummary player={player} aside={<ConditionBadge condition={player.condition} />} />
         <Fieldset legend="Nova condição" error={errors.condition?.message}>
           <div className="grid gap-2">
             {CONDITIONS.map((condition) => {
