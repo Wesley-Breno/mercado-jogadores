@@ -181,6 +181,12 @@ cp .env.example .env
   progressiva arredondada uma vez e crédito) saem de uma única função do domínio, `settle_sale`. O contrato vira
   `RESCINDIDO` quando há multa e `ENCERRADO` quando a fidelidade foi cumprida; o jogador volta a ficar livre, sai
   da escalação e a transação `VENDA` é gravada, tudo na mesma transação do banco. Caixa baixo não impede venda.
+- Histórico (RN17): as transações guardam nome e valores do momento e nunca são recalculadas; o `summary` é
+  calculado num único lugar (`domain/transaction_summary.py`) sobre as transações já filtradas. `player_id` de
+  jogador excluído é 404, mas as transações dele continuam no histórico sem o filtro.
+- Exportação CSV (RN18): gerada com o módulo `csv` da biblioteca padrão (separador `;`, aspas só quando o nome tem
+  `;` ou aspas, com as aspas internas duplicadas), em UTF-8 sem BOM e com LF em todas as linhas. A resposta traz
+  `Content-Disposition` com o nome do arquivo; as recusas continuam em JSON.
 - Fim da fidelidade fora da janela (não futuro ou mais de 1.095 dias depois da compra) é 400, como manda o item
   2.3.1 do enunciado, e é conferido antes de buscar o jogador e o clube.
 - Mensagens de recusa citam os valores em formato brasileiro (`O custo da compra (50,40) passa do limite de 50% do
@@ -207,7 +213,8 @@ cp .env.example .env
 ## 8. Funcionalidades não implementadas
 
 Projeto em desenvolvimento. Já implementados: módulo de jogadores completo (`POST`, `GET`, `PUT` e `DELETE` em
-`/players`, e `PATCH /players/{id}/condition`) clubes (`POST /clubs`, `GET /clubs` e `GET /clubs/{id}`) compra e venda (`POST /players/{id}/buy` e `POST /players/{id}/sell`). As demais funcionalidades do enunciado ainda não foram implementadas.
+`/players`, e `PATCH /players/{id}/condition`) clubes (`POST /clubs`, `GET /clubs` e `GET /clubs/{id}`) compra e venda (`POST /players/{id}/buy` e `POST /players/{id}/sell`) e histórico com exportação
+(`GET /clubs/{id}/transactions` e `GET /clubs/{id}/transactions/export`). As demais funcionalidades do enunciado ainda não foram implementadas.
 
 ## 9. Uso de inteligência artificial
 
