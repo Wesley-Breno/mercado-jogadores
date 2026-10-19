@@ -1,0 +1,166 @@
+import { ArrowUpDown, SearchX, Users } from 'lucide-react'
+import { useSearchParams } from 'react-router'
+
+import { toSearchParams } from '../../api/players'
+import type { PlayerQuery } from '../../api/types'
+import { Button } from '../../components/ui/Button'
+import { Card } from '../../components/ui/Card'
+import { ChoiceMenu } from '../../components/ui/ChoiceMenu'
+import { PageHeader } from '../../components/ui/PageHeader'
+import { Pagination } from '../../components/ui/Pagination'
+import { Popover } from '../../components/ui/Popover'
+import { SegmentedControl } from '../../components/ui/SegmentedControl'
+import { EmptyState } from '../../components/ui/States'
+import { useDebouncedValue } from '../../hooks/useDebouncedValue'
+import { useClubs } from '../clubs/queries'
+import { COMBINATION_NOTE, SORT_LABELS } from './labels'
+import { PlayerFilters } from './PlayerFilters'
+import {
+  type Availability,
+  CLEARED_FILTERS,
+  SORTS,
+  activeFilters,
+  availabilityOf,
+  changeQuery,
+  freeFilter,
+  readPlayerQuery,
+  toRequest,
+} from './playerQuery'
+import { PlayersTable } from './PlayersTable'
+import { useAvailabilityCounts, usePlayers } from './queries'
+
+const SEARCH_DELAY_MS = 350
+
+const AVAILABILITY_LABELS: Record<Availability, string> = {
+  all: 'Todos',
+  free: 'Livres',
+  owned: 'Em clubes',
+}
+
+function lowerFirst(text: string): string {
+  return text.charAt(0).toLowerCase() + text.slice(1)
+}
+
+/** F01 and F02: the filters live in the address, so going back and reloading keep them. */
+export function PlayersPage() {
+  const [params, setParams] = useSearchParams()
+  const query = readPlayerQuery(params)
+  const debouncedSearch = useDebouncedValue(query.search, SEARCH_DELAY_MS)
+  const request = toRequest({ ...query, search: query.search && debouncedSearch })
+  const players = usePlayers(request)
+  const clubs = useClubs()
+  const clubsById = new Map((clubs.data ?? []).map((club) => [club.id, club]))
+  const availability = availabilityOf(query)
+  const counts = useAvailabilityCounts(request, availability, players.data?.meta.total_items)
+  const active = activeFilters(query, clubsById)
+  const sort = request.sort ?? 'name'
+
+  function update(changes: PlayerQuery, options?: { replace: boolean }) {
+    setParams(toSearchParams(changeQuery(query, changes)), options)
+  }
+
+  function emptyState() {
+    if (players.data && players.data.meta.total_items > 0) {
+      return (
+        <EmptyState
+          icon={Users}
+          title="Esta página não tem jogadores"
+          description="A lista mudou e ficou com menos páginas."
+          action={<Button onClick={() => update({})}>Ir para a primeira página</Button>}
+        />
+      )
+    }
+    if (active.length > 0 || availability !== 'all') {
+      return (
+        <EmptyState
+          icon={SearchX}
+          title="Nenhum jogador encontrado"
+          description="Nenhum jogador atende à busca e aos filtros escolhidos."
+          action={
+            active.length > 0 && (
+              <Button onClick={() => update(CLEARED_FILTERS)}>Limpar filtros</Button>
+            )
+          }
+        />
+      )
+    }
+    return (
+      <EmptyState
+        icon={Users}
+        title="Nenhum jogador cadastrado"
+        description="Os jogadores cadastrados aparecem aqui, com overall e valor de mercado."
+      />
+    )
+  }
+
+  return (
+    <>
+      <PageHeader
+        icon={Users}
+        title="Jogadores"
+        description="Cadastre jogadores, acompanhe os indicadores e compre os que estão livres."
+      />
+      <PlayerFilters query={query} clubs={clubs.data ?? []} active={active} onChange={update} />
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-3 p-3">
+          <SegmentedControl
+            label="Mostrar"
+            selected={availability}
+            onSelect={(value) => update({ free: freeFilter(value) })}
+            segments={(['all', 'free', 'owned'] as const).map((value) => {
+              const blocked = value === 'free' && query.club_id !== undefined
+              return {
+                value,
+                label: AVAILABILITY_LABELS[value],
+                count: blocked ? undefined : counts[value],
+                disabled: blocked,
+                title: blocked ? COMBINATION_NOTE : undefined,
+              }
+            })}
+          />
+          <Popover
+            icon={ArrowUpDown}
+            label={`Ordenar: ${lowerFirst(SORT_LABELS[sort])}`}
+            align="end"
+            popup="menu"
+            panelLabel="Ordenar por"
+          >
+            {(close) => (
+              <ChoiceMenu
+                title="Ordenar por"
+                choices={SORTS.map((value) => ({ value, label: SORT_LABELS[value] }))}
+                selected={sort}
+                onSelect={(value) => {
+                  close()
+                  update({ sort: value })
+                }}
+              />
+            )}
+          </Popover>
+        </div>
+        <PlayersTable
+          players={players.data?.data}
+          clubs={clubsById}
+          isUpdating={players.isPlaceholderData}
+          error={players.error}
+          onRetry={() => players.refetch()}
+          empty={emptyState()}
+        />
+        {players.data && players.data.data.length > 0 && (
+          <Pagination
+            page={players.data.meta.page}
+            limit={players.data.meta.limit}
+            totalItems={players.data.meta.total_items}
+            totalPages={players.data.meta.total_pages}
+            itemLabel={{ one: 'jogador', other: 'jogadores' }}
+            onPageChange={(page) => update({ page })}
+          />
+        )}
+      </Card>
+      <p className="mt-3 text-xs text-zinc-500">
+        Overall e valor de mercado são calculados pela API a cada consulta. A busca ignora
+        maiúsculas, minúsculas e acentos.
+      </p>
+    </>
+  )
+}

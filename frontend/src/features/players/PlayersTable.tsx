@@ -1,0 +1,110 @@
+import type { ReactNode } from 'react'
+
+import type { Club, Player } from '../../api/types'
+import { Avatar } from '../../components/ui/Avatar'
+import { Badge } from '../../components/ui/Badge'
+import { type Column, DataTable } from '../../components/ui/DataTable'
+import { formatMoney } from '../../lib/format'
+import { POSITION_LABELS } from './labels'
+import { AgilityMeter, ConditionBadge } from './PlayerBadges'
+
+type PlayersTableProps = {
+  players: Player[] | undefined
+  clubs: ReadonlyMap<number, Club>
+  isUpdating: boolean
+  error: Error | null
+  onRetry: () => void
+  empty: ReactNode
+}
+
+function ClubTag({ club, clubId }: { club: Club | undefined; clubId: number | null }) {
+  if (clubId === null) {
+    return <Badge tone="neutral">Livre</Badge>
+  }
+  return (
+    <span className="inline-flex items-center gap-2">
+      <Badge>{club?.acronym ?? '···'}</Badge>
+      <span>{club?.name}</span>
+    </span>
+  )
+}
+
+function playerColumns(clubs: ReadonlyMap<number, Club>): Column<Player>[] {
+  return [
+    {
+      key: 'name',
+      header: 'Jogador',
+      cell: (player) => (
+        <span className="flex items-center gap-3">
+          <Avatar name={player.name} seed={player.id} />
+          <span>
+            <span className="block font-medium text-zinc-950">{player.name}</span>
+            <span className="block text-xs text-zinc-500">{POSITION_LABELS[player.position]}</span>
+          </span>
+        </span>
+      ),
+    },
+    { key: 'position', header: 'Posição', cell: (player) => <Badge>{player.position}</Badge> },
+    {
+      key: 'overall',
+      header: 'Overall',
+      align: 'right',
+      cell: (player) => <span className="font-semibold">{player.overall}</span>,
+    },
+    {
+      key: 'agility',
+      header: 'Agilidade',
+      cell: (player) => <AgilityMeter agility={player.agility} />,
+    },
+    { key: 'age', header: 'Idade', align: 'right', cell: (player) => player.age },
+    {
+      key: 'condition',
+      header: 'Condição',
+      cell: (player) => <ConditionBadge condition={player.condition} />,
+    },
+    {
+      key: 'base_value',
+      header: 'Valor base',
+      align: 'right',
+      cell: (player) => <span className="text-zinc-600">{formatMoney(player.base_value)}</span>,
+    },
+    {
+      key: 'market_value',
+      header: 'Valor de mercado',
+      align: 'right',
+      cell: (player) => <span className="font-semibold">{formatMoney(player.market_value)}</span>,
+    },
+    {
+      key: 'club',
+      header: 'Clube',
+      cell: (player) => (
+        <ClubTag
+          clubId={player.club_id}
+          club={player.club_id === null ? undefined : clubs.get(player.club_id)}
+        />
+      ),
+    },
+  ]
+}
+
+export function PlayersTable({
+  players,
+  clubs,
+  isUpdating,
+  error,
+  onRetry,
+  empty,
+}: PlayersTableProps) {
+  return (
+    <DataTable
+      label="Jogadores"
+      columns={playerColumns(clubs)}
+      rows={players}
+      rowKey={(player) => player.id}
+      isUpdating={isUpdating}
+      error={error}
+      onRetry={onRetry}
+      empty={empty}
+    />
+  )
+}
