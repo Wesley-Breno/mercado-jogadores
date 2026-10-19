@@ -309,6 +309,14 @@ cp .env.example .env
   leva à página do clube.
 - Datas aparecem como `07/11/2026 10:30` (sem vírgula), sempre no fuso `America/Sao_Paulo`; números inteiros
   grandes com separador de milhar (`1.089` dias).
+- Compra (F06): o botão Comprar aparece na linha de cada jogador livre (e no menu "⋯"). O fim da fidelidade é
+  digitado em dois campos de texto, data (`dd/mm/aaaa`) e hora (`hh:mm`), com as barras e os dois-pontos postos
+  enquanto se digita, e é enviado como `AAAA-MM-DDTHH:MM-03:00`. Campos de texto, e não os de data do navegador,
+  porque estes seguem o idioma do sistema (em inglês, `12/11/2027` viraria 11 de dezembro). A tela confere se a
+  data existe no calendário e se a hora vai de 00:00 a 23:59; a janela "depois de agora e até 1.095 dias" depende
+  do momento e fica na API, assim como o limite de 50% do caixa, o elenco cheio e a recompra.
+- O resultado da compra mostra o valor, a taxa, o fim da fidelidade, o contrato e o novo caixa da resposta da
+  API; o custo total é a soma de valor e taxa, a única conta feita na tela, como o enunciado permite.
 - Menus que abrem sobre a página (filtros, ordenação e o "⋯" de cada linha) acompanham o botão quando a página
   rola e não são cortados pela tabela; no celular, aparecem como painel no pé da tela.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
@@ -344,7 +352,7 @@ cp .env.example .env
 - **Frontend:** em desenvolvimento. Já existem o layout com o menu, o cliente da API, a lista de jogadores com
   busca, filtros, ordenação e paginação (F01 e F02), a exclusão (F03), o cadastro, a edição e a alteração de
   condição de jogador (F04), a lista e a criação de clubes (F05) e a página do clube com o elenco e os contratos
-  (parte do F07); a compra, a venda, o histórico e a liga vêm a seguir.
+  (parte do F07) e a compra (F06); a venda, o histórico e a liga vêm a seguir.
 
 ## 9. Uso de inteligência artificial
 
@@ -357,7 +365,7 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
   regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios;
   base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout, cliente da API,
   componentes de interface, a tela de jogadores (lista, cadastro, edição, condição e exclusão), a de clubes e a
-  página do clube.
+  página do clube e a compra.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
