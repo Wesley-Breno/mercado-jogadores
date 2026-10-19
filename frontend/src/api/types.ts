@@ -1,0 +1,60 @@
+export type Position = 'GOL' | 'ZAG' | 'LAT' | 'MEI' | 'ATA'
+export type Condition = 'APTO' | 'MAL_CONDICIONADO' | 'DOENTE'
+
+export type Player = {
+  id: number
+  name: string
+  position: Position
+  agility: number
+  age: number
+  condition: Condition
+  base_value: number
+  market_value: number
+  pace: number
+  shooting: number
+  passing: number
+  dribbling: number
+  defending: number
+  physical: number
+  potential: number
+  overall: number
+  club_id: number | null
+}
+
+type PageMeta = {
+  page: number
+  limit: number
+  total_items: number
+  total_pages: number
+}
+
+export type PlayerPage = {
+  data: Player[]
+  meta: PageMeta
+}
+
+export type PlayerSort = 'name' | 'value_asc' | 'value_desc' | 'age_asc' | 'age_desc' | 'position'
+
+export type PlayerQuery = {
+  search?: string
+  position?: Position
+  condition?: Condition
+  free?: boolean
+  club_id?: number
+  min_age?: number
+  max_age?: number
+  min_value?: string
+  max_value?: string
+  sort?: PlayerSort
+  page?: number
+  limit?: number
+}
+
+export type Club = {
+  id: number
+  name: string
+  acronym: string
+  cash: number
+  squad_value: number
+  net_worth: number
+}
