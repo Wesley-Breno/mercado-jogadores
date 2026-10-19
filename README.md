@@ -132,6 +132,7 @@ As versões de todas as dependências, inclusive as transitivas, estão fixadas 
 | Zod e @hookform/resolvers | 4.6.7 e 5.9.2 | Esquemas de validação dos formulários ligados ao React Hook Form |
 | Tailwind CSS e @tailwindcss/vite | 4.3.3 | Estilos e responsividade; a paleta padrão (zinc e blue) é a mesma do mockup |
 | lucide-react | 1.59.0 | Ícones do menu e das telas, do mesmo estilo do mockup |
+| @fontsource-variable/geist | 5.3.0 | Fonte Geist do mockup, empacotada no build (sem depender de CDN) |
 | Vitest e jsdom | 5.0.5 e 30.1.3 | Testes de componente e de funções, sem modo de observação (desenvolvimento) |
 | Testing Library (react, dom, user-event, jest-dom) | 16.3.3, 10.4.2, 14.6.8 e 7.0.1 | Testar os componentes como o usuário os usa (desenvolvimento) |
 | Playwright | 1.64.1 | Testes de ponta a ponta no Chrome, na janela de 1366 × 768 da banca (desenvolvimento) |
