@@ -4,7 +4,11 @@ import { normalizeSpaces } from '../../lib/text'
 import { CONDITION_LABELS, POSITION_LABELS } from './labels'
 
 export const POSITIONS = ['GOL', 'ZAG', 'LAT', 'MEI', 'ATA'] as const satisfies readonly Position[]
-export const CONDITIONS: Condition[] = ['APTO', 'MAL_CONDICIONADO', 'DOENTE']
+export const CONDITIONS = [
+  'APTO',
+  'MAL_CONDICIONADO',
+  'DOENTE',
+] as const satisfies readonly Condition[]
 export const SORTS: PlayerSort[] = [
   'name',
   'value_desc',

@@ -36,6 +36,8 @@ export type PlayerCreate = Pick<
   | 'potential'
 >
 
+export type PlayerUpdate = Pick<Player, 'name' | 'position' | 'agility' | 'age'>
+
 type PageMeta = {
   page: number
   limit: number

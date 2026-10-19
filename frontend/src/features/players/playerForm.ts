@@ -1,9 +1,9 @@
 import type { DefaultValues } from 'react-hook-form'
 import { z } from 'zod'
 
-import type { PlayerCreate } from '../../api/types'
+import type { Player, PlayerCreate, PlayerUpdate } from '../../api/types'
 import { normalizeSpaces } from '../../lib/text'
-import { POSITIONS } from './playerQuery'
+import { CONDITIONS, POSITIONS } from './playerQuery'
 
 /** The six technical attributes plus the potential, in the order of the form. */
 export const INDICATORS = [
@@ -69,3 +69,33 @@ export const EMPTY_PLAYER: DefaultValues<PlayerCreateFields> = {
   physical: '',
   potential: '',
 }
+
+/**
+ * J09: only name, position, age and agility change. The age cannot go down, a refusal the screen
+ * may prevent with the data it already has.
+ */
+export function playerEditSchema(current: Player) {
+  return playerCreateSchema
+    .pick({ name: true, position: true, age: true, agility: true })
+    .refine((player) => player.age >= current.age, {
+      path: ['age'],
+      message: `A idade não pode diminuir (atual: ${current.age}).`,
+    }) satisfies z.ZodType<PlayerUpdate>
+}
+
+export type PlayerEditFields = z.input<ReturnType<typeof playerEditSchema>>
+
+export function editFieldsOf(player: Player): PlayerEditFields {
+  return {
+    name: player.name,
+    position: player.position,
+    age: String(player.age),
+    agility: String(player.agility),
+  }
+}
+
+export const conditionSchema = z.object({
+  condition: z.enum(CONDITIONS, { error: 'Escolha a condição.' }),
+})
+
+export type ConditionFields = z.infer<typeof conditionSchema>

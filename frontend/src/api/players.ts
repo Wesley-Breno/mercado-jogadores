@@ -1,5 +1,12 @@
 import { apiGet, apiSend } from './client'
-import type { Player, PlayerCreate, PlayerPage, PlayerQuery } from './types'
+import type {
+  Condition,
+  Player,
+  PlayerCreate,
+  PlayerPage,
+  PlayerQuery,
+  PlayerUpdate,
+} from './types'
 
 export function toSearchParams(query: PlayerQuery): string {
   const params = new URLSearchParams()
@@ -18,4 +25,12 @@ export function listPlayers(query: PlayerQuery): Promise<PlayerPage> {
 
 export function createPlayer(player: PlayerCreate): Promise<Player> {
   return apiSend<Player>('POST', '/players', player)
+}
+
+export function updatePlayer(id: number, player: PlayerUpdate): Promise<Player> {
+  return apiSend<Player>('PUT', `/players/${id}`, player)
+}
+
+export function changeCondition(id: number, condition: Condition): Promise<Player> {
+  return apiSend<Player>('PATCH', `/players/${id}/condition`, { condition })
 }

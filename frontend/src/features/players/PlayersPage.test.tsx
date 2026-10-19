@@ -242,6 +242,25 @@ describe('PlayersPage', () => {
     expect(lastListQuery(fetchMock).get('position')).toBe('GOL')
   })
 
+  it('abre a edição e a condição pelo menu da linha', async () => {
+    const user = userEvent.setup()
+    fakeApi()
+    renderPage()
+    await screen.findByText('Mostrando 1–10 de 23 jogadores')
+
+    await user.click(screen.getByRole('button', { name: 'Ações de André Lacerda' }))
+    await user.click(screen.getByRole('menuitem', { name: 'Editar' }))
+
+    expect(screen.getByRole('dialog', { name: 'Editar jogador' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Nome')).toHaveValue('André Lacerda')
+
+    await user.click(screen.getByRole('button', { name: 'Cancelar' }))
+    await user.click(screen.getByRole('button', { name: 'Ações de Danilo Freitas' }))
+    await user.click(screen.getByRole('menuitem', { name: 'Alterar condição' }))
+
+    expect(screen.getByRole('dialog', { name: 'Alterar condição física' })).toBeInTheDocument()
+  })
+
   it('mostra a lista vazia', async () => {
     fakeApi([])
     renderPage()

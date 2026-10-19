@@ -1,4 +1,5 @@
 import { ArrowUpDown, SearchX, Users } from 'lucide-react'
+import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 
 import { toSearchParams } from '../../api/players'
@@ -13,8 +14,10 @@ import { SegmentedControl } from '../../components/ui/SegmentedControl'
 import { EmptyState } from '../../components/ui/States'
 import { useDebouncedValue } from '../../hooks/useDebouncedValue'
 import { useClubs } from '../clubs/queries'
+import { ConditionDialog } from './ConditionDialog'
 import { CreatePlayer } from './CreatePlayer'
 import { COMBINATION_NOTE, SORT_LABELS } from './labels'
+import { PlayerEditDialog } from './PlayerEditDialog'
 import { PlayerFilters } from './PlayerFilters'
 import {
   type Availability,
@@ -27,7 +30,7 @@ import {
   readPlayerQuery,
   toRequest,
 } from './playerQuery'
-import { PlayersTable } from './PlayersTable'
+import { type PlayerAction, PlayersTable } from './PlayersTable'
 import { useAvailabilityCounts, usePlayers } from './queries'
 
 const SEARCH_DELAY_MS = 350
@@ -55,6 +58,7 @@ export function PlayersPage() {
   const counts = useAvailabilityCounts(request, availability, players.data?.meta.total_items)
   const active = activeFilters(query, clubsById)
   const sort = request.sort ?? 'name'
+  const [action, setAction] = useState<PlayerAction | null>(null)
 
   function update(changes: PlayerQuery, options?: { replace: boolean }) {
     setParams(toSearchParams(changeQuery(query, changes)), options)
@@ -143,6 +147,7 @@ export function PlayersPage() {
         <PlayersTable
           players={players.data?.data}
           clubs={clubsById}
+          onAction={setAction}
           isUpdating={players.isPlaceholderData}
           error={players.error}
           onRetry={() => players.refetch()}
@@ -163,6 +168,12 @@ export function PlayersPage() {
         Overall e valor de mercado são calculados pela API a cada consulta. A busca ignora
         maiúsculas, minúsculas e acentos.
       </p>
+      {action?.kind === 'edit' && (
+        <PlayerEditDialog player={action.player} onClose={() => setAction(null)} />
+      )}
+      {action?.kind === 'condition' && (
+        <ConditionDialog player={action.player} onClose={() => setAction(null)} />
+      )}
     </>
   )
 }

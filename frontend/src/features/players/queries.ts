@@ -1,7 +1,8 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { createPlayer, listPlayers } from '../../api/players'
-import type { PlayerQuery } from '../../api/types'
+import { changeCondition, createPlayer, listPlayers, updatePlayer } from '../../api/players'
+import type { Condition, PlayerQuery, PlayerUpdate } from '../../api/types'
+import { clubKeys } from '../clubs/queries'
 import { type Availability, countRequest } from './playerQuery'
 
 const playerKeys = {
@@ -52,5 +53,35 @@ export function useCreatePlayer() {
   return useMutation({
     mutationFn: createPlayer,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: playerKeys.all }),
+  })
+}
+
+/**
+ * A player that changes moves the market values, so the players and the clubs (squad value and
+ * net worth) are fetched again, also after a refusal, when the data on screen may be old.
+ */
+function useRefreshMarket() {
+  const queryClient = useQueryClient()
+  return () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: playerKeys.all }),
+      queryClient.invalidateQueries({ queryKey: clubKeys.all }),
+    ])
+}
+
+export function useUpdatePlayer() {
+  const refresh = useRefreshMarket()
+  return useMutation({
+    mutationFn: ({ id, player }: { id: number; player: PlayerUpdate }) => updatePlayer(id, player),
+    onSettled: refresh,
+  })
+}
+
+export function useChangeCondition() {
+  const refresh = useRefreshMarket()
+  return useMutation({
+    mutationFn: ({ id, condition }: { id: number; condition: Condition }) =>
+      changeCondition(id, condition),
+    onSettled: refresh,
   })
 }

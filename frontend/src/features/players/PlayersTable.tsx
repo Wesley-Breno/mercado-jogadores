@@ -1,16 +1,24 @@
+import { HeartPulse, Pencil } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import type { Club, Player } from '../../api/types'
 import { Avatar } from '../../components/ui/Avatar'
 import { Badge } from '../../components/ui/Badge'
 import { type Column, DataTable } from '../../components/ui/DataTable'
+import { RowActions } from '../../components/ui/RowActions'
 import { formatMoney } from '../../lib/format'
 import { POSITION_LABELS } from './labels'
 import { AgilityMeter, ConditionBadge } from './PlayerBadges'
 
+export type PlayerAction = {
+  kind: 'edit' | 'condition'
+  player: Player
+}
+
 type PlayersTableProps = {
   players: Player[] | undefined
   clubs: ReadonlyMap<number, Club>
+  onAction: (action: PlayerAction) => void
   isUpdating: boolean
   error: Error | null
   onRetry: () => void
@@ -29,7 +37,10 @@ function ClubTag({ club, clubId }: { club: Club | undefined; clubId: number | nu
   )
 }
 
-function playerColumns(clubs: ReadonlyMap<number, Club>): Column<Player>[] {
+function playerColumns(
+  clubs: ReadonlyMap<number, Club>,
+  onAction: (action: PlayerAction) => void,
+): Column<Player>[] {
   return [
     {
       key: 'name',
@@ -84,12 +95,35 @@ function playerColumns(clubs: ReadonlyMap<number, Club>): Column<Player>[] {
         />
       ),
     },
+    {
+      key: 'actions',
+      header: <span className="sr-only">Ações</span>,
+      align: 'right',
+      cell: (player) => (
+        <RowActions
+          title={player.name}
+          actions={[
+            {
+              label: 'Editar',
+              icon: Pencil,
+              onSelect: () => onAction({ kind: 'edit', player }),
+            },
+            {
+              label: 'Alterar condição',
+              icon: HeartPulse,
+              onSelect: () => onAction({ kind: 'condition', player }),
+            },
+          ]}
+        />
+      ),
+    },
   ]
 }
 
 export function PlayersTable({
   players,
   clubs,
+  onAction,
   isUpdating,
   error,
   onRetry,
@@ -98,7 +132,7 @@ export function PlayersTable({
   return (
     <DataTable
       label="Jogadores"
-      columns={playerColumns(clubs)}
+      columns={playerColumns(clubs, onAction)}
       rows={players}
       rowKey={(player) => player.id}
       isUpdating={isUpdating}
