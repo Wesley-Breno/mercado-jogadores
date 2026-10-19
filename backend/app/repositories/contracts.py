@@ -19,3 +19,9 @@ class ContractRepository:
         self.session.add(contract)
         self.session.flush()
         return contract
+
+    def find_active_for_player(self, player_id: int) -> Contract | None:
+        statement = select(Contract).where(
+            Contract.player_id == player_id, Contract.status == ContractStatus.ACTIVE
+        )
+        return self.session.scalar(statement.with_for_update())

@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.deps import MarketServiceDep, PlayerId
-from app.api.schemas.market import PurchaseRequest, PurchaseResponse
+from app.api.schemas.market import PurchaseRequest, PurchaseResponse, SaleResponse
 
 router = APIRouter(prefix="/players", tags=["Mercado"])
 
@@ -14,3 +14,11 @@ def buy_player(
     player_id: PlayerId, payload: PurchaseRequest, service: MarketServiceDep
 ) -> PurchaseResponse:
     return PurchaseResponse.from_result(service.buy(player_id, payload))
+
+
+@router.post(
+    "/{player_id}/sell",
+    summary="Vende o jogador pelo clube atual: multa, comissão e crédito (RN15 e RN16)",
+)
+def sell_player(player_id: PlayerId, service: MarketServiceDep) -> SaleResponse:
+    return SaleResponse.from_result(service.sell(player_id))

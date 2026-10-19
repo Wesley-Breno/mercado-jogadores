@@ -11,14 +11,16 @@ from app.domain.market import (
     exceeds_cash_limit,
     is_valid_loyalty_end,
     purchase_fee,
+    settle_sale,
 )
 from app.domain.money import format_brl
 from app.models import Contract, Transaction
 from app.repositories.clubs import ClubRepository
 from app.repositories.contracts import ContractRepository
+from app.repositories.lineups import LineupRepository
 from app.repositories.players import PlayerRepository
 from app.repositories.transactions import TransactionRepository
-from app.services.market_views import PurchaseResult
+from app.services.market_views import PurchaseResult, SaleResult
 from app.services.messages import CLUB_NOT_FOUND, PLAYER_NOT_FOUND
 from app.services.valuation import value_player
 
@@ -31,6 +33,7 @@ class MarketService:
         self.clubs = ClubRepository(session)
         self.contracts = ContractRepository(session)
         self.transactions = TransactionRepository(session)
+        self.lineups = LineupRepository(session)
 
     def buy(self, player_id: int, data: PurchaseRequest) -> PurchaseResult:
         """RN12 to RN14: one atomic operation; player and club rows stay locked until commit."""
@@ -92,3 +95,47 @@ class MarketService:
         )
         self.session.commit()
         return PurchaseResult(transaction, contract, club.cash)
+
+    def sell(self, player_id: int) -> SaleResult:
+        """RN15 and RN16: sold by the current club, at the market value of this moment."""
+        now = self.clock.now()
+        player = self.players.find_active(player_id, for_update=True)
+        if player is None:
+            raise NotFoundError(PLAYER_NOT_FOUND)
+        if player.club_id is None:
+            raise ConflictError(
+                "Jogador livre não pode ser vendido: ele não pertence a nenhum clube."
+            )
+        club = self.clubs.find(player.club_id, for_update=True)
+        contract = self.contracts.find_active_for_player(player.id)
+        price = value_player(player).market_value
+        settlement = settle_sale(price, contract.purchase_value, contract.loyalty_until, now)
+
+        contract.status = settlement.contract_status
+        contract.ended_at = now
+        club.cash += settlement.credit
+        player.club_id = None
+        self.lineups.remove_player(player.id)
+        transaction = self.transactions.add(
+            Transaction(
+                club_id=club.id,
+                player_id=player.id,
+                player_name=player.name,
+                type=TransactionType.SALE,
+                value=price,
+                fee=settlement.commission,
+                penalty=settlement.penalty,
+                profit=settlement.profit,
+                cash_change=settlement.credit,
+                created_at=now,
+            )
+        )
+        self.session.commit()
+        return SaleResult(
+            transaction=transaction,
+            purchase_value=contract.purchase_value,
+            remaining_days=settlement.remaining_days,
+            penalty_rate=settlement.penalty_rate,
+            contract_status=contract.status,
+            club_cash=club.cash,
+        )

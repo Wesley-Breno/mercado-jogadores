@@ -6,7 +6,7 @@ from app.api.schemas.common import BrasiliaDateTime, Money
 from app.api.validators import BrasiliaInputDateTime, StrictInt
 from app.domain.enums import ContractStatus, TransactionType
 from app.models import Transaction
-from app.services.market_views import PurchaseResult
+from app.services.market_views import PurchaseResult, SaleResult
 
 
 class PurchaseRequest(BaseModel):
@@ -63,5 +63,24 @@ class PurchaseResponse(TransactionResponse):
                 loyalty_until=result.contract.loyalty_until,
                 status=result.contract.status,
             ),
+            club_cash=result.club_cash,
+        )
+
+
+class SaleResponse(TransactionResponse):
+    purchase_value: Money
+    remaining_days: int
+    penalty_rate: int
+    contract_status: ContractStatus
+    club_cash: Money
+
+    @classmethod
+    def from_result(cls, result: SaleResult) -> Self:
+        return cls(
+            **TransactionResponse.from_transaction(result.transaction).model_dump(),
+            purchase_value=result.purchase_value,
+            remaining_days=result.remaining_days,
+            penalty_rate=result.penalty_rate,
+            contract_status=result.contract_status,
             club_cash=result.club_cash,
         )
