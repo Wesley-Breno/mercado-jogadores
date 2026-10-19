@@ -91,8 +91,13 @@ backend/
 frontend/
   src/
     app/          providers (React Query e rotas), layout com o menu e as rotas das telas
-    api/          cliente HTTP (fetch) com o tratamento central do `message` das recusas
-    components/   componentes reutilizáveis de interface (ui/)
+    api/          cliente HTTP (fetch) com o tratamento central do `message` das recusas, tipos e
+                  funções de cada recurso da API (a única camada que chama a API)
+    features/     telas por módulo (players/, clubs/): componentes, hooks do React Query e funções
+                  puras de cada tela, como a leitura dos filtros do endereço
+    components/   componentes reutilizáveis de interface (ui/): tabela com os estados de
+                  carregamento, vazio e erro, paginação, campo com rótulo e erro, menus e badges
+    hooks/        hooks genéricos (atraso da busca enquanto se digita)
     lib/          formatação de moeda e data no padrão brasileiro e utilitários
     test/         configuração dos testes de componente (Vitest + Testing Library)
   e2e/            testes de ponta a ponta (Playwright) contra a aplicação no ar
@@ -257,6 +262,18 @@ cp .env.example .env
   `index.html` (rotas da SPA). A URL da API entra no build (`VITE_API_URL`). A raiz `/` abre a lista de jogadores.
 - Lint do frontend com o oxlint, que é o padrão do template oficial do Vite (`create-vite`), e formatação com o
   Prettier.
+- Lista de jogadores: busca, filtros, aba, ordem e página ficam no endereço (`/jogadores?condition=APTO&page=2`),
+  com os mesmos nomes da API; assim o botão Voltar e o recarregar mantêm a tela. Cada pedido envia `sort`, `page`
+  e `limit=10` explícitos. Valores do endereço que a API recusaria são ignorados.
+- Busca por nome: o pedido sai 350 ms depois da última tecla e só a partir de 2 letras (a API recusa 1 letra com
+  400); com 1 letra, a tela avisa que faltam letras.
+- "Só livres" e o filtro por clube não se combinam (a API recusa com 400): com a aba Livres aberta, o filtro por
+  clube fica desabilitado, e com um clube escolhido, a aba Livres fica desabilitada, com o motivo na tela.
+- Faixas de idade e de valor de mercado: aceitam um lado só ("a partir de 18"); o valor pode ser digitado com
+  vírgula (`10,50`) e é enviado com ponto (`10.50`). A tela confere os limites (16 a 45 e 0 a 550) e se o "De"
+  não passa do "Até" antes de enviar.
+- Contadores das abas Todos, Livres e Em clubes: a aba aberta usa o total da lista; as outras pedem o mesmo
+  filtro com `limit=1` e leem `meta.total_items`, sem contar nada na tela.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
   jogaram aparecem zerados) e a ordem pontos, saldo, gols marcados, nome (ordem das Premissas) e id.
 - Fim da fidelidade fora da janela (não futuro ou mais de 1.095 dias depois da compra) é 400, como manda o item
@@ -285,7 +302,8 @@ cp .env.example .env
 ## 8. Funcionalidades não implementadas
 
 - **Backend:** nenhuma. Os 19 endpoints do enunciado estão implementados e documentados no Swagger.
-- **Frontend:** em desenvolvimento. Já existem o layout com o menu e o cliente da API; as telas vêm a seguir.
+- **Frontend:** em desenvolvimento. Já existem o layout com o menu, o cliente da API e a lista de jogadores com
+  busca, filtros, ordenação e paginação (F01 e F02); o cadastro e as demais telas vêm a seguir.
 
 ## 9. Uso de inteligência artificial
 
@@ -296,7 +314,8 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
   configuração, CORS, tratamento central de erros e log de requisições da API (`backend/app/core`);
   modelos, migration inicial e testes do schema (`backend/app/models`, `backend/migrations`, `backend/tests/db`);
   regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios;
-  base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout e cliente da API.
+  base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout, cliente da API,
+  componentes de interface e lista de jogadores.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
