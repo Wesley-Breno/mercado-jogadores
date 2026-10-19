@@ -79,6 +79,16 @@ describe('ClubPage', () => {
     expect(within(rows[1]).getByText('Doente')).toBeInTheDocument()
   })
 
+  it('abre a venda pelo botão Vender do elenco', async () => {
+    const user = userEvent.setup()
+    respondWith(200, AGUIAS)
+    renderClub()
+
+    await user.click(await screen.findByRole('button', { name: 'Vender Meia Lua' }))
+
+    expect(screen.getByRole('dialog', { name: 'Vender Meia Lua?' })).toBeInTheDocument()
+  })
+
   it('mostra o elenco vazio com o caminho para os jogadores livres', async () => {
     respondWith(200, { ...AGUIAS, squad_value: 0, net_worth: 261.15, players: [] })
     renderClub()

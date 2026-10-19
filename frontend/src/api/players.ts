@@ -8,6 +8,7 @@ import type {
   PlayerQuery,
   PlayerUpdate,
   Purchase,
+  Sale,
 } from './types'
 
 export function toSearchParams(query: PlayerQuery): string {
@@ -43,4 +44,9 @@ export function deletePlayer(id: number): Promise<void> {
 
 export function buyPlayer(id: number, purchase: BuyRequest): Promise<Purchase> {
   return apiSend<Purchase>('POST', `/players/${id}/buy`, purchase)
+}
+
+/** RN15/RN16: no body; the API values the player at the moment of the sale. */
+export function sellPlayer(id: number): Promise<Sale> {
+  return apiSend<Sale>('POST', `/players/${id}/sell`)
 }

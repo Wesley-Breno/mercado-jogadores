@@ -1,8 +1,9 @@
 import { Coins, Landmark, SearchX, Shirt, ShoppingCart, Users, Wallet } from 'lucide-react'
+import { useState } from 'react'
 import { useParams } from 'react-router'
 
 import { ApiError } from '../../api/client'
-import type { ClubDetail } from '../../api/types'
+import type { ClubDetail, SquadPlayer } from '../../api/types'
 import { useBreadcrumbTail } from '../../app/breadcrumbContext'
 import { Badge } from '../../components/ui/Badge'
 import { ButtonLink } from '../../components/ui/ButtonLink'
@@ -10,6 +11,7 @@ import { Card } from '../../components/ui/Card'
 import { StatCard } from '../../components/ui/StatCard'
 import { EmptyState, ErrorState } from '../../components/ui/States'
 import { formatMoney } from '../../lib/format'
+import { SellPlayer } from '../market/SellPlayer'
 import { ClubMark } from './ClubMark'
 import { MAX_SQUAD } from './labels'
 import { useClub } from './queries'
@@ -88,6 +90,7 @@ function ClubStats({ club }: { club: ClubDetail | undefined }) {
 export function ClubPage() {
   const { clubId = '' } = useParams()
   const club = useClub(clubId)
+  const [selling, setSelling] = useState<SquadPlayer | null>(null)
   useBreadcrumbTail(club.data?.name)
 
   if (club.error instanceof ApiError && club.error.status === 404) {
@@ -125,6 +128,7 @@ export function ClubPage() {
         </div>
         <SquadTable
           players={club.data?.players}
+          onSell={setSelling}
           error={club.error}
           onRetry={() => club.refetch()}
           empty={
@@ -146,6 +150,9 @@ export function ClubPage() {
         Valor de mercado, dias restantes e % de multa calculados pela API para uma venda agora. A
         multa tem teto de 10,00.
       </p>
+      {selling && club.data && (
+        <SellPlayer player={selling} clubName={club.data.name} onClose={() => setSelling(null)} />
+      )}
     </>
   )
 }
