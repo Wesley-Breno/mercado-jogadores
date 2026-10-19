@@ -15,6 +15,7 @@ import { EmptyState } from '../../components/ui/States'
 import { useDebouncedValue } from '../../hooks/useDebouncedValue'
 import { lowerFirst } from '../../lib/text'
 import { useClubs } from '../clubs/queries'
+import { BuyPlayer } from '../market/BuyPlayer'
 import { ConditionDialog } from './ConditionDialog'
 import { CreatePlayer } from './CreatePlayer'
 import { DeletePlayerDialog } from './DeletePlayerDialog'
@@ -171,6 +172,9 @@ export function PlayersPage() {
       )}
       {action?.kind === 'condition' && (
         <ConditionDialog player={action.player} onClose={() => setAction(null)} />
+      )}
+      {action?.kind === 'buy' && (
+        <BuyPlayer player={action.player} onClose={() => setAction(null)} />
       )}
       {action?.kind === 'delete' && (
         <DeletePlayerDialog player={action.player} onClose={() => setAction(null)} />

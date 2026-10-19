@@ -282,6 +282,20 @@ describe('PlayersPage', () => {
     expect(screen.queryByRole('row', { name: /Danilo Freitas/ })).not.toBeInTheDocument()
   })
 
+  it('abre a compra pelo botão Comprar do jogador livre', async () => {
+    const user = userEvent.setup()
+    fakeApi()
+    renderPage()
+    await screen.findByText('Mostrando 1–10 de 23 jogadores')
+
+    await user.click(screen.getByRole('button', { name: 'Comprar Danilo Freitas' }))
+
+    expect(screen.getByRole('dialog', { name: 'Comprar jogador' })).toHaveTextContent(
+      'Danilo Freitas',
+    )
+    expect(screen.queryByRole('button', { name: 'Comprar André Lacerda' })).not.toBeInTheDocument()
+  })
+
   it('só oferece a exclusão de jogador livre', async () => {
     const user = userEvent.setup()
     fakeApi()

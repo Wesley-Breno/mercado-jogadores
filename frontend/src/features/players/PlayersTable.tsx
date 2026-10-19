@@ -1,10 +1,11 @@
-import { HeartPulse, Pencil, Trash2 } from 'lucide-react'
+import { HeartPulse, Pencil, ShoppingCart, Trash2 } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router'
 
 import type { Club, Player } from '../../api/types'
 import { Avatar } from '../../components/ui/Avatar'
 import { Badge } from '../../components/ui/Badge'
+import { Button } from '../../components/ui/Button'
 import { type Column, DataTable } from '../../components/ui/DataTable'
 import { RowActions } from '../../components/ui/RowActions'
 import { formatMoney } from '../../lib/format'
@@ -12,7 +13,7 @@ import { POSITION_LABELS } from './labels'
 import { AgilityMeter, ConditionBadge } from './PlayerBadges'
 
 export type PlayerAction = {
-  kind: 'edit' | 'condition' | 'delete'
+  kind: 'edit' | 'condition' | 'delete' | 'buy'
   player: Player
 }
 
@@ -26,15 +27,30 @@ type PlayersTableProps = {
   empty: ReactNode
 }
 
-function ClubTag({ club, clubId }: { club: Club | undefined; clubId: number | null }) {
-  if (clubId === null) {
-    return <Badge tone="neutral">Livre</Badge>
+type ClubCellProps = {
+  player: Player
+  club: Club | undefined
+  onBuy: () => void
+}
+
+/** Club name and acronym, or "Livre" with the button that starts the purchase (F06). */
+function ClubCell({ player, club, onBuy }: ClubCellProps) {
+  if (player.club_id === null) {
+    return (
+      <span className="inline-flex items-center gap-2">
+        <Badge tone="neutral">Livre</Badge>
+        <Button size="sm" onClick={onBuy} aria-label={`Comprar ${player.name}`}>
+          <ShoppingCart aria-hidden />
+          Comprar
+        </Button>
+      </span>
+    )
   }
   return (
     <span className="inline-flex items-center gap-2">
       <Badge>{club?.acronym ?? '···'}</Badge>
       <Link
-        to={`/clubes/${clubId}`}
+        to={`/clubes/${player.club_id}`}
         className="underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-950"
       >
         {club?.name}
@@ -95,9 +111,10 @@ function playerColumns(
       key: 'club',
       header: 'Clube',
       cell: (player) => (
-        <ClubTag
-          clubId={player.club_id}
+        <ClubCell
+          player={player}
           club={player.club_id === null ? undefined : clubs.get(player.club_id)}
+          onBuy={() => onAction({ kind: 'buy', player })}
         />
       ),
     },
@@ -119,6 +136,15 @@ function playerColumns(
               icon: HeartPulse,
               onSelect: () => onAction({ kind: 'condition', player }),
             },
+            ...(player.club_id === null
+              ? [
+                  {
+                    label: 'Comprar',
+                    icon: ShoppingCart,
+                    onSelect: () => onAction({ kind: 'buy', player }),
+                  },
+                ]
+              : []),
             {
               label: 'Excluir',
               icon: Trash2,

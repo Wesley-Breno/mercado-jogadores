@@ -1,11 +1,13 @@
 import { apiDelete, apiGet, apiSend } from './client'
 import type {
+  BuyRequest,
   Condition,
   Player,
   PlayerCreate,
   PlayerPage,
   PlayerQuery,
   PlayerUpdate,
+  Purchase,
 } from './types'
 
 export function toSearchParams(query: PlayerQuery): string {
@@ -37,4 +39,8 @@ export function changeCondition(id: number, condition: Condition): Promise<Playe
 
 export function deletePlayer(id: number): Promise<void> {
   return apiDelete(`/players/${id}`)
+}
+
+export function buyPlayer(id: number, purchase: BuyRequest): Promise<Purchase> {
+  return apiSend<Purchase>('POST', `/players/${id}/buy`, purchase)
 }

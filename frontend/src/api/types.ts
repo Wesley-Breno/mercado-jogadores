@@ -94,3 +94,30 @@ export type Contract = {
 export type SquadPlayer = Player & { contract: Contract }
 
 export type ClubDetail = Club & { players: SquadPlayer[] }
+
+export type TransactionType = 'COMPRA' | 'VENDA'
+
+/** RN17: a line of the club history; buy and sell answer one of these plus the result fields. */
+export type Transaction = {
+  id: number
+  club_id: number
+  player_id: number
+  player_name: string
+  type: TransactionType
+  value: number
+  fee: number
+  penalty: number
+  profit: number | null
+  cash_change: number
+  created_at: string
+}
+
+export type BuyRequest = {
+  club_id: number
+  loyalty_until: string
+}
+
+export type Purchase = Transaction & {
+  contract: { purchase_value: number; loyalty_until: string; status: 'ATIVO' }
+  club_cash: number
+}
