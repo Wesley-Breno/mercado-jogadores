@@ -34,6 +34,11 @@ export function formatInteger(value: number): string {
   return integer.format(value)
 }
 
+/** Goal difference with its sign: "+2", "0", "-2". */
+export function formatSignedInteger(value: number): string {
+  return value > 0 ? `+${value}` : String(value)
+}
+
 /** API dates (already -03:00) in Brasília time, whatever the computer time zone is. */
 export function dateTimeParts(value: string): { date: string; time: string } {
   const instant = new Date(value)

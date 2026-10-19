@@ -4,6 +4,7 @@ import {
   dateTimeParts,
   formatDateTime,
   formatInteger,
+  formatSignedInteger,
   formatMoney,
   formatSignedMoney,
   toApiDateTime,
@@ -38,6 +39,16 @@ describe('formatInteger', () => {
     [1089, '1.089'],
   ])('%d vira %s', (value, expected) => {
     expect(formatInteger(value)).toBe(expected)
+  })
+})
+
+describe('formatSignedInteger', () => {
+  it.each([
+    [2, '+2'],
+    [0, '0'],
+    [-2, '-2'],
+  ])('%d vira %s', (value, expected) => {
+    expect(formatSignedInteger(value)).toBe(expected)
   })
 })
 
