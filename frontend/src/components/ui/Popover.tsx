@@ -1,11 +1,13 @@
 import { ChevronDown, type LucideIcon } from 'lucide-react'
-import { type ReactNode, useEffect, useId, useRef, useState } from 'react'
+import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import { cn } from '../../lib/cn'
 
 type PopoverProps = {
-  label: ReactNode
+  label: string
   icon?: LucideIcon
+  iconOnly?: boolean
   active?: boolean
   disabled?: boolean
   align?: 'start' | 'end'
@@ -14,14 +16,33 @@ type PopoverProps = {
   children: (close: () => void) => ReactNode
 }
 
+const GAP = 6
+const MIN_SPACE_BELOW = 280
+
+/** Where the panel goes on wider screens: under the button, or above it near the bottom. */
+function panelPlace(trigger: HTMLElement, align: 'start' | 'end'): CSSProperties {
+  const rect = trigger.getBoundingClientRect()
+  const vertical =
+    window.innerHeight - rect.bottom < MIN_SPACE_BELOW && rect.top > MIN_SPACE_BELOW
+      ? { '--popover-bottom': `${window.innerHeight - rect.top + GAP}px` }
+      : { '--popover-top': `${rect.bottom + GAP}px` }
+  const horizontal =
+    align === 'start'
+      ? { '--popover-left': `${rect.left}px` }
+      : { '--popover-right': `${window.innerWidth - rect.right}px` }
+  return { ...vertical, ...horizontal } as CSSProperties
+}
+
 /**
- * Button that opens a floating panel (a menu or a small form). It closes on Escape, on a click
- * outside or when the content calls `close`. On phones the panel becomes a sheet at the bottom,
- * so it never widens the page.
+ * Button that opens a floating panel (a menu or a small form). The panel is drawn over the page,
+ * so a table that scrolls does not cut it, and follows the button when the page scrolls. It closes
+ * on Escape, on a click outside or when the content calls `close`. On phones it is a sheet at the
+ * bottom.
  */
 export function Popover({
   label,
   icon: Icon,
+  iconOnly = false,
   active = false,
   disabled = false,
   align = 'start',
@@ -29,14 +50,16 @@ export function Popover({
   panelLabel,
   children,
 }: PopoverProps) {
-  const [open, setOpen] = useState(false)
+  const [place, setPlace] = useState<CSSProperties | null>(null)
   const rootRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
   const triggerId = useId()
   const panelId = useId()
+  const open = place !== null
 
   /** Closes and gives the focus back to the button, as menus do. */
   function close() {
-    setOpen(false)
+    setPlace(null)
     document.getElementById(triggerId)?.focus()
   }
 
@@ -44,60 +67,84 @@ export function Popover({
     if (!open) {
       return
     }
+    function isInside(target: EventTarget | null): boolean {
+      return (
+        target instanceof Node &&
+        Boolean(rootRef.current?.contains(target) || panelRef.current?.contains(target))
+      )
+    }
     function closeOnOutsideClick(event: PointerEvent) {
-      if (event.target instanceof Node && !rootRef.current?.contains(event.target)) {
-        setOpen(false)
+      if (!isInside(event.target)) {
+        setPlace(null)
+      }
+    }
+    function followTrigger(event: Event) {
+      const trigger = document.getElementById(triggerId)
+      if (trigger && !isInside(event.target)) {
+        setPlace(panelPlace(trigger, align))
       }
     }
     function closeOnEscape(event: KeyboardEvent) {
       if (event.key === 'Escape') {
-        setOpen(false)
+        setPlace(null)
         document.getElementById(triggerId)?.focus()
       }
     }
     document.addEventListener('pointerdown', closeOnOutsideClick)
     document.addEventListener('keydown', closeOnEscape)
+    window.addEventListener('scroll', followTrigger, true)
+    window.addEventListener('resize', followTrigger)
     return () => {
       document.removeEventListener('pointerdown', closeOnOutsideClick)
       document.removeEventListener('keydown', closeOnEscape)
+      window.removeEventListener('scroll', followTrigger, true)
+      window.removeEventListener('resize', followTrigger)
     }
-  }, [open, triggerId])
+  }, [open, triggerId, align])
 
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} className={cn('relative', iconOnly && 'inline-flex')}>
       <button
         id={triggerId}
         type="button"
+        aria-label={iconOnly ? label : undefined}
         aria-expanded={open}
         aria-haspopup={popup}
         aria-controls={open ? panelId : undefined}
         disabled={disabled}
-        onClick={() => setOpen((value) => !value)}
+        onClick={(event) => setPlace(open ? null : panelPlace(event.currentTarget, align))}
         className={cn(
-          'inline-flex h-9 max-w-full items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 text-sm font-medium shadow-xs transition-colors hover:bg-zinc-50',
+          'inline-flex items-center rounded-lg text-sm font-medium transition-colors',
           'focus-visible:ring-3 focus-visible:ring-blue-600/30 focus-visible:outline-none',
           'disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
-          active ? 'text-zinc-950' : 'text-zinc-600',
+          iconOnly
+            ? 'size-8 justify-center text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950'
+            : 'h-9 max-w-full gap-2 border border-zinc-200 bg-white px-3 shadow-xs hover:bg-zinc-50',
+          !iconOnly && (active ? 'text-zinc-950' : 'text-zinc-600'),
         )}
       >
         {Icon && <Icon aria-hidden />}
-        <span className="truncate">{label}</span>
-        <ChevronDown aria-hidden className="text-zinc-500" />
+        {!iconOnly && <span className="truncate">{label}</span>}
+        {!iconOnly && <ChevronDown aria-hidden className="text-zinc-500" />}
       </button>
-      {open && (
-        <div
-          id={panelId}
-          role={popup === 'dialog' ? 'dialog' : undefined}
-          aria-label={popup === 'dialog' ? panelLabel : undefined}
-          className={cn(
-            'fixed inset-x-4 bottom-4 z-30 rounded-xl border border-zinc-200 bg-white shadow-md',
-            'sm:absolute sm:inset-x-auto sm:top-full sm:bottom-auto sm:mt-1.5 sm:min-w-56',
-            align === 'start' ? 'sm:left-0' : 'sm:right-0',
-          )}
-        >
-          {children(close)}
-        </div>
-      )}
+      {open &&
+        createPortal(
+          <div
+            ref={panelRef}
+            id={panelId}
+            role={popup === 'dialog' ? 'dialog' : undefined}
+            aria-label={popup === 'dialog' ? panelLabel : undefined}
+            style={place}
+            className={cn(
+              'fixed inset-x-4 bottom-4 z-40 rounded-xl border border-zinc-200 bg-white text-zinc-950 shadow-md',
+              'sm:inset-x-auto sm:top-(--popover-top) sm:bottom-(--popover-bottom) sm:min-w-56',
+              align === 'start' ? 'sm:left-(--popover-left)' : 'sm:right-(--popover-right)',
+            )}
+          >
+            {children(close)}
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }

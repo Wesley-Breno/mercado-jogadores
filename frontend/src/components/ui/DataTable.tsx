@@ -45,7 +45,7 @@ export function DataTable<Row>({
   }
   const isLoading = rows === undefined
   return (
-    <div className="overflow-x-auto">
+    <div className="relative overflow-x-auto">
       <table
         aria-label={label}
         aria-busy={isLoading || isUpdating}
