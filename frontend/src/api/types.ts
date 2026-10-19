@@ -152,6 +152,11 @@ export type Sale = Transaction & {
 
 export type Formation = '3-1' | '2-2' | '2-1-1' | '1-2-1'
 
+export type LineupRequest = {
+  formation: Formation
+  player_ids: number[]
+}
+
 /** RN19: the saved lineup; a starter who was sold or fell sick leaves it and `complete` turns false. */
 export type Lineup = {
   club_id: number

@@ -1,5 +1,5 @@
 import { apiGet, apiSend } from './client'
-import type { Club, ClubCreate, ClubDetail, ClubSort, Lineup } from './types'
+import type { Club, ClubCreate, ClubDetail, ClubSort, Lineup, LineupRequest } from './types'
 
 export function listClubs(sort: ClubSort): Promise<Club[]> {
   return apiGet<Club[]>(`/clubs?sort=${sort}`)
@@ -16,4 +16,9 @@ export function getClub(id: string): Promise<ClubDetail> {
 
 export function getLineup(clubId: string): Promise<Lineup> {
   return apiGet<Lineup>(`/clubs/${encodeURIComponent(clubId)}/lineup`)
+}
+
+/** RN19: replaces the whole lineup in one operation. */
+export function saveLineup(clubId: number, lineup: LineupRequest): Promise<Lineup> {
+  return apiSend<Lineup>('PUT', `/clubs/${clubId}/lineup`, lineup)
 }

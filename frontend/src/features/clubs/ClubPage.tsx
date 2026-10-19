@@ -1,4 +1,13 @@
-import { Coins, History, Landmark, SearchX, Shirt, ShoppingCart, Wallet } from 'lucide-react'
+import {
+  ClipboardList,
+  Coins,
+  History,
+  Landmark,
+  SearchX,
+  Shirt,
+  ShoppingCart,
+  Wallet,
+} from 'lucide-react'
 import { useState } from 'react'
 import { useParams, useSearchParams } from 'react-router'
 
@@ -12,6 +21,7 @@ import { StatCard } from '../../components/ui/StatCard'
 import { Tabs } from '../../components/ui/Tabs'
 import { EmptyState, ErrorState } from '../../components/ui/States'
 import { formatMoney } from '../../lib/format'
+import { LineupSection } from '../lineup/LineupSection'
 import { SellPlayer } from '../market/SellPlayer'
 import { useTransactions } from '../transactions/queries'
 import { TransactionHistory } from '../transactions/TransactionHistory'
@@ -20,9 +30,9 @@ import { MAX_SQUAD } from './labels'
 import { useClub } from './queries'
 import { SquadSection } from './SquadSection'
 
-type ClubTab = 'elenco' | 'historico'
+type ClubTab = 'elenco' | 'escalacao' | 'historico'
 
-const CLUB_TABS: ClubTab[] = ['elenco', 'historico']
+const CLUB_TABS: ClubTab[] = ['elenco', 'escalacao', 'historico']
 
 function ClubHeader({ club }: { club: ClubDetail | undefined }) {
   return (
@@ -137,6 +147,7 @@ export function ClubPage() {
         label="Seções do clube"
         tabs={[
           { key: 'elenco', label: 'Elenco', icon: Shirt, count: club.data?.players.length },
+          { key: 'escalacao', label: 'Escalação', icon: ClipboardList },
           {
             key: 'historico',
             label: 'Histórico',
@@ -147,16 +158,16 @@ export function ClubPage() {
         selected={tab}
         onSelect={showTab}
       >
-        {tab === 'elenco' ? (
+        {tab === 'elenco' && (
           <SquadSection
             club={club.data}
             error={club.error}
             onRetry={() => club.refetch()}
             onSell={setSelling}
           />
-        ) : (
-          <TransactionHistory clubId={clubId} />
         )}
+        {tab === 'escalacao' && club.data && <LineupSection club={club.data} />}
+        {tab === 'historico' && <TransactionHistory clubId={clubId} />}
       </Tabs>
       {selling && club.data && (
         <SellPlayer
