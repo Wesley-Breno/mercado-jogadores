@@ -29,13 +29,19 @@ type Route = {
 
 /**
  * A small fake API: each request gets the first route with its method (GET by default) and its
- * path after /api/v1; anything else is a 404, as the real API would answer.
+ * path after /api/v1 (with the query string, when the route has one); anything else is a 404, as
+ * the real API would answer.
  */
 export function fakeRoutes(routes: Route[]) {
   const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
     const method = init?.method ?? 'GET'
-    const path = new URL(String(input)).pathname.replace('/api/v1', '')
-    const route = routes.find((item) => (item.method ?? 'GET') === method && item.path === path)
+    const url = new URL(String(input))
+    const path = url.pathname.replace('/api/v1', '')
+    const route = routes.find(
+      (item) =>
+        (item.method ?? 'GET') === method &&
+        item.path === (item.path.includes('?') ? `${path}${url.search}` : path),
+    )
     if (!route) {
       return new Response(JSON.stringify({ message: 'Rota não encontrada.' }), { status: 404 })
     }

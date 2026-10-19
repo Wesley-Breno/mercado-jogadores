@@ -17,7 +17,8 @@ type DataTableProps<Row> = {
   rowKey: (row: Row) => string | number
   isUpdating?: boolean
   error: Error | null
-  onRetry: () => void
+  errorTitle?: string
+  onRetry?: () => void
   empty: ReactNode
 }
 
@@ -34,11 +35,12 @@ export function DataTable<Row>({
   rowKey,
   isUpdating = false,
   error,
+  errorTitle,
   onRetry,
   empty,
 }: DataTableProps<Row>) {
   if (error) {
-    return <ErrorState message={error.message} onRetry={onRetry} />
+    return <ErrorState title={errorTitle} message={error.message} onRetry={onRetry} />
   }
   if (rows?.length === 0 && !isUpdating) {
     return empty

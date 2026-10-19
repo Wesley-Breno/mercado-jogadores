@@ -2,7 +2,7 @@ import { ArrowUpDown, SearchX, Users } from 'lucide-react'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 
-import { toSearchParams } from '../../api/players'
+import { toSearchParams } from '../../api/searchParams'
 import type { PlayerQuery } from '../../api/types'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'

@@ -24,17 +24,22 @@ export function EmptyState({ icon: Icon, title, description, action }: EmptyStat
 }
 
 type ErrorStateProps = {
+  title?: string
   message: string
   onRetry?: () => void
 }
 
-export function ErrorState({ message, onRetry }: ErrorStateProps) {
+export function ErrorState({
+  title = 'Não foi possível carregar',
+  message,
+  onRetry,
+}: ErrorStateProps) {
   return (
     <div role="alert" className="flex flex-col items-center px-4 py-12 text-center">
       <span className="grid size-10 place-items-center rounded-lg border border-red-200 bg-red-50 text-red-600">
         <AlertTriangle aria-hidden className="size-5" />
       </span>
-      <p className="mt-3 font-semibold">Não foi possível carregar</p>
+      <p className="mt-3 font-semibold">{title}</p>
       <p className="mt-1 max-w-md text-sm text-zinc-500">{message}</p>
       {onRetry && (
         <Button className="mt-4" onClick={onRetry}>
