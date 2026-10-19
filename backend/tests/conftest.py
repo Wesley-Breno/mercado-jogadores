@@ -1,5 +1,6 @@
 import os
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
+from datetime import datetime
 from pathlib import Path
 
 import pytest
@@ -9,6 +10,8 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import Connection, Engine, create_engine, make_url, text
 
+from app.api.deps import get_clock
+from app.core.clock import Clock
 from app.core.config import Settings
 from app.main import create_app
 
@@ -96,3 +99,19 @@ def app(settings: Settings, clean_database: None) -> FastAPI:
 @pytest.fixture
 def client(app: FastAPI) -> TestClient:
     return TestClient(app, raise_server_exceptions=False)
+
+
+class FixedClock(Clock):
+    def __init__(self, moment: datetime) -> None:
+        self.moment = moment
+
+    def now(self) -> datetime:
+        return self.moment
+
+
+@pytest.fixture
+def freeze_clock(app: FastAPI) -> Callable[[datetime], None]:
+    def freeze(moment: datetime) -> None:
+        app.dependency_overrides[get_clock] = lambda: FixedClock(moment)
+
+    return freeze
