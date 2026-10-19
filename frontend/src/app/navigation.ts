@@ -1,4 +1,4 @@
-import { History, ListOrdered, Shield, Users, type LucideIcon } from 'lucide-react'
+import { ListOrdered, Shield, Swords, Users, type LucideIcon } from 'lucide-react'
 
 export type NavigationItem = {
   label: string
@@ -22,7 +22,7 @@ export const NAVIGATION: NavigationSection[] = [
   {
     label: 'Liga',
     items: [
-      { label: 'Partidas', path: '/partidas', icon: History },
+      { label: 'Partidas', path: '/partidas', icon: Swords },
       { label: 'Classificação', path: '/classificacao', icon: ListOrdered },
     ],
   },
