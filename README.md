@@ -274,6 +274,15 @@ cp .env.example .env
   não passa do "Até" antes de enviar.
 - Contadores das abas Todos, Livres e Em clubes: a aba aberta usa o total da lista; as outras pedem o mesmo
   filtro com `limit=1` e leem `meta.total_items`, sem contar nada na tela.
+- Formulários: a tela confere, antes de enviar, os campos obrigatórios e os limites de cada campo (nome de 3 a
+  100 caracteres, idade de 16 a 45, agilidade de 1 a 100, atributos e potencial de 1 a 99), com a mensagem junto
+  ao campo. As regras que cruzam campos (soma dos atributos, potencial e idade, agilidade com 35 anos ou mais)
+  ficam só na API, e o `message` da recusa aparece no próprio formulário.
+- Clique duplo: o botão de envio fica desabilitado do clique até a resposta da API, então sai um só pedido.
+- Depois do cadastro, a tela mostra o valor base, o valor de mercado e o overall da resposta do `POST /players`
+  (nada é calculado na tela), e a lista de jogadores é buscada de novo antes do aviso de sucesso.
+- Diálogos com o elemento nativo `<dialog>` do navegador: o foco fica preso no diálogo, Esc fecha (menos durante
+  o envio) e o foco volta para o botão que o abriu.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
   jogaram aparecem zerados) e a ordem pontos, saldo, gols marcados, nome (ordem das Premissas) e id.
 - Fim da fidelidade fora da janela (não futuro ou mais de 1.095 dias depois da compra) é 400, como manda o item
@@ -302,8 +311,9 @@ cp .env.example .env
 ## 8. Funcionalidades não implementadas
 
 - **Backend:** nenhuma. Os 19 endpoints do enunciado estão implementados e documentados no Swagger.
-- **Frontend:** em desenvolvimento. Já existem o layout com o menu, o cliente da API e a lista de jogadores com
-  busca, filtros, ordenação e paginação (F01 e F02); o cadastro e as demais telas vêm a seguir.
+- **Frontend:** em desenvolvimento. Já existem o layout com o menu, o cliente da API, a lista de jogadores com
+  busca, filtros, ordenação e paginação (F01 e F02) e o cadastro de jogador; a edição, a condição, a exclusão e as
+  demais telas vêm a seguir.
 
 ## 9. Uso de inteligência artificial
 
@@ -315,7 +325,7 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
   modelos, migration inicial e testes do schema (`backend/app/models`, `backend/migrations`, `backend/tests/db`);
   regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios;
   base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout, cliente da API,
-  componentes de interface e lista de jogadores.
+  componentes de interface, lista e cadastro de jogadores.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
