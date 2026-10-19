@@ -8,10 +8,11 @@ type SellPlayerProps = {
   player: SquadPlayer
   clubName: string
   onClose: () => void
+  onShowHistory: () => void
 }
 
 /** F08: the confirmation and, once the API accepts, every value of the sale. */
-export function SellPlayer({ player, clubName, onClose }: SellPlayerProps) {
+export function SellPlayer({ player, clubName, onClose, onShowHistory }: SellPlayerProps) {
   const [result, setResult] = useState<{ sale: Sale; wasStarter: boolean } | null>(null)
 
   if (result) {
@@ -21,6 +22,7 @@ export function SellPlayer({ player, clubName, onClose }: SellPlayerProps) {
         wasStarter={result.wasStarter}
         clubName={clubName}
         onClose={onClose}
+        onShowHistory={onShowHistory}
       />
     )
   }

@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import type { ClubDetail } from '../../api/types'
 import { AppRoutes } from '../../app/AppRoutes'
-import { respondWith, sentRequest } from '../../test/fakeFetch'
+import { fakeRoutes, respondWith, sentRequest } from '../../test/fakeFetch'
 import { fakePlayer } from '../../test/fakePlayer'
 import { renderWithProviders } from '../../test/renderWithProviders'
 
@@ -37,6 +37,29 @@ const AGUIAS: ClubDetail = {
   ],
 }
 
+const EMPTY_HISTORY = {
+  data: [],
+  summary: {
+    total_spent: 0,
+    total_received: 0,
+    total_fees: 0,
+    total_penalties: 0,
+    total_profit: 0,
+  },
+}
+
+/** The club page asks for the club, its history (tab counter) and, when selling, the lineup. */
+function fakeClub(club: ClubDetail) {
+  return fakeRoutes([
+    { path: '/clubs/1', body: club },
+    { path: '/clubs/1/transactions', body: EMPTY_HISTORY },
+    {
+      path: '/clubs/1/lineup',
+      body: { club_id: 1, formation: null, complete: false, players: [] },
+    },
+  ])
+}
+
 function renderClub(path = '/clubes/1') {
   return renderWithProviders(<AppRoutes />, path)
 }
@@ -47,7 +70,7 @@ afterEach(() => {
 
 describe('ClubPage', () => {
   it('mostra caixa, valor do elenco e patrimônio devolvidos pela API', async () => {
-    const fetchMock = respondWith(200, AGUIAS)
+    const fetchMock = fakeClub(AGUIAS)
     renderClub()
 
     expect(await screen.findByRole('heading', { name: 'Águias FC' })).toBeInTheDocument()
@@ -60,7 +83,7 @@ describe('ClubPage', () => {
   })
 
   it('mostra o elenco na ordem da API com as colunas do contrato', async () => {
-    respondWith(200, AGUIAS)
+    fakeClub(AGUIAS)
     renderClub()
 
     await screen.findByRole('row', { name: /Meia Lua/ })
@@ -81,7 +104,7 @@ describe('ClubPage', () => {
 
   it('abre a venda pelo botão Vender do elenco', async () => {
     const user = userEvent.setup()
-    respondWith(200, AGUIAS)
+    fakeClub(AGUIAS)
     renderClub()
 
     await user.click(await screen.findByRole('button', { name: 'Vender Meia Lua' }))
@@ -90,7 +113,7 @@ describe('ClubPage', () => {
   })
 
   it('mostra o elenco vazio com o caminho para os jogadores livres', async () => {
-    respondWith(200, { ...AGUIAS, squad_value: 0, net_worth: 261.15, players: [] })
+    fakeClub({ ...AGUIAS, squad_value: 0, net_worth: 261.15, players: [] })
     renderClub()
 
     expect(await screen.findByText('Nenhum jogador no elenco')).toBeInTheDocument()
@@ -114,7 +137,7 @@ describe('ClubPage', () => {
     renderClub()
 
     await screen.findByRole('alert')
-    respondWith(200, AGUIAS)
+    fakeClub(AGUIAS)
     await user.click(screen.getByRole('button', { name: 'Tentar de novo' }))
 
     expect(await screen.findByRole('heading', { name: 'Águias FC' })).toBeInTheDocument()

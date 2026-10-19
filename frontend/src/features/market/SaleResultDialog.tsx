@@ -1,16 +1,19 @@
+import { History } from 'lucide-react'
+
 import type { Sale } from '../../api/types'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { Dialog } from '../../components/ui/Dialog'
 import { ResultList } from '../../components/ui/ResultList'
-import { cn } from '../../lib/cn'
-import { formatInteger, formatMoney, formatSignedMoney } from '../../lib/format'
+import { SignedMoney } from '../../components/ui/SignedMoney'
+import { formatInteger, formatMoney } from '../../lib/format'
 
 type SaleResultDialogProps = {
   sale: Sale
   clubName: string
   wasStarter: boolean
   onClose: () => void
+  onShowHistory: () => void
 }
 
 function describe(sale: Sale, wasStarter: boolean): string {
@@ -24,7 +27,13 @@ function describe(sale: Sale, wasStarter: boolean): string {
  * V02/V03: every value is the one returned by POST /players/{id}/sell; the hints only explain
  * them (RN15 and RN16), nothing is calculated on screen.
  */
-export function SaleResultDialog({ sale, clubName, wasStarter, onClose }: SaleResultDialogProps) {
+export function SaleResultDialog({
+  sale,
+  clubName,
+  wasStarter,
+  onClose,
+  onShowHistory,
+}: SaleResultDialogProps) {
   const profit = sale.profit ?? 0
   return (
     <Dialog
@@ -33,9 +42,15 @@ export function SaleResultDialog({ sale, clubName, wasStarter, onClose }: SaleRe
       description={describe(sale, wasStarter)}
       onClose={onClose}
       footer={
-        <Button variant="primary" onClick={onClose}>
-          Fechar
-        </Button>
+        <>
+          <Button onClick={onShowHistory}>
+            <History aria-hidden />
+            Ver histórico
+          </Button>
+          <Button variant="primary" onClick={onClose}>
+            Fechar
+          </Button>
+        </>
       }
     >
       <ResultList
@@ -57,11 +72,7 @@ export function SaleResultDialog({ sale, clubName, wasStarter, onClose }: SaleRe
           },
           {
             label: 'Lucro',
-            value: (
-              <span className={cn(profit > 0 && 'text-green-700', profit < 0 && 'text-red-600')}>
-                {formatSignedMoney(profit)}
-              </span>
-            ),
+            value: <SignedMoney value={profit} />,
           },
           {
             label: 'Comissão',
@@ -72,7 +83,7 @@ export function SaleResultDialog({ sale, clubName, wasStarter, onClose }: SaleRe
           {
             label: 'Crédito no caixa',
             hint: 'Valor de venda − multa − comissão',
-            value: formatSignedMoney(sale.cash_change),
+            value: <SignedMoney value={sale.cash_change} />,
             highlight: true,
           },
           {

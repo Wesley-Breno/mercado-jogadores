@@ -1,6 +1,6 @@
-import { Coins, Landmark, SearchX, Shirt, ShoppingCart, Users, Wallet } from 'lucide-react'
+import { Coins, History, Landmark, SearchX, Shirt, ShoppingCart, Wallet } from 'lucide-react'
 import { useState } from 'react'
-import { useParams } from 'react-router'
+import { useParams, useSearchParams } from 'react-router'
 
 import { ApiError } from '../../api/client'
 import type { ClubDetail, SquadPlayer } from '../../api/types'
@@ -9,13 +9,20 @@ import { Badge } from '../../components/ui/Badge'
 import { ButtonLink } from '../../components/ui/ButtonLink'
 import { Card } from '../../components/ui/Card'
 import { StatCard } from '../../components/ui/StatCard'
+import { Tabs } from '../../components/ui/Tabs'
 import { EmptyState, ErrorState } from '../../components/ui/States'
 import { formatMoney } from '../../lib/format'
 import { SellPlayer } from '../market/SellPlayer'
+import { useTransactions } from '../transactions/queries'
+import { TransactionHistory } from '../transactions/TransactionHistory'
 import { ClubMark } from './ClubMark'
 import { MAX_SQUAD } from './labels'
 import { useClub } from './queries'
-import { SquadTable } from './SquadTable'
+import { SquadSection } from './SquadSection'
+
+type ClubTab = 'elenco' | 'historico'
+
+const CLUB_TABS: ClubTab[] = ['elenco', 'historico']
 
 function ClubHeader({ club }: { club: ClubDetail | undefined }) {
   return (
@@ -90,8 +97,16 @@ function ClubStats({ club }: { club: ClubDetail | undefined }) {
 export function ClubPage() {
   const { clubId = '' } = useParams()
   const club = useClub(clubId)
+  const history = useTransactions(clubId, {})
+  const [params, setParams] = useSearchParams()
+  const tab = CLUB_TABS.find((value) => value === params.get('aba')) ?? 'elenco'
   const [selling, setSelling] = useState<SquadPlayer | null>(null)
   useBreadcrumbTail(club.data?.name)
+
+  /** The tab goes in the address (`?aba=historico`); changing it clears the history filters. */
+  function showTab(next: ClubTab) {
+    setParams(next === 'elenco' ? {} : { aba: next })
+  }
 
   if (club.error instanceof ApiError && club.error.status === 404) {
     return (
@@ -118,40 +133,41 @@ export function ClubPage() {
     <>
       <ClubHeader club={club.data} />
       <ClubStats club={club.data} />
-      <Card>
-        <div className="px-4 py-3">
-          <h2 className="font-semibold">Elenco</h2>
-          <p className="text-xs text-zinc-500">
-            Ordem por posição (GOL, ZAG, LAT, MEI, ATA), depois pelo nome. Contrato calculado para
-            uma venda agora.
-          </p>
-        </div>
-        <SquadTable
-          players={club.data?.players}
-          onSell={setSelling}
-          error={club.error}
-          onRetry={() => club.refetch()}
-          empty={
-            <EmptyState
-              icon={Shirt}
-              title="Nenhum jogador no elenco"
-              description="Compre jogadores livres para montar o elenco. O limite é de 12 jogadores, e o custo de cada compra não pode passar de 50% do caixa."
-              action={
-                <ButtonLink to="/jogadores?free=true">
-                  <Users aria-hidden />
-                  Ver jogadores livres
-                </ButtonLink>
-              }
-            />
-          }
-        />
-      </Card>
-      <p className="mt-3 text-xs text-zinc-500">
-        Valor de mercado, dias restantes e % de multa calculados pela API para uma venda agora. A
-        multa tem teto de 10,00.
-      </p>
+      <Tabs
+        label="Seções do clube"
+        tabs={[
+          { key: 'elenco', label: 'Elenco', icon: Shirt, count: club.data?.players.length },
+          {
+            key: 'historico',
+            label: 'Histórico',
+            icon: History,
+            count: history.data?.data.length,
+          },
+        ]}
+        selected={tab}
+        onSelect={showTab}
+      >
+        {tab === 'elenco' ? (
+          <SquadSection
+            club={club.data}
+            error={club.error}
+            onRetry={() => club.refetch()}
+            onSell={setSelling}
+          />
+        ) : (
+          <TransactionHistory clubId={clubId} />
+        )}
+      </Tabs>
       {selling && club.data && (
-        <SellPlayer player={selling} clubName={club.data.name} onClose={() => setSelling(null)} />
+        <SellPlayer
+          player={selling}
+          clubName={club.data.name}
+          onClose={() => setSelling(null)}
+          onShowHistory={() => {
+            setSelling(null)
+            showTab('historico')
+          }}
+        />
       )}
     </>
   )

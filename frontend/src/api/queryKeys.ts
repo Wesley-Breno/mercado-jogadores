@@ -1,4 +1,4 @@
-import type { ClubSort, PlayerQuery } from './types'
+import type { ClubSort, PlayerQuery, TransactionFilters } from './types'
 
 /** Cache keys of every resource, in one place so that each action knows what to fetch again. */
 export const playerKeys = {
@@ -15,4 +15,10 @@ export const clubKeys = {
 export const lineupKeys = {
   all: ['lineups'] as const,
   detail: (clubId: string) => [...lineupKeys.all, clubId] as const,
+}
+
+export const transactionKeys = {
+  all: ['transactions'] as const,
+  list: (clubId: string, filters: TransactionFilters) =>
+    [...transactionKeys.all, clubId, filters] as const,
 }

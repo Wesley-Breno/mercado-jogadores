@@ -112,6 +112,26 @@ export type Transaction = {
   created_at: string
 }
 
+/** RN17: totals of the filtered transactions, as the API rounded them. */
+export type TransactionSummary = {
+  total_spent: number
+  total_received: number
+  total_fees: number
+  total_penalties: number
+  total_profit: number
+}
+
+export type TransactionHistory = {
+  data: Transaction[]
+  summary: TransactionSummary
+}
+
+/** Filters of the history and of the CSV; without `type` both kinds come. */
+export type TransactionFilters = {
+  type?: TransactionType
+  player_id?: number
+}
+
 export type BuyRequest = {
   club_id: number
   loyalty_until: string

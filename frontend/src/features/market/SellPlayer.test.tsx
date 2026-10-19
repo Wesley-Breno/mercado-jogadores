@@ -42,7 +42,9 @@ const NO_LINEUP = { club_id: 1, formation: null, complete: false, players: [] }
 
 function renderSale() {
   const onClose = vi.fn()
-  renderWithProviders(<SellPlayer player={FELIPE} clubName="Águias FC" onClose={onClose} />)
+  renderWithProviders(
+    <SellPlayer player={FELIPE} clubName="Águias FC" onClose={onClose} onShowHistory={vi.fn()} />,
+  )
   return screen.getByRole('dialog', { name: 'Vender Felipe Moura?' })
 }
 
