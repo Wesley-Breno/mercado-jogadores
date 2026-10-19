@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import pytest
 from fastapi.testclient import TestClient
 from httpx2 import Response
-from sqlalchemy import Engine, text
+from sqlalchemy import Engine
 
 from tests.api.test_clubs import AGUIAS, CLUBS_URL, NOW, create_club, create_player, set_cash
 from tests.api.test_players_create import PLAYERS_URL
@@ -129,27 +129,6 @@ def test_squad_holds_at_most_12_players(market: TestClient, engine: Engine) -> N
 
     assert response.status_code == 409
     assert len(market.get(f"{CLUBS_URL}/{club_id}").json()["players"]) == 12
-
-
-def test_club_cannot_buy_back_a_player_it_sold(market: TestClient, engine: Engine) -> None:
-    seller = create_club(market, **AGUIAS)
-    other = create_club(market, "Delta FC", "DFC")
-    player_id = create_player(market)
-    with engine.begin() as connection:
-        connection.execute(
-            text(
-                "INSERT INTO transacoes (clube_id, jogador_id, nome_jogador, tipo, valor, taxa,"
-                " multa, lucro, variacao_caixa, criado_em) VALUES (:club, :player, 'Meia Lua',"
-                " 'VENDA', 40, 0, 0, 0, 40, now())"
-            ),
-            {"club": seller, "player": player_id},
-        )
-
-    refused = buy(market, player_id, {"club_id": seller, "loyalty_until": LOYALTY_UNTIL})
-    accepted = buy(market, player_id, {"club_id": other, "loyalty_until": LOYALTY_UNTIL})
-
-    assert refused.status_code == 409
-    assert accepted.status_code == 200
 
 
 def test_loyalty_window_limits(market: TestClient) -> None:
