@@ -172,6 +172,15 @@ cp .env.example .env
 - Dias restantes de fidelidade e percentual de multa (RN15) ficam num único lugar (`domain/market.py`) e servem
   tanto à consulta do clube quanto à venda. Os dias são contados com fração e arredondados para cima.
 - Datas nas respostas: sempre convertidas para -03:00 e sem frações de segundo (`2027-03-02T10:15:00-03:00`).
+- Compra (RN12 a RN14): numa única transação do banco, com as linhas do jogador e do clube travadas, sempre nessa
+  ordem (a venda usa a mesma ordem, o que evita deadlock). O preço é o valor de mercado no momento; a taxa só existe
+  acima de 30,00; o limite compara `custo × 2` com o caixa, para não arredondar a metade (caixa 261,15 → limite
+  130,575). Ordem das recusas: dados inválidos (400), jogador ou clube inexistente (404) e regras de negócio
+  (409: jogador não livre, recompra pelo clube que vendeu, elenco com 12, custo acima do limite).
+- Fim da fidelidade fora da janela (não futuro ou mais de 1.095 dias depois da compra) é 400, como manda o item
+  2.3.1 do enunciado, e é conferido antes de buscar o jogador e o clube.
+- Mensagens de recusa citam os valores em formato brasileiro (`O custo da compra (50,40) passa do limite de 50% do
+  caixa (50,00).`).
 - Valores em moedas saem como números JSON (`40.0`), e não como texto, que é o padrão do Pydantic para `Decimal`.
 - Overall e valor de mercado são calculados a cada consulta, num único lugar (`services/valuation.py`, que usa
   `domain/pricing.py`); o valor base é calculado uma vez, no cadastro, e gravado.
@@ -194,7 +203,7 @@ cp .env.example .env
 ## 8. Funcionalidades não implementadas
 
 Projeto em desenvolvimento. Já implementados: módulo de jogadores completo (`POST`, `GET`, `PUT` e `DELETE` em
-`/players`, e `PATCH /players/{id}/condition`) e clubes (`POST /clubs`, `GET /clubs` e `GET /clubs/{id}`). As demais funcionalidades do enunciado ainda não foram implementadas.
+`/players`, e `PATCH /players/{id}/condition`) clubes (`POST /clubs`, `GET /clubs` e `GET /clubs/{id}`) e compra (`POST /players/{id}/buy`). As demais funcionalidades do enunciado ainda não foram implementadas.
 
 ## 9. Uso de inteligência artificial
 
