@@ -1,7 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { getMatch, listMatches, playMatch } from '../../api/matches'
-import { matchKeys } from '../../api/queryKeys'
+import { matchKeys, standingsKeys } from '../../api/queryKeys'
 
 export function useMatches(clubId: number | undefined) {
   return useQuery({
@@ -17,7 +17,7 @@ export function useMatch(id: string) {
 
 /**
  * The response is the match page itself (score and duels, nothing recalculated), and the history
- * is fetched again to include it.
+ * and the standings are fetched again to include it.
  */
 export function usePlayMatch() {
   const queryClient = useQueryClient()
@@ -25,7 +25,10 @@ export function usePlayMatch() {
     mutationFn: playMatch,
     onSuccess: (match) => {
       queryClient.setQueryData(matchKeys.detail(String(match.id)), match)
-      return queryClient.invalidateQueries({ queryKey: matchKeys.lists() })
+      return Promise.all([
+        queryClient.invalidateQueries({ queryKey: matchKeys.lists() }),
+        queryClient.invalidateQueries({ queryKey: standingsKeys.all }),
+      ])
     },
   })
 }

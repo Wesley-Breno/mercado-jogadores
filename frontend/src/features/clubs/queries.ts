@@ -1,7 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { createClub, getClub, getLineup, listClubs } from '../../api/clubs'
-import { clubKeys, lineupKeys } from '../../api/queryKeys'
+import { clubKeys, lineupKeys, standingsKeys } from '../../api/queryKeys'
 import type { ClubSort } from '../../api/types'
 
 /** The order always goes in the request, so the screen shows the clubs as the API sorted them. */
@@ -21,7 +21,11 @@ export function useCreateClub() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: createClub,
-    onSettled: () => queryClient.invalidateQueries({ queryKey: clubKeys.all }),
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: clubKeys.all }),
+        queryClient.invalidateQueries({ queryKey: standingsKeys.all }),
+      ]),
   })
 }
 

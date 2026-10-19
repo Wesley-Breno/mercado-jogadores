@@ -5,6 +5,7 @@ import { ClubsPage } from '../features/clubs/ClubsPage'
 import { MatchesPage } from '../features/matches/MatchesPage'
 import { MatchPage } from '../features/matches/MatchPage'
 import { PlayersPage } from '../features/players/PlayersPage'
+import { StandingsPage } from '../features/standings/StandingsPage'
 import { AppLayout } from './AppLayout'
 import { NotFoundPage } from './NotFoundPage'
 
@@ -18,6 +19,7 @@ export function AppRoutes() {
         <Route path="clubes/:clubId" element={<ClubPage />} />
         <Route path="partidas" element={<MatchesPage />} />
         <Route path="partidas/:matchId" element={<MatchPage />} />
+        <Route path="classificacao" element={<StandingsPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

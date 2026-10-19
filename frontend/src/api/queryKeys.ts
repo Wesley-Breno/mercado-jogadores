@@ -29,3 +29,7 @@ export const matchKeys = {
   list: (clubId: number | undefined) => [...matchKeys.lists(), clubId ?? 'all'] as const,
   detail: (id: string) => [...matchKeys.all, 'detail', id] as const,
 }
+
+export const standingsKeys = {
+  all: ['standings'] as const,
+}

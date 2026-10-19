@@ -209,3 +209,18 @@ export type MatchRequest = {
   home_club_id: number
   away_club_id: number
 }
+
+/** RN21: a row of the standings, in the order the API sorted them. */
+export type StandingRow = {
+  position: number
+  club_id: number
+  club_name: string
+  played: number
+  wins: number
+  draws: number
+  losses: number
+  goals_for: number
+  goals_against: number
+  goal_difference: number
+  points: number
+}
