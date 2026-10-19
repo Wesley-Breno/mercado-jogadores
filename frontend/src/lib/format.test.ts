@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
-import { formatDateTime, formatMoney, formatSignedMoney, toApiDateTime } from './format'
+import {
+  dateTimeParts,
+  formatDateTime,
+  formatInteger,
+  formatMoney,
+  formatSignedMoney,
+  toApiDateTime,
+} from './format'
 
 describe('formatMoney', () => {
   it.each([
@@ -24,13 +31,30 @@ describe('formatSignedMoney', () => {
   })
 })
 
+describe('formatInteger', () => {
+  it.each([
+    [0, '0'],
+    [120, '120'],
+    [1089, '1.089'],
+  ])('%d vira %s', (value, expected) => {
+    expect(formatInteger(value)).toBe(expected)
+  })
+})
+
 describe('formatDateTime', () => {
-  it('mostra a data no horário de Brasília', () => {
-    expect(formatDateTime('2026-11-05T16:40:00-03:00')).toMatch(/^05\/11\/2026,? 16:40$/)
+  it('mostra a data no horário de Brasília, sem vírgula', () => {
+    expect(formatDateTime('2026-11-05T16:40:00-03:00')).toBe('05/11/2026 16:40')
   })
 
   it('converte datas de outro fuso para Brasília', () => {
-    expect(formatDateTime('2026-11-05T19:40:00Z')).toMatch(/^05\/11\/2026,? 16:40$/)
+    expect(formatDateTime('2026-11-05T19:40:00Z')).toBe('05/11/2026 16:40')
+  })
+
+  it('separa a data e a hora para mostrar em duas linhas', () => {
+    expect(dateTimeParts('2027-03-02T00:15:00-03:00')).toEqual({
+      date: '02/03/2027',
+      time: '00:15',
+    })
   })
 })
 
