@@ -187,6 +187,10 @@ cp .env.example .env
 - Exportação CSV (RN18): gerada com o módulo `csv` da biblioteca padrão (separador `;`, aspas só quando o nome tem
   `;` ou aspas, com as aspas internas duplicadas), em UTF-8 sem BOM e com LF em todas as linhas. A resposta traz
   `Content-Disposition` com o nome do arquivo; as recusas continuam em JSON.
+- Escalação (RN19): o `PUT` substitui a escalação inteira numa transação; as recusas não gravam nada. Jogadores
+  são travados antes do clube, a mesma ordem da venda, para evitar deadlock entre as duas operações. `complete` é
+  `true` só com a formação salva e os 5 titulares; titular vendido ou que passa a `DOENTE` sai da escalação e não
+  volta sozinho.
 - Fim da fidelidade fora da janela (não futuro ou mais de 1.095 dias depois da compra) é 400, como manda o item
   2.3.1 do enunciado, e é conferido antes de buscar o jogador e o clube.
 - Mensagens de recusa citam os valores em formato brasileiro (`O custo da compra (50,40) passa do limite de 50% do
@@ -213,8 +217,9 @@ cp .env.example .env
 ## 8. Funcionalidades não implementadas
 
 Projeto em desenvolvimento. Já implementados: módulo de jogadores completo (`POST`, `GET`, `PUT` e `DELETE` em
-`/players`, e `PATCH /players/{id}/condition`) clubes (`POST /clubs`, `GET /clubs` e `GET /clubs/{id}`) compra e venda (`POST /players/{id}/buy` e `POST /players/{id}/sell`) e histórico com exportação
-(`GET /clubs/{id}/transactions` e `GET /clubs/{id}/transactions/export`). As demais funcionalidades do enunciado ainda não foram implementadas.
+`/players`, e `PATCH /players/{id}/condition`) clubes (`POST /clubs`, `GET /clubs` e `GET /clubs/{id}`) compra e venda (`POST /players/{id}/buy` e `POST /players/{id}/sell`) histórico com exportação
+(`GET /clubs/{id}/transactions` e `GET /clubs/{id}/transactions/export`) e escalação (`PUT` e
+`GET /clubs/{id}/lineup`). As demais funcionalidades do enunciado ainda não foram implementadas.
 
 ## 9. Uso de inteligência artificial
 
