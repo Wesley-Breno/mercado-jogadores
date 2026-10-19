@@ -164,3 +164,48 @@ export type Lineup = {
   complete: boolean
   players: Player[]
 }
+
+export type MatchResult = 'MANDANTE' | 'VISITANTE' | 'EMPATE'
+
+export type MatchSide = {
+  club_id: number
+  club_name: string
+  formation: Formation
+  goals: number
+}
+
+/** A match of the history: GET /matches does not bring the duels. */
+export type MatchSummary = {
+  id: number
+  played_at: string
+  home: MatchSide
+  away: MatchSide
+  result: MatchResult
+}
+
+export type DuelAttribute = 'shooting' | 'passing' | 'dribbling' | 'defending'
+
+/** RN20: name, position and condition of the moment, and the value already with the condition. */
+export type DuelPlayer = {
+  player_id: number
+  player_name: string
+  position: Position
+  condition: Condition
+  attribute: DuelAttribute
+  value: number
+}
+
+export type Duel = {
+  order: number
+  attacking_club_id: number
+  attacker: DuelPlayer
+  defender: DuelPlayer
+  goal: boolean
+}
+
+export type Match = MatchSummary & { duels: Duel[] }
+
+export type MatchRequest = {
+  home_club_id: number
+  away_club_id: number
+}

@@ -22,3 +22,10 @@ export const transactionKeys = {
   list: (clubId: string, filters: TransactionFilters) =>
     [...transactionKeys.all, clubId, filters] as const,
 }
+
+export const matchKeys = {
+  all: ['matches'] as const,
+  lists: () => [...matchKeys.all, 'list'] as const,
+  list: (clubId: number | undefined) => [...matchKeys.lists(), clubId ?? 'all'] as const,
+  detail: (id: string) => [...matchKeys.all, 'detail', id] as const,
+}
