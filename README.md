@@ -354,6 +354,10 @@ cp .env.example .env
   ordem da API (da mais recente para a mais antiga), filtro por clube no endereço (`/partidas?club_id=2`, que
   envia `GET /matches?club_id=2`) e "Ver duelos" em cada partida, que abre a partida com `GET /matches/{id}`.
   A última partida aparece em destaque no topo, como no mockup.
+- Classificação (F14): tabela de `GET /standings` na ordem devolvida, com posição, clube (sigla e nome, que leva
+  à página do clube), jogos, vitórias, empates, derrotas, gols marcados, gols sofridos, saldo (com sinal) e
+  pontos; a tela não reordena nem soma nada. Ao lado, as 3 últimas partidas e os critérios de desempate da RN21,
+  como no mockup. Jogar uma partida ou criar um clube faz a classificação ser buscada de novo.
 - Menus que abrem sobre a página (filtros, ordenação e o "⋯" de cada linha) acompanham o botão quando a página
   rola e não são cortados pela tabela; no celular, aparecem como painel no pé da tela.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
@@ -390,8 +394,8 @@ cp .env.example .env
   busca, filtros, ordenação e paginação (F01 e F02), a exclusão (F03), o cadastro, a edição e a alteração de
   condição de jogador (F04), a lista e a criação de clubes (F05) e a página do clube com o elenco e os contratos
   (parte do F07), a compra (F06), a venda (F08), o histórico com filtros, totais e exportação em CSV (F09 a
-  F11), a escalação (F12), as partidas (F13) e o histórico de partidas (parte do F14); a classificação vem a
-  seguir.
+  F11), a escalação (F12), as partidas (F13) e o histórico de partidas e a classificação (F14). Seguem os
+  testes de ponta a ponta do roteiro inteiro e os extras do mockup.
 
 ## 9. Uso de inteligência artificial
 
@@ -404,7 +408,7 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
   regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios;
   base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout, cliente da API,
   componentes de interface, a tela de jogadores (lista, cadastro, edição, condição e exclusão), a de clubes e a
-  página do clube, a compra, a venda, o histórico, a escalação e as partidas.
+  página do clube, a compra, a venda, o histórico, a escalação, as partidas e a classificação.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
