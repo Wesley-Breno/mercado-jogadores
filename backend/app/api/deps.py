@@ -9,6 +9,7 @@ from app.core.clock import Clock
 from app.core.errors import NotFoundError
 from app.models.base import MAX_INTEGER_ID
 from app.services.clubs import ClubService
+from app.services.market import MarketService
 from app.services.messages import CLUB_NOT_FOUND, PLAYER_NOT_FOUND
 from app.services.players import PlayerService
 
@@ -61,3 +62,10 @@ def get_club_service(session: SessionDep, clock: ClockDep) -> ClubService:
 
 ClubId = Annotated[int, Depends(club_id_from_path)]
 ClubServiceDep = Annotated[ClubService, Depends(get_club_service)]
+
+
+def get_market_service(session: SessionDep, clock: ClockDep) -> MarketService:
+    return MarketService(session, clock)
+
+
+MarketServiceDep = Annotated[MarketService, Depends(get_market_service)]

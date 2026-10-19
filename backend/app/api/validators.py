@@ -1,9 +1,11 @@
 import re
+from datetime import datetime
 from typing import Annotated
 
 from pydantic import AfterValidator, BeforeValidator
 from pydantic_core import PydanticCustomError
 
+from app.core.clock import BRASILIA_TZ
 from app.domain.text import count_words, has_control_character, is_letter, normalize_spaces
 
 INTEGER_MESSAGE = "deve ser um número inteiro."
@@ -16,6 +18,8 @@ CLUB_NAME_MIN_WORDS = 2
 CLUB_NAME_MAX_WORDS = 5
 CLUB_NAME_SYMBOLS = " -."
 ACRONYM_PATTERN = re.compile(r"[A-Z]{3}")
+BRASILIA_INPUT_PATTERN = re.compile(r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}-03:00")
+BRASILIA_INPUT_FORMAT = "%Y-%m-%dT%H:%M-03:00"
 
 
 def parse_strict_integer(value: object) -> int:
@@ -71,7 +75,21 @@ def validate_acronym(value: str) -> str:
     return value
 
 
+def parse_brasilia_datetime(value: object) -> datetime:
+    """RN01: only AAAA-MM-DDTHH:MM-03:00 with a real date and time; nothing is adjusted."""
+    if value is None:
+        raise PydanticCustomError("missing", "Campo obrigatório.")
+    if not isinstance(value, str) or not BRASILIA_INPUT_PATTERN.fullmatch(value):
+        raise ValueError("use o formato AAAA-MM-DDTHH:MM-03:00, no horário de Brasília.")
+    try:
+        moment = datetime.strptime(value, BRASILIA_INPUT_FORMAT)
+    except ValueError as error:
+        raise ValueError("data ou hora inexistente.") from error
+    return moment.replace(tzinfo=BRASILIA_TZ)
+
+
 StrictInt = Annotated[int, BeforeValidator(parse_strict_integer)]
 PlayerName = Annotated[str, AfterValidator(validate_player_name)]
 ClubName = Annotated[str, AfterValidator(validate_club_name)]
 Acronym = Annotated[str, AfterValidator(validate_acronym)]
+BrasiliaInputDateTime = Annotated[datetime, BeforeValidator(parse_brasilia_datetime)]

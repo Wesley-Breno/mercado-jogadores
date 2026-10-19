@@ -14,3 +14,8 @@ class ContractRepository:
             Contract.club_id == club_id, Contract.status == ContractStatus.ACTIVE
         )
         return {contract.player_id: contract for contract in self.session.scalars(statement)}
+
+    def add(self, contract: Contract) -> Contract:
+        self.session.add(contract)
+        self.session.flush()
+        return contract

@@ -1,6 +1,6 @@
 from collections.abc import Sequence
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.domain.player_listing import PlayerListQuery
@@ -44,3 +44,7 @@ class PlayerRepository:
         """Squads of the given clubs (only active players can belong to a club)."""
         statement = select(Player).where(Player.club_id.in_(club_ids), Player.deleted_at.is_(None))
         return self.session.scalars(statement).all()
+
+    def count_in_club(self, club_id: int) -> int:
+        statement = select(func.count()).select_from(Player).where(Player.club_id == club_id)
+        return self.session.scalar(statement)

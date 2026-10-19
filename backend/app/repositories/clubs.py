@@ -31,8 +31,10 @@ class ClubRepository:
     def acronym_taken(self, acronym: str) -> bool:
         return self.session.scalar(select(Club.id).where(Club.acronym == acronym)) is not None
 
-    def find(self, club_id: int) -> Club | None:
-        return self.session.get(Club, club_id)
+    def find(self, club_id: int, *, for_update: bool = False) -> Club | None:
+        if club_id > MAX_INTEGER_ID:
+            return None
+        return self.session.get(Club, club_id, with_for_update=for_update)
 
     def exists(self, club_id: int) -> bool:
         if club_id > MAX_INTEGER_ID:
