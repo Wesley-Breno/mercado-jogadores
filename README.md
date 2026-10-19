@@ -369,6 +369,11 @@ cp .env.example .env
   botão "+" para criar um clube e o cartão da liga com a última partida. Os números vêm da API
   (`meta.total_items`, `GET /clubs` e `GET /matches`) e são atualizados depois de cada ação; se a API estiver
   fora do ar, o menu continua funcionando sem eles. A lista de clubes e o cartão aparecem só em telas largas.
+- Detalhes do jogador (extra do mockup): "Ver detalhes" no menu da linha (e no aviso de jogador cadastrado) abre
+  um painel lateral com os valores devolvidos pela API (valor de mercado, valor base, overall e potencial), os
+  seis atributos desenhados na escala de 1 a 99 com o potencial ao fundo, e as ações Editar, Alterar condição e
+  Comprar (só para jogador livre). No cadastro, a "Prévia dos atributos" desenha os números enquanto são
+  digitados; overall e valor base continuam vindo só da API.
 - Menus que abrem sobre a página (filtros, ordenação e o "⋯" de cada linha) acompanham o botão quando a página
   rola e não são cortados pela tabela; no celular, aparecem como painel no pé da tela.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
