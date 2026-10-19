@@ -324,6 +324,14 @@ cp .env.example .env
 - Titular: a confirmação da venda e a mudança para `DOENTE` consultam a escalação salva do clube
   (`GET /clubs/{id}/lineup`) e avisam quando o jogador é titular, porque ele sai da escalação (RN19). Depois de
   vender, comprar ou mudar a condição, a escalação também é buscada de novo.
+- Página do clube em abas (Elenco e Histórico), com a aba no endereço (`/clubes/1?aba=historico`).
+- Histórico (F09 e F10): tabela na ordem da API, com data e hora de Brasília, tipo, jogador, valor, taxa ou
+  comissão, multa, lucro (`–` na compra) e variação do caixa com `+` e `-`; abaixo, os 5 totais do `summary`,
+  sempre do mesmo pedido da tabela, então respeitam o filtro. Filtro de tipo com duas caixas (Compra e Venda):
+  as duas marcadas pedem o histórico sem `type`; desmarcar uma pede só a outra (`type=VENDA`), e a última
+  marcada não pode ser desmarcada. O filtro de jogador lista os jogadores que aparecem no histórico do clube
+  (com o nome mais recente) e envia `player_id`. Se a API recusar o filtro (jogador excluído → 404), a tela
+  mostra "O filtro foi recusado" com o `message` e esconde tabela e totais. Os filtros ficam no endereço.
 - Menus que abrem sobre a página (filtros, ordenação e o "⋯" de cada linha) acompanham o botão quando a página
   rola e não são cortados pela tabela; no celular, aparecem como painel no pé da tela.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
@@ -359,7 +367,8 @@ cp .env.example .env
 - **Frontend:** em desenvolvimento. Já existem o layout com o menu, o cliente da API, a lista de jogadores com
   busca, filtros, ordenação e paginação (F01 e F02), a exclusão (F03), o cadastro, a edição e a alteração de
   condição de jogador (F04), a lista e a criação de clubes (F05) e a página do clube com o elenco e os contratos
-  (parte do F07), a compra (F06) e a venda (F08); o histórico e a liga vêm a seguir.
+  (parte do F07), a compra (F06), a venda (F08) e o histórico com filtros e totais (F09 e F10); a exportação em
+  CSV e a liga vêm a seguir.
 
 ## 9. Uso de inteligência artificial
 
@@ -372,7 +381,7 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
   regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios;
   base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout, cliente da API,
   componentes de interface, a tela de jogadores (lista, cadastro, edição, condição e exclusão), a de clubes e a
-  página do clube, a compra e a venda.
+  página do clube, a compra, a venda e o histórico.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
