@@ -10,6 +10,7 @@ from typing import Annotated
 from fastapi import Query
 
 from app.core.errors import BadRequestError
+from app.domain.club_rules import ClubSort
 from app.domain.enums import Condition, Position
 from app.domain.player_listing import (
     DEFAULT_LIMIT,
@@ -152,3 +153,10 @@ def player_list_query(
             "Combinação inválida: free=true não pode ser usado junto com club_id."
         )
     return query
+
+
+def club_sort(
+    sort: Annotated[str | None, Query(description="name, net_worth_asc ou net_worth_desc")] = None,
+) -> ClubSort:
+    """RN11: a single value; unlike the player list, it does not take two criteria."""
+    return parse_optional(sort, partial(parse_choice, "sort", choices=ClubSort), ClubSort.NAME)

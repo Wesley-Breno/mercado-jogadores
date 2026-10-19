@@ -39,3 +39,8 @@ class PlayerRepository:
         if query.club_id is not None:
             statement = statement.where(Player.club_id == query.club_id)
         return self.session.scalars(statement).all()
+
+    def list_in_clubs(self, club_ids: Sequence[int]) -> Sequence[Player]:
+        """Squads of the given clubs (only active players can belong to a club)."""
+        statement = select(Player).where(Player.club_id.in_(club_ids), Player.deleted_at.is_(None))
+        return self.session.scalars(statement).all()

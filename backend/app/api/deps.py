@@ -8,7 +8,8 @@ from sqlalchemy.orm import Session
 from app.core.clock import Clock
 from app.core.errors import NotFoundError
 from app.models.base import MAX_INTEGER_ID
-from app.services.messages import PLAYER_NOT_FOUND
+from app.services.clubs import ClubService
+from app.services.messages import CLUB_NOT_FOUND, PLAYER_NOT_FOUND
 from app.services.players import PlayerService
 
 RESOURCE_ID_PATTERN = re.compile(r"[1-9][0-9]*")
@@ -34,6 +35,10 @@ def player_id_from_path(player_id: str) -> int:
     return parse_resource_id(player_id, PLAYER_NOT_FOUND)
 
 
+def club_id_from_path(club_id: str) -> int:
+    return parse_resource_id(club_id, CLUB_NOT_FOUND)
+
+
 def get_clock() -> Clock:
     return Clock()
 
@@ -48,3 +53,11 @@ def get_player_service(session: SessionDep, clock: ClockDep) -> PlayerService:
 
 PlayerId = Annotated[int, Depends(player_id_from_path)]
 PlayerServiceDep = Annotated[PlayerService, Depends(get_player_service)]
+
+
+def get_club_service(session: SessionDep, clock: ClockDep) -> ClubService:
+    return ClubService(session, clock)
+
+
+ClubId = Annotated[int, Depends(club_id_from_path)]
+ClubServiceDep = Annotated[ClubService, Depends(get_club_service)]
