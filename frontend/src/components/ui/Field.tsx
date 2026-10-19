@@ -13,6 +13,7 @@ type FieldProps = {
   label: ReactNode
   hint?: string
   error?: string
+  inline?: boolean
   className?: string
   children: (control: ControlProps) => ReactNode
 }
@@ -29,20 +30,50 @@ function FieldMessage({ id, hint, error }: { id: string; hint?: string; error?: 
   )
 }
 
-/** Visible label, the control, and below it the error (or the hint), linked for screen readers. */
-export function Field({ label, hint, error, className, children }: FieldProps) {
+/**
+ * Visible label, the control, and below it the error (or the hint), linked for screen readers.
+ * Inline puts the label and the hint on the left of the control, for rows of a list.
+ */
+export function Field({ label, hint, error, inline = false, className, children }: FieldProps) {
   const id = useId()
   const messageId = `${id}-message`
+  const hintId = `${id}-hint`
+  const describedBy = inline
+    ? [hint && hintId, error && messageId].filter(Boolean).join(' ')
+    : error || hint
+      ? messageId
+      : ''
+  const control = children({
+    id,
+    'aria-invalid': Boolean(error),
+    'aria-describedby': describedBy || undefined,
+  })
+  if (inline) {
+    return (
+      <div className={cn('grid gap-1.5 sm:grid-cols-[8rem_minmax(0,1fr)] sm:gap-x-4', className)}>
+        <div className="sm:pt-2">
+          <label htmlFor={id} className="block text-sm font-medium">
+            {label}
+          </label>
+          {hint && (
+            <span id={hintId} className="block text-xs text-zinc-500">
+              {hint}
+            </span>
+          )}
+        </div>
+        <div className="grid content-start gap-1.5">
+          {control}
+          <FieldMessage id={messageId} error={error} />
+        </div>
+      </div>
+    )
+  }
   return (
     <div className={cn('grid content-start gap-1.5', className)}>
       <label htmlFor={id} className="text-sm font-medium">
         {label}
       </label>
-      {children({
-        id,
-        'aria-invalid': Boolean(error),
-        'aria-describedby': error || hint ? messageId : undefined,
-      })}
+      {control}
       <FieldMessage id={messageId} hint={hint} error={error} />
     </div>
   )
