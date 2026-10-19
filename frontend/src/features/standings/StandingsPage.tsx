@@ -23,7 +23,7 @@ function RecentMatches() {
   const matches = useMatches(undefined)
   const recent = matches.data?.slice(0, RECENT_MATCHES) ?? []
   return (
-    <Card>
+    <Card aria-label="Últimas partidas">
       <div className="border-b border-zinc-200 px-4 py-3">
         <h2 className="font-semibold">Últimas partidas</h2>
         <p className="text-xs text-zinc-500">Da mais recente para a mais antiga.</p>

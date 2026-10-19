@@ -30,6 +30,17 @@ function usePlayerCount(query: PlayerQuery, enabled: boolean) {
   })
 }
 
+const TOTAL_QUERY: PlayerQuery = { sort: 'name', page: 1, limit: 1 }
+
+/** How many players the league has (the menu counter), read from `meta.total_items`. */
+export function usePlayerTotal() {
+  return useQuery({
+    queryKey: playerKeys.list(TOTAL_QUERY),
+    queryFn: () => listPlayers(TOTAL_QUERY),
+    select: (page) => page.meta.total_items,
+  })
+}
+
 /** Counters of the tabs: the open tab reuses the list total, the others ask for one item. */
 export function useAvailabilityCounts(
   request: PlayerQuery,

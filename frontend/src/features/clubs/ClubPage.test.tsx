@@ -78,7 +78,9 @@ describe('ClubPage', () => {
     expect(screen.getByText('1.037,00')).toBeInTheDocument()
     expect(screen.getByText('1.298,15')).toBeInTheDocument()
     expect(screen.getByText('2 de 12')).toBeInTheDocument()
-    expect(sentRequest(fetchMock).path).toBe('/clubs/1')
+    expect(fetchMock.mock.calls.map((_, index) => sentRequest(fetchMock, index).path)).toContain(
+      '/clubs/1',
+    )
     expect(screen.getByLabelText('Você está em')).toHaveTextContent('MercadoClubesÁguias FC')
   })
 

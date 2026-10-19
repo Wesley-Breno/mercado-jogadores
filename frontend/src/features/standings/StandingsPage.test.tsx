@@ -93,7 +93,8 @@ describe('Classificação', () => {
   it('mostra as últimas partidas e a ordem dos critérios', async () => {
     renderStandings()
 
-    const recent = await screen.findByRole('link', { name: /Águias FC\s*1 × 2\s*Delta FC/ })
+    const panel = await screen.findByRole('region', { name: 'Últimas partidas' })
+    const recent = await within(panel).findByRole('link', { name: /Águias FC\s*1 × 2\s*Delta FC/ })
 
     expect(recent).toHaveAttribute('href', '/partidas/1')
     expect(screen.getByText('Maior saldo de gols')).toBeInTheDocument()

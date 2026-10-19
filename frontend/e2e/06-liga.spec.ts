@@ -77,7 +77,7 @@ test('F14: histórico com filtro por clube, duelos ao abrir e classificação na
   page,
 }) => {
   await page.goto('/partidas')
-  await page.getByLabel('Clube').selectOption({ label: 'Gaviões FC' })
+  await page.getByRole('combobox', { name: /^Clube/ }).selectOption({ label: 'Gaviões FC' })
   await expect(page).toHaveURL(`/partidas?club_id=${gavioes.id}`)
   const history = await get<Match[]>(`/matches?club_id=${gavioes.id}`)
   const rows = page.getByRole('table', { name: 'Histórico de partidas' }).getByRole('row')

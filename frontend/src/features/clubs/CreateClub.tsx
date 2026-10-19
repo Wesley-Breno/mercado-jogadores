@@ -11,17 +11,35 @@ import { CreateClubDialog } from './CreateClubDialog'
  * "Novo clube": the header button and the one of the empty list open the same form. After saving,
  * the new club's page opens (C04).
  */
-export function CreateClub({ variant = 'primary' }: { variant?: 'primary' | 'outline' }) {
+type CreateClubProps = {
+  variant?: 'primary' | 'outline'
+  compact?: boolean
+}
+
+export function CreateClub({ variant = 'primary', compact = false }: CreateClubProps) {
   const [isOpen, setOpen] = useState(false)
   const toast = useToast()
   const navigate = useNavigate()
 
   return (
     <>
-      <Button variant={variant} onClick={() => setOpen(true)}>
-        <Plus aria-hidden />
-        Novo clube
-      </Button>
+      {compact ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setOpen(true)}
+          aria-label="Adicionar clube"
+          title="Adicionar clube"
+          className="size-7 px-0"
+        >
+          <Plus aria-hidden />
+        </Button>
+      ) : (
+        <Button variant={variant} onClick={() => setOpen(true)}>
+          <Plus aria-hidden />
+          Novo clube
+        </Button>
+      )}
       {isOpen && (
         <CreateClubDialog
           onClose={() => setOpen(false)}
