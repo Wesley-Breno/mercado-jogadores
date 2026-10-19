@@ -67,6 +67,13 @@ export type PlayerQuery = {
   limit?: number
 }
 
+export type ClubSort = 'name' | 'net_worth_desc' | 'net_worth_asc'
+
+export type ClubCreate = {
+  name: string
+  acronym: string
+}
+
 export type Club = {
   id: number
   name: string
