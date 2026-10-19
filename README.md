@@ -295,6 +295,12 @@ cp .env.example .env
   jogador com clube ele aparece desabilitado, com o motivo. A confirmação mostra o jogador, e o botão fica
   desabilitado desde o clique, então um clique duplo envia um só `DELETE`. Se a API recusar (jogador que entrou
   num clube ou foi excluído depois de a tela abrir), o `message` aparece no diálogo e a lista é buscada de novo.
+- Clubes (F05): a lista pede sempre `GET /clubs?sort=...` com a ordem escolhida (nome por padrão; patrimônio do
+  maior para o menor ou do menor para o maior) e mostra os clubes na ordem devolvida, sem reordenar na tela. A
+  ordem fica no endereço (`/clubes?sort=net_worth_desc`).
+- Criação de clube: a tela confere o nome (3 a 60 caracteres) e a sigla (3 letras), e envia a sigla em
+  maiúsculas. As regras de palavras, de caracteres e de correspondência entre sigla e nome, o nome repetido
+  (RN10), a sigla repetida e o limite de 20 clubes ficam na API, e o `message` aparece no formulário.
 - Menus que abrem sobre a página (filtros, ordenação e o "⋯" de cada linha) acompanham o botão quando a página
   rola e não são cortados pela tabela; no celular, aparecem como painel no pé da tela.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
@@ -326,8 +332,9 @@ cp .env.example .env
 
 - **Backend:** nenhuma. Os 19 endpoints do enunciado estão implementados e documentados no Swagger.
 - **Frontend:** em desenvolvimento. Já existem o layout com o menu, o cliente da API, a lista de jogadores com
-  busca, filtros, ordenação e paginação (F01 e F02), a exclusão (F03) e o cadastro, a edição e a alteração de
-  condição de jogador (F04); as telas de clubes, mercado, histórico e liga vêm a seguir.
+  busca, filtros, ordenação e paginação (F01 e F02), a exclusão (F03), o cadastro, a edição e a alteração de
+  condição de jogador (F04) e a lista e a criação de clubes (F05); a página do clube, o mercado, o histórico e a
+  liga vêm a seguir.
 
 ## 9. Uso de inteligência artificial
 
@@ -339,7 +346,7 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
   modelos, migration inicial e testes do schema (`backend/app/models`, `backend/migrations`, `backend/tests/db`);
   regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios;
   base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout, cliente da API,
-  componentes de interface e a tela de jogadores (lista, cadastro, edição, condição e exclusão).
+  componentes de interface, a tela de jogadores (lista, cadastro, edição, condição e exclusão) e a de clubes.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
