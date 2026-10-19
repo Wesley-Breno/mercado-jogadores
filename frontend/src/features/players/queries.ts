@@ -7,14 +7,10 @@ import {
   listPlayers,
   updatePlayer,
 } from '../../api/players'
+import { playerKeys } from '../../api/queryKeys'
 import type { Condition, PlayerQuery, PlayerUpdate } from '../../api/types'
-import { clubKeys } from '../clubs/queries'
+import { useRefreshMarket } from '../../hooks/useRefreshMarket'
 import { type Availability, countRequest } from './playerQuery'
-
-const playerKeys = {
-  all: ['players'] as const,
-  list: (query: PlayerQuery) => [...playerKeys.all, 'list', query] as const,
-}
 
 /** While another page or filter loads, the previous rows stay on the screen. */
 export function usePlayers(query: PlayerQuery) {
@@ -60,19 +56,6 @@ export function useCreatePlayer() {
     mutationFn: createPlayer,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: playerKeys.all }),
   })
-}
-
-/**
- * A player that changes moves the market values, so the players and the clubs (squad value and
- * net worth) are fetched again, also after a refusal, when the data on screen may be old.
- */
-function useRefreshMarket() {
-  const queryClient = useQueryClient()
-  return () =>
-    Promise.all([
-      queryClient.invalidateQueries({ queryKey: playerKeys.all }),
-      queryClient.invalidateQueries({ queryKey: clubKeys.all }),
-    ])
 }
 
 export function useUpdatePlayer() {

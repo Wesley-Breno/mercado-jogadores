@@ -1,13 +1,8 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { createClub, getClub, listClubs } from '../../api/clubs'
+import { clubKeys } from '../../api/queryKeys'
 import type { ClubSort } from '../../api/types'
-
-export const clubKeys = {
-  all: ['clubs'] as const,
-  list: (sort: ClubSort) => [...clubKeys.all, 'list', sort] as const,
-  detail: (id: string) => [...clubKeys.all, 'detail', id] as const,
-}
 
 /** The order always goes in the request, so the screen shows the clubs as the API sorted them. */
 export function useClubs(sort: ClubSort = 'name') {
