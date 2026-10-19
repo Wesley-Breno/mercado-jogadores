@@ -365,6 +365,10 @@ cp .env.example .env
   à página do clube), jogos, vitórias, empates, derrotas, gols marcados, gols sofridos, saldo (com sinal) e
   pontos; a tela não reordena nem soma nada. Ao lado, as 3 últimas partidas e os critérios de desempate da RN21,
   como no mockup. Jogar uma partida ou criar um clube faz a classificação ser buscada de novo.
+- Menu lateral (extras opcionais do mockup): contadores de jogadores, clubes e partidas, a lista de clubes com o
+  botão "+" para criar um clube e o cartão da liga com a última partida. Os números vêm da API
+  (`meta.total_items`, `GET /clubs` e `GET /matches`) e são atualizados depois de cada ação; se a API estiver
+  fora do ar, o menu continua funcionando sem eles. A lista de clubes e o cartão aparecem só em telas largas.
 - Menus que abrem sobre a página (filtros, ordenação e o "⋯" de cada linha) acompanham o botão quando a página
   rola e não são cortados pela tabela; no celular, aparecem como painel no pé da tela.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
