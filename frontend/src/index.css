@@ -1,8 +1,9 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/geist';
 
 @theme {
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
+  --radius-xl: 0.875rem;
 }
 
 @layer base {
