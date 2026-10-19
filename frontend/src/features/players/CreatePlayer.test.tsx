@@ -2,6 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent, { type UserEvent } from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { respondWith } from '../../test/fakeFetch'
 import { renderWithProviders } from '../../test/renderWithProviders'
 import { CreatePlayer } from './CreatePlayer'
 
@@ -36,12 +37,6 @@ const CREATED = {
   potential: 86,
   overall: 75,
   club_id: null,
-}
-
-function respondWith(status: number, body: unknown) {
-  const fetchMock = vi.fn(async () => new Response(JSON.stringify(body), { status }))
-  vi.stubGlobal('fetch', fetchMock)
-  return fetchMock
 }
 
 async function openForm(user: UserEvent) {

@@ -1,15 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Info, Lock, User } from 'lucide-react'
+import { Info, Lock } from 'lucide-react'
 import { useId } from 'react'
 import { useForm } from 'react-hook-form'
 
 import type { Player, PlayerCreate } from '../../api/types'
-import { Alert } from '../../components/ui/Alert'
-import { Button } from '../../components/ui/Button'
 import { Dialog } from '../../components/ui/Dialog'
+import { FormActions } from '../../components/ui/FormActions'
 import { Field, Input } from '../../components/ui/Field'
 import { EMPTY_PLAYER, INDICATORS, type PlayerCreateFields, playerCreateSchema } from './playerForm'
-import { PositionPicker } from './PositionPicker'
+import { PlayerBasicFields } from './PlayerBasicFields'
 import { useCreatePlayer } from './queries'
 
 type PlayerCreateDialogProps = {
@@ -52,46 +51,37 @@ export function PlayerCreateDialog({ onClose, onCreated }: PlayerCreateDialogPro
       description="Preencha os dados e os indicadores técnicos. O valor base, o overall e o valor de mercado são calculados ao salvar."
       onClose={() => !isSubmitting && onClose()}
       footer={
-        <>
-          {errors.root && (
-            <div className="basis-full">
-              <Alert>{errors.root.message}</Alert>
-            </div>
-          )}
-          <p className="mr-auto flex items-center gap-1.5 text-xs text-zinc-500">
-            <Info aria-hidden className="size-3.5" />O jogador começa livre e Apto.
-          </p>
-          <Button onClick={onClose} disabled={isSubmitting}>
-            Cancelar
-          </Button>
-          <Button variant="primary" type="submit" form={formId} disabled={isSubmitting}>
-            {isSubmitting ? 'Salvando…' : 'Salvar jogador'}
-          </Button>
-        </>
+        <FormActions
+          formId={formId}
+          submitLabel="Salvar jogador"
+          isSubmitting={isSubmitting}
+          error={errors.root?.message}
+          note={
+            <p className="mr-auto flex items-center gap-1.5 text-xs text-zinc-500">
+              <Info aria-hidden className="size-3.5" />O jogador começa livre e Apto.
+            </p>
+          }
+          onCancel={onClose}
+        />
       }
     >
       <form id={formId} noValidate onSubmit={submit} className="grid gap-5">
-        <Field
-          label="Nome"
-          hint="De 3 a 100 caracteres, com pelo menos duas palavras e sem números."
-          error={errors.name?.message}
-        >
-          {(control) => <Input {...control} icon={User} autoComplete="off" {...register('name')} />}
-        </Field>
-        <PositionPicker registration={register('position')} error={errors.position?.message} />
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Idade" hint="De 16 a 45 anos." error={errors.age?.message}>
-            {(control) => <Input {...control} inputMode="numeric" {...register('age')} />}
-          </Field>
-          <Field
-            label="Agilidade"
-            hint="De 1 a 100 (até 85 com 35 anos ou mais)."
-            error={errors.agility?.message}
-          >
-            {(control) => <Input {...control} inputMode="numeric" {...register('agility')} />}
-          </Field>
-          <CalculatedField label="Valor base (moedas)" hint="Calculado no cadastro." />
-        </div>
+        <PlayerBasicFields
+          fields={{
+            name: register('name'),
+            position: register('position'),
+            age: register('age'),
+            agility: register('agility'),
+          }}
+          errors={{
+            name: errors.name?.message,
+            position: errors.position?.message,
+            age: errors.age?.message,
+            agility: errors.agility?.message,
+          }}
+          ageHint="De 16 a 45 anos."
+          extra={<CalculatedField label="Valor base (moedas)" hint="Calculado no cadastro." />}
+        />
         <section className="grid gap-3 border-t border-zinc-200 pt-5">
           <div>
             <h3 className="font-semibold">Indicadores técnicos</h3>
