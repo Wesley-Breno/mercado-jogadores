@@ -324,7 +324,16 @@ cp .env.example .env
 - Titular: a confirmação da venda e a mudança para `DOENTE` consultam a escalação salva do clube
   (`GET /clubs/{id}/lineup`) e avisam quando o jogador é titular, porque ele sai da escalação (RN19). Depois de
   vender, comprar ou mudar a condição, a escalação também é buscada de novo.
-- Página do clube em abas (Elenco e Histórico), com a aba no endereço (`/clubes/1?aba=historico`).
+- Página do clube em abas (Elenco, Escalação e Histórico), com a aba no endereço (`/clubes/1?aba=historico`).
+- Escalação (F12): a aba parte da escalação salva (`GET /clubs/{id}/lineup`); sem escalação, a formação 2-1-1
+  aparece marcada, mas nada é salvo até o clique em Salvar. Cada vaga da formação tem um select só com os
+  jogadores do elenco daquele setor (GOL; ZAG ou LAT; MEI; ATA), sem os `DOENTE` e sem quem já está em outra
+  vaga, que são as escolhas que o enunciado deixa a tela impedir. Trocar de formação mantém os titulares que
+  cabem nas novas vagas. Antes de enviar, a tela pede um titular em cada vaga, com a mensagem junto à vaga; o
+  `PUT` vai com a formação e os 5 ids na ordem das vagas, e a resposta da API passa a ser a escalação mostrada.
+  Com a escalação incompleta (sem escalação, ou titular vendido ou `DOENTE`), a aba avisa que o clube não pode
+  jogar; com titular `MAL_CONDICIONADO`, avisa que ele joga com 15% a menos (RN20). Uma recusa (dados que mudaram
+  depois de a tela abrir) mostra o `message` e mantém as escolhas.
 - Histórico (F09 e F10): tabela na ordem da API, com data e hora de Brasília, tipo, jogador, valor, taxa ou
   comissão, multa, lucro (`–` na compra) e variação do caixa com `+` e `-`; abaixo, os 5 totais do `summary`,
   sempre do mesmo pedido da tabela, então respeitam o filtro. Filtro de tipo com duas caixas (Compra e Venda):
@@ -371,8 +380,8 @@ cp .env.example .env
 - **Frontend:** em desenvolvimento. Já existem o layout com o menu, o cliente da API, a lista de jogadores com
   busca, filtros, ordenação e paginação (F01 e F02), a exclusão (F03), o cadastro, a edição e a alteração de
   condição de jogador (F04), a lista e a criação de clubes (F05) e a página do clube com o elenco e os contratos
-  (parte do F07), a compra (F06), a venda (F08) e o histórico com filtros, totais e exportação em CSV (F09 a
-  F11); a escalação, as partidas e a classificação vêm a seguir.
+  (parte do F07), a compra (F06), a venda (F08), o histórico com filtros, totais e exportação em CSV (F09 a
+  F11) e a escalação (F12); as partidas e a classificação vêm a seguir.
 
 ## 9. Uso de inteligência artificial
 
@@ -385,7 +394,7 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
   regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios;
   base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout, cliente da API,
   componentes de interface, a tela de jogadores (lista, cadastro, edição, condição e exclusão), a de clubes e a
-  página do clube, a compra, a venda e o histórico.
+  página do clube, a compra, a venda, o histórico e a escalação.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
