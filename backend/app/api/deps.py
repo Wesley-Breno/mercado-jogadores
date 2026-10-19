@@ -11,7 +11,8 @@ from app.models.base import MAX_INTEGER_ID
 from app.services.clubs import ClubService
 from app.services.lineups import LineupService
 from app.services.market import MarketService
-from app.services.messages import CLUB_NOT_FOUND, PLAYER_NOT_FOUND
+from app.services.matches import MatchService
+from app.services.messages import CLUB_NOT_FOUND, MATCH_NOT_FOUND, PLAYER_NOT_FOUND
 from app.services.players import PlayerService
 from app.services.transactions import TransactionService
 
@@ -40,6 +41,10 @@ def player_id_from_path(player_id: str) -> int:
 
 def club_id_from_path(club_id: str) -> int:
     return parse_resource_id(club_id, CLUB_NOT_FOUND)
+
+
+def match_id_from_path(match_id: str) -> int:
+    return parse_resource_id(match_id, MATCH_NOT_FOUND)
 
 
 def get_clock() -> Clock:
@@ -85,3 +90,11 @@ def get_lineup_service(session: SessionDep, clock: ClockDep) -> LineupService:
 
 
 LineupServiceDep = Annotated[LineupService, Depends(get_lineup_service)]
+
+
+def get_match_service(session: SessionDep, clock: ClockDep) -> MatchService:
+    return MatchService(session, clock)
+
+
+MatchId = Annotated[int, Depends(match_id_from_path)]
+MatchServiceDep = Annotated[MatchService, Depends(get_match_service)]

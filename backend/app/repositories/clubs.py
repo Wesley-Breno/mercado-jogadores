@@ -43,3 +43,6 @@ class ClubRepository:
 
     def list_all(self) -> Sequence[Club]:
         return self.session.scalars(select(Club)).all()
+
+    def names_by_id(self) -> dict[int, str]:
+        return dict(self.session.execute(select(Club.id, Club.name)).all())

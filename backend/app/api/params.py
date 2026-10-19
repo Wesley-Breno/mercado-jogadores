@@ -163,6 +163,12 @@ def club_sort(
     return parse_optional(sort, partial(parse_choice, "sort", choices=ClubSort), ClubSort.NAME)
 
 
+def match_club_filter(
+    club_id: Annotated[str | None, Query(description="Partidas em que o clube jogou")] = None,
+) -> int | None:
+    return parse_optional(club_id, partial(parse_positive_int, "club_id"), None)
+
+
 def parse_transaction_types(raw: str) -> frozenset[TransactionType]:
     """One or more of COMPRA and VENDA, separated by commas, without spaces or repetition."""
     names = raw.split(",")
