@@ -71,7 +71,10 @@ backend/
   app/
     main.py       cria a aplicação (factory), registra CORS, erros, logs e rotas
     core/         configuração, fuso de Brasília, exceções de domínio, tratamento central de erros e log
-    api/          roteador com o prefixo /api/v1 e as rotas de cada recurso
+    api/          rotas (routers/), schemas de entrada e saída (schemas/), validadores estritos e
+                  dependências (sessão do banco, ids da URL); sem regra de negócio
+    services/     casos de uso: orquestram repositórios e domínio e controlam a transação
+    repositories/ consultas ao banco com o SQLAlchemy
     domain/       regras de negócio puras, sem framework nem banco: listas de valores, texto (V4, acentos,
                   ordem alfabética, busca), dinheiro (Decimal e arredondamento) e valores do jogador
                   (overall, valor base e valor de mercado)
@@ -138,6 +141,14 @@ cp .env.example .env
   requisição é recusada com 400 por falta do corpo.
 - Log: uma linha por requisição, com data e hora de Brasília, método, caminho e status, pelo módulo `logging` da
   biblioteca padrão. O log de acesso do Uvicorn fica desligado (`--no-access-log`) para não duplicar a linha.
+- Validação estrita dos campos: inteiro só como número JSON (`50.0` vale 50; `"15"`, `true` e `50.5` são
+  recusados), listas de valores sensíveis a maiúsculas, `null` tratado como ausente e campos desconhecidos ou
+  controlados pelo sistema ignorados. A mensagem diz o campo e o motivo, em português.
+- Id da URL que não é inteiro positivo sem zeros à esquerda, ou que passa de 2.147.483.647, responde 404 (V8),
+  conferido por uma dependência antes da lógica do endpoint.
+- Valores em moedas saem como números JSON (`40.0`), e não como texto, que é o padrão do Pydantic para `Decimal`.
+- Overall e valor de mercado são calculados a cada consulta, num único lugar (`services/valuation.py`, que usa
+  `domain/pricing.py`); o valor base é calculado uma vez, no cadastro, e gravado.
 - Endpoint adicional `GET /api/v1/health`, usado para saber quando a API está no ar.
 - Dinheiro sempre em `Decimal`, nunca em `float`. O arredondamento para 2 casas usa `ROUND_HALF_UP`, que no Python
   leva o 5 para longe do zero também nos negativos (−0,385 → −0,39), e é feito uma vez, no resultado final.
@@ -156,7 +167,8 @@ cp .env.example .env
 
 ## 8. Funcionalidades não implementadas
 
-Este é o esqueleto do projeto: as funcionalidades do enunciado ainda não foram implementadas.
+Projeto em desenvolvimento. Já implementados: cadastro e consulta de jogador (`POST /players` e
+`GET /players/{id}`). As demais funcionalidades do enunciado ainda não foram implementadas.
 
 ## 9. Uso de inteligência artificial
 
@@ -165,7 +177,8 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
 
 - **Onde:** estrutura do repositório, configuração do Docker, do Ruff, do pytest e da integração contínua;
   configuração, CORS, tratamento central de erros e log de requisições da API (`backend/app/core`);
-  modelos, migration inicial e testes do schema (`backend/app/models`, `backend/migrations`, `backend/tests/db`).
+  modelos, migration inicial e testes do schema (`backend/app/models`, `backend/migrations`, `backend/tests/db`);
+  regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
