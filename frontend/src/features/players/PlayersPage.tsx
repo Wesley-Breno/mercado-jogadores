@@ -13,6 +13,7 @@ import { Popover } from '../../components/ui/Popover'
 import { SegmentedControl } from '../../components/ui/SegmentedControl'
 import { EmptyState } from '../../components/ui/States'
 import { useDebouncedValue } from '../../hooks/useDebouncedValue'
+import { lowerFirst } from '../../lib/text'
 import { useClubs } from '../clubs/queries'
 import { ConditionDialog } from './ConditionDialog'
 import { CreatePlayer } from './CreatePlayer'
@@ -40,10 +41,6 @@ const AVAILABILITY_LABELS: Record<Availability, string> = {
   all: 'Todos',
   free: 'Livres',
   owned: 'Em clubes',
-}
-
-function lowerFirst(text: string): string {
-  return text.charAt(0).toLowerCase() + text.slice(1)
 }
 
 /** F01 and F02: the filters live in the address, so going back and reloading keep them. */
