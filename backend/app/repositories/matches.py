@@ -3,6 +3,7 @@ from collections.abc import Sequence
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
+from app.domain.standings import MatchScore
 from app.models import Duel, Match
 
 
@@ -34,3 +35,9 @@ class MatchRepository:
                 or_(Match.home_club_id == club_id, Match.away_club_id == club_id)
             )
         return self.session.scalars(statement).all()
+
+    def scores(self) -> list[MatchScore]:
+        statement = select(
+            Match.home_club_id, Match.away_club_id, Match.home_goals, Match.away_goals
+        )
+        return [MatchScore(*row) for row in self.session.execute(statement)]

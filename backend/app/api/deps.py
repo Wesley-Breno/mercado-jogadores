@@ -14,6 +14,7 @@ from app.services.market import MarketService
 from app.services.matches import MatchService
 from app.services.messages import CLUB_NOT_FOUND, MATCH_NOT_FOUND, PLAYER_NOT_FOUND
 from app.services.players import PlayerService
+from app.services.standings import StandingsService
 from app.services.transactions import TransactionService
 
 RESOURCE_ID_PATTERN = re.compile(r"[1-9][0-9]*")
@@ -98,3 +99,10 @@ def get_match_service(session: SessionDep, clock: ClockDep) -> MatchService:
 
 MatchId = Annotated[int, Depends(match_id_from_path)]
 MatchServiceDep = Annotated[MatchService, Depends(get_match_service)]
+
+
+def get_standings_service(session: SessionDep) -> StandingsService:
+    return StandingsService(session)
+
+
+StandingsServiceDep = Annotated[StandingsService, Depends(get_standings_service)]
