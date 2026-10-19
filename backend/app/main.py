@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
 from app.core.config import Settings
+from app.core.database import create_session_factory
 from app.core.error_handlers import register_error_handlers
 from app.core.request_logging import register_request_logging
 
@@ -15,6 +16,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         version="1.0.0",
         redirect_slashes=False,
     )
+    app.state.session_factory = create_session_factory(settings.database_url)
     register_error_handlers(app)
     register_request_logging(app)
     app.add_middleware(

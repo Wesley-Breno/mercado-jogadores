@@ -4,6 +4,7 @@ from decimal import Decimal
 from sqlalchemy import ForeignKey, Numeric, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
+from app.domain.attributes import AttributeSet
 from app.domain.enums import Condition, Position
 from app.models.base import Base, enum_column_type
 
@@ -31,3 +32,14 @@ class Player(Base):
     updated_at: Mapped[datetime] = mapped_column(
         "atualizado_em", server_default=func.now(), onupdate=func.now()
     )
+
+    @property
+    def attribute_set(self) -> AttributeSet:
+        return AttributeSet(
+            pace=self.pace,
+            shooting=self.shooting,
+            passing=self.passing,
+            dribbling=self.dribbling,
+            defending=self.defending,
+            physical=self.physical,
+        )
