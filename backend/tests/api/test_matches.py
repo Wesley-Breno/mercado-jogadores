@@ -57,18 +57,6 @@ def build_team(
     return {"id": club_id, "players": ids}
 
 
-@pytest.fixture
-def league(client: TestClient, engine: Engine, freeze_clock: Freeze) -> dict:
-    freeze_clock(NOW)
-    aguias = build_team(client, engine, "Águias FC", "AGU", AGUIAS_STARTERS, "2-1-1")
-    delta = build_team(client, engine, "Delta FC", "DFC", DELTA_STARTERS, "2-1-1")
-    client.patch(
-        f"{PLAYERS_URL}/{aguias['players']['Davi Lins']}/condition",
-        json={"condition": "MAL_CONDICIONADO"},
-    )
-    return {"aguias": aguias, "delta": delta}
-
-
 def play(client: TestClient, home: int, away: int) -> Response:
     return client.post(MATCHES_URL, json={"home_club_id": home, "away_club_id": away})
 
