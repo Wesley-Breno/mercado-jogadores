@@ -21,6 +21,8 @@ services:
     build:
       context: ./backend
       target: runtime
+    environment:
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
     ports:
       - "8000:8000"
     depends_on:
