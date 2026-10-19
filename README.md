@@ -71,8 +71,9 @@ backend/
   app/
     main.py       cria a aplicação (factory), registra CORS, erros, logs e rotas
     core/         configuração, fuso de Brasília, exceções de domínio, tratamento central de erros e log
-    api/          rotas (routers/), schemas de entrada e saída (schemas/), validadores estritos e
-                  dependências (sessão do banco, ids da URL); sem regra de negócio
+    api/          rotas (routers/), schemas de entrada e saída (schemas/), validadores estritos,
+                  leitura estrita dos query params (params.py) e dependências (sessão do banco, ids
+                  da URL); sem regra de negócio
     services/     casos de uso: orquestram repositórios e domínio e controlam a transação
     repositories/ consultas ao banco com o SQLAlchemy
     domain/       regras de negócio puras, sem framework nem banco: listas de valores, texto (V4, acentos,
@@ -146,6 +147,16 @@ cp .env.example .env
   controlados pelo sistema ignorados. A mensagem diz o campo e o motivo, em português.
 - Id da URL que não é inteiro positivo sem zeros à esquerda, ou que passa de 2.147.483.647, responde 404 (V8),
   conferido por uma dependência antes da lógica do endpoint.
+- Query params lidos como texto e validados à mão: inteiros só com dígitos e sem zeros à esquerda, decimais no
+  formato `10.55`, listas exatamente como no enunciado e parâmetro presente com valor vazio recusado (400).
+  Parâmetro desconhecido é ignorado. As faixas sem um dos limites usam o extremo do campo (idade 16 a 45, valor
+  0 a 550).
+- Listagem de jogadores (RN07): posição, condição, livre ou com clube, clube e idade são filtrados no banco; a
+  busca, a faixa de valor de mercado (que é calculado, não gravado) e a ordenação são feitas no Python, com as
+  mesmas funções do domínio, e a paginação vem por último. Com no máximo algumas centenas de jogadores, isso
+  evita duplicar em SQL a fórmula do valor de mercado.
+- Na ordenação, os critérios pedidos vêm primeiro, e o empate é desfeito pelo nome (ordem das Premissas) e
+  depois pelo id; os dois sentidos de valor e de idade são o mesmo campo, então `value_asc,value_desc` é 400.
 - Valores em moedas saem como números JSON (`40.0`), e não como texto, que é o padrão do Pydantic para `Decimal`.
 - Overall e valor de mercado são calculados a cada consulta, num único lugar (`services/valuation.py`, que usa
   `domain/pricing.py`); o valor base é calculado uma vez, no cadastro, e gravado.
@@ -167,8 +178,8 @@ cp .env.example .env
 
 ## 8. Funcionalidades não implementadas
 
-Projeto em desenvolvimento. Já implementados: cadastro e consulta de jogador (`POST /players` e
-`GET /players/{id}`). As demais funcionalidades do enunciado ainda não foram implementadas.
+Projeto em desenvolvimento. Já implementados: cadastro, consulta e listagem de jogadores (`POST /players`,
+`GET /players/{id}` e `GET /players`). As demais funcionalidades do enunciado ainda não foram implementadas.
 
 ## 9. Uso de inteligência artificial
 
