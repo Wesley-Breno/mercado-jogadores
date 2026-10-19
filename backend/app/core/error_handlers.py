@@ -27,6 +27,7 @@ def describe_validation_error(error: dict) -> str:
     location = [str(part) for part in error["loc"] if part not in ("body", "query", "path")]
     field = ".".join(location)
     error_type = error["type"]
+    context = error.get("ctx", {})
     if error_type == "json_invalid":
         return "O corpo da requisição não é um JSON válido."
     if not field and (error_type in BODY_SHAPE_ERRORS or error_type == "missing"):
@@ -34,7 +35,17 @@ def describe_validation_error(error: dict) -> str:
     if error_type == "missing":
         return f"O campo '{field}' é obrigatório."
     if error_type == "value_error":
-        return f"Campo '{field}': {error['ctx']['error']}"
+        detail = str(context["error"])
+        return f"Campo '{field}': {detail}" if field else detail
+    if error_type == "greater_than_equal":
+        return f"Campo '{field}': deve ser no mínimo {context['ge']}."
+    if error_type == "less_than_equal":
+        return f"Campo '{field}': deve ser no máximo {context['le']}."
+    if error_type == "enum":
+        accepted = str(context["expected"]).replace(" or ", " ou ")
+        return f"Campo '{field}': valor fora da lista aceita ({accepted})."
+    if error_type == "string_type":
+        return f"Campo '{field}': deve ser um texto."
     return f"O campo '{field}' é inválido."
 
 
