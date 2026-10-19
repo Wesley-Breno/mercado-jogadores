@@ -163,6 +163,15 @@ cp .env.example .env
   da escalação na mesma transação (RN19); de `DOENTE` direto para `APTO` é 409.
 - O instante do servidor vem de um relógio injetável (`core/clock.py`), sempre em -03:00, usado por todas as regras
   de data; nos testes, ele pode ser trocado por um relógio fixo.
+- Clubes: a criação trava a tabela `clubes` (`LOCK TABLE ... SHARE ROW EXCLUSIVE`) durante a transação, para que
+  duas criações simultâneas não passem do limite de 20 clubes nem repitam nome ou sigla; leituras continuam
+  livres. A sigla é conferida contra o nome sem acentos e sem diferenciar maiúsculas: a primeira letra da sigla é a
+  primeira letra do nome, e as outras aparecem depois, na mesma ordem.
+- `POST /clubs` responde os campos mínimos do clube (sem o elenco, que nasce vazio); `GET /clubs/{id}` traz também
+  `players`, cada um com os campos de `GET /players/{id}` e o `contract`.
+- Dias restantes de fidelidade e percentual de multa (RN15) ficam num único lugar (`domain/market.py`) e servem
+  tanto à consulta do clube quanto à venda. Os dias são contados com fração e arredondados para cima.
+- Datas nas respostas: sempre convertidas para -03:00 e sem frações de segundo (`2027-03-02T10:15:00-03:00`).
 - Valores em moedas saem como números JSON (`40.0`), e não como texto, que é o padrão do Pydantic para `Decimal`.
 - Overall e valor de mercado são calculados a cada consulta, num único lugar (`services/valuation.py`, que usa
   `domain/pricing.py`); o valor base é calculado uma vez, no cadastro, e gravado.
@@ -184,8 +193,8 @@ cp .env.example .env
 
 ## 8. Funcionalidades não implementadas
 
-Projeto em desenvolvimento. Já implementado: módulo de jogadores completo (`POST`, `GET`, `PUT` e `DELETE` em
-`/players`, e `PATCH /players/{id}/condition`). As demais funcionalidades do enunciado ainda não foram implementadas.
+Projeto em desenvolvimento. Já implementados: módulo de jogadores completo (`POST`, `GET`, `PUT` e `DELETE` em
+`/players`, e `PATCH /players/{id}/condition`) e clubes (`POST /clubs`, `GET /clubs` e `GET /clubs/{id}`). As demais funcionalidades do enunciado ainda não foram implementadas.
 
 ## 9. Uso de inteligência artificial
 
