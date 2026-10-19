@@ -283,6 +283,16 @@ cp .env.example .env
   (nada é calculado na tela), e a lista de jogadores é buscada de novo antes do aviso de sucesso.
 - Diálogos com o elemento nativo `<dialog>` do navegador: o foco fica preso no diálogo, Esc fecha (menos durante
   o envio) e o foco volta para o botão que o abriu.
+- Edição e condição: das recusas que o enunciado deixa a tela prever, a tela impede três com o motivo à vista:
+  mudar a posição de jogador com clube (as outras posições ficam desabilitadas), diminuir a idade (erro junto ao
+  campo) e passar de `DOENTE` direto para `APTO` (opção desabilitada). As demais recusas vão para a API, e o
+  `message` aparece no diálogo.
+- Depois de editar ou de mudar a condição, a lista de jogadores e a de clubes (valor do elenco e patrimônio) são
+  buscadas de novo, também quando a API recusa, porque a recusa pode vir de dados que mudaram depois de a tela
+  abrir. O aviso de sucesso mostra o valor de mercado devolvido pela API.
+- Ao escolher `DOENTE` para um jogador com clube, a tela avisa que, se ele for titular, sai da escalação (RN19).
+- Menus que abrem sobre a página (filtros, ordenação e o "⋯" de cada linha) acompanham o botão quando a página
+  rola e não são cortados pela tabela; no celular, aparecem como painel no pé da tela.
 - Classificação (RN21): calculada a cada consulta a partir dos placares gravados, com todos os clubes (os que não
   jogaram aparecem zerados) e a ordem pontos, saldo, gols marcados, nome (ordem das Premissas) e id.
 - Fim da fidelidade fora da janela (não futuro ou mais de 1.095 dias depois da compra) é 400, como manda o item
@@ -312,8 +322,8 @@ cp .env.example .env
 
 - **Backend:** nenhuma. Os 19 endpoints do enunciado estão implementados e documentados no Swagger.
 - **Frontend:** em desenvolvimento. Já existem o layout com o menu, o cliente da API, a lista de jogadores com
-  busca, filtros, ordenação e paginação (F01 e F02) e o cadastro de jogador; a edição, a condição, a exclusão e as
-  demais telas vêm a seguir.
+  busca, filtros, ordenação e paginação (F01 e F02) e o cadastro, a edição e a alteração de condição de jogador
+  (F04); a exclusão e as demais telas vêm a seguir.
 
 ## 9. Uso de inteligência artificial
 
@@ -325,7 +335,7 @@ ciclo, com arquivos, o que foi gerado e o que eu aceitei ou alterei, está em [`
   modelos, migration inicial e testes do schema (`backend/app/models`, `backend/migrations`, `backend/tests/db`);
   regras de domínio (`backend/app/domain`) e endpoints de jogadores com validadores, serviços e repositórios;
   base do frontend (configuração do Vite, Tailwind, testes, lint, Docker e CI), layout, cliente da API,
-  componentes de interface, lista e cadastro de jogadores.
+  componentes de interface, lista, cadastro, edição e condição de jogadores.
 - **Como:** desenvolvimento em ciclos pequenos; a cada ciclo, a IA propõe o plano, gera o código e roda testes,
   lint e formatação; eu reviso o diff, executo, ajusto e faço o commit.
 - **Por quê:** acelerar a parte repetitiva e conferir cada regra do enunciado com testes, mantendo as decisões
