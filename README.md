@@ -464,6 +464,10 @@ estados de carregamento, lista vazia e erro.
   Com a escalação incompleta (sem escalação, ou titular vendido ou `DOENTE`), a aba avisa que o clube não pode
   jogar; com titular `MAL_CONDICIONADO`, avisa que ele joga com 15% a menos (RN20). Uma recusa (dados que mudaram
   depois de a tela abrir) mostra o `message` e mantém as escolhas.
+- Em campo e Reservas (extras do mockup na aba Escalação): ao lado das vagas, um campo desenhado mostra os titulares
+  escolhidos na tela, do goleiro ao ataque, antes mesmo de salvar; a vaga vazia fica tracejada e o mal condicionado
+  ganha um marcador. Abaixo, as reservas são os jogadores do elenco fora das vagas, e o `DOENTE` traz o aviso de
+  que não pode ser escalado. O campo só desenha as escolhas: nenhum valor é calculado na tela.
 - Partidas (F13): "Nova partida" pede o mandante e o visitante (clubes diferentes, conferido antes de enviar) e
   envia `POST /matches`. A resposta abre a página da partida (`/partidas/:id`) direto do cache, sem novo pedido:
   placar, formações, resultado e os 6 duelos, separados pelo clube que ataca, com atacante, defensor, posição,
