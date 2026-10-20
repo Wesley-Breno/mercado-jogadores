@@ -68,6 +68,15 @@ jobs:
         run: |
           timeout 300 bash -c 'until curl -sf http://localhost:8000/api/v1/health; do sleep 2; done'
           timeout 120 bash -c 'until curl -sf http://localhost:5173 > /dev/null; do sleep 2; done'
+      - name: Suíte de conformidade da API (B01 a B22) contra a aplicação no ar
+        run: >-
+          docker compose --profile test run --rm --build
+          -e CONFORMANCE_API_URL=http://backend:8000/api/v1
+          backend-test pytest conformance
+      - name: Recria o banco com os comandos do README
+        run: |
+          docker compose exec -T backend alembic downgrade base
+          docker compose exec -T backend alembic upgrade head
       - uses: actions/setup-node@v7
         with:
           node-version: "22"
