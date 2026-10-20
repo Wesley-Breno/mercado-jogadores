@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 
 import type { Player } from '../../api/types'
 import { Avatar } from '../../components/ui/Avatar'
+import { formatMoney } from '../../lib/format'
 import { POSITION_LABELS } from './labels'
 
 /** The player the dialog is about: initials, name, position, age and, on the right, a badge or a value. */
@@ -17,5 +18,15 @@ export function PlayerSummary({ player, aside }: { player: Player; aside: ReactN
       </div>
       {aside}
     </div>
+  )
+}
+
+/** The aside of the buy and sell dialogs: the market value the deal will use. */
+export function MarketValueAside({ value }: { value: number }) {
+  return (
+    <span className="text-right">
+      <span className="block text-xs text-zinc-500">Valor de mercado</span>
+      <span className="font-semibold tabular-nums">{formatMoney(value)}</span>
+    </span>
   )
 }

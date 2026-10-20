@@ -3,11 +3,10 @@ import type { ReactNode } from 'react'
 
 import type { SquadPlayer } from '../../api/types'
 import { Avatar } from '../../components/ui/Avatar'
-import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { type Column, DataTable } from '../../components/ui/DataTable'
 import { dateTimeParts, formatInteger, formatMoney } from '../../lib/format'
-import { ConditionBadge } from '../players/PlayerBadges'
+import { PLAYER_COLUMNS } from '../players/playerColumns'
 import { PenaltyBadge } from './PenaltyBadge'
 
 function LoyaltyEnd({ value }: { value: string }) {
@@ -32,24 +31,10 @@ function squadColumns(onSell: (player: SquadPlayer) => void): Column<SquadPlayer
         </span>
       ),
     },
-    { key: 'position', header: 'Posição', cell: (player) => <Badge>{player.position}</Badge> },
-    {
-      key: 'overall',
-      header: 'Overall',
-      align: 'right',
-      cell: (player) => <span className="font-semibold">{player.overall}</span>,
-    },
-    {
-      key: 'condition',
-      header: 'Condição',
-      cell: (player) => <ConditionBadge condition={player.condition} />,
-    },
-    {
-      key: 'market_value',
-      header: 'Valor de mercado',
-      align: 'right',
-      cell: (player) => <span className="font-semibold">{formatMoney(player.market_value)}</span>,
-    },
+    PLAYER_COLUMNS.position,
+    PLAYER_COLUMNS.overall,
+    PLAYER_COLUMNS.condition,
+    PLAYER_COLUMNS.marketValue,
     {
       key: 'purchase_value',
       header: 'Valor de compra',

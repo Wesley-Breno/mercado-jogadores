@@ -10,7 +10,7 @@ import { Field, Input, Select } from '../../components/ui/Field'
 import { maskDate, maskTime } from '../../lib/dateInput'
 import { formatMoney } from '../../lib/format'
 import { useClubs } from '../clubs/queries'
-import { PlayerSummary } from '../players/PlayerSummary'
+import { MarketValueAside, PlayerSummary } from '../players/PlayerSummary'
 import { type BuyFields, buySchema } from './buyForm'
 import { useBuyPlayer } from './queries'
 
@@ -67,15 +67,7 @@ export function BuyPlayerDialog({ player, onClose, onBought }: BuyPlayerDialogPr
       }
     >
       <form id={formId} noValidate onSubmit={submit} className="grid gap-4">
-        <PlayerSummary
-          player={player}
-          aside={
-            <span className="text-right">
-              <span className="block text-xs text-zinc-500">Valor de mercado</span>
-              <span className="font-semibold tabular-nums">{formatMoney(player.market_value)}</span>
-            </span>
-          }
-        />
+        <PlayerSummary player={player} aside={<MarketValueAside value={player.market_value} />} />
         <Field
           label="Clube comprador"
           hint={

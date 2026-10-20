@@ -10,7 +10,8 @@ import { type Column, DataTable } from '../../components/ui/DataTable'
 import { RowActions } from '../../components/ui/RowActions'
 import { formatMoney } from '../../lib/format'
 import { POSITION_LABELS } from './labels'
-import { AgilityMeter, ConditionBadge } from './PlayerBadges'
+import { AgilityMeter } from './PlayerBadges'
+import { PLAYER_COLUMNS } from './playerColumns'
 
 export type PlayerAction = {
   kind: 'details' | 'edit' | 'condition' | 'delete' | 'buy'
@@ -77,36 +78,22 @@ function playerColumns(
         </span>
       ),
     },
-    { key: 'position', header: 'Posição', cell: (player) => <Badge>{player.position}</Badge> },
-    {
-      key: 'overall',
-      header: 'Overall',
-      align: 'right',
-      cell: (player) => <span className="font-semibold">{player.overall}</span>,
-    },
+    PLAYER_COLUMNS.position,
+    PLAYER_COLUMNS.overall,
     {
       key: 'agility',
       header: 'Agilidade',
       cell: (player) => <AgilityMeter agility={player.agility} />,
     },
     { key: 'age', header: 'Idade', align: 'right', cell: (player) => player.age },
-    {
-      key: 'condition',
-      header: 'Condição',
-      cell: (player) => <ConditionBadge condition={player.condition} />,
-    },
+    PLAYER_COLUMNS.condition,
     {
       key: 'base_value',
       header: 'Valor base',
       align: 'right',
       cell: (player) => <span className="text-zinc-600">{formatMoney(player.base_value)}</span>,
     },
-    {
-      key: 'market_value',
-      header: 'Valor de mercado',
-      align: 'right',
-      cell: (player) => <span className="font-semibold">{formatMoney(player.market_value)}</span>,
-    },
+    PLAYER_COLUMNS.marketValue,
     {
       key: 'club',
       header: 'Clube',

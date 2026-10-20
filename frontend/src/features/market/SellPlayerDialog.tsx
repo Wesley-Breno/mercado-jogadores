@@ -9,7 +9,7 @@ import { useSingleAction } from '../../hooks/useSingleAction'
 import { formatDateTime, formatInteger, formatMoney } from '../../lib/format'
 import { PenaltyBadge } from '../clubs/PenaltyBadge'
 import { useIsStarter } from '../clubs/queries'
-import { PlayerSummary } from '../players/PlayerSummary'
+import { MarketValueAside, PlayerSummary } from '../players/PlayerSummary'
 import { useSellPlayer } from './queries'
 
 type SellPlayerDialogProps = {
@@ -56,15 +56,7 @@ export function SellPlayerDialog({ player, clubName, onClose, onSold }: SellPlay
             escalar de novo os 5 titulares.
           </Alert>
         )}
-        <PlayerSummary
-          player={player}
-          aside={
-            <span className="text-right">
-              <span className="block text-xs text-zinc-500">Valor de mercado</span>
-              <span className="font-semibold tabular-nums">{formatMoney(player.market_value)}</span>
-            </span>
-          }
-        />
+        <PlayerSummary player={player} aside={<MarketValueAside value={player.market_value} />} />
         <ResultList
           items={[
             { label: 'Valor de compra', value: formatMoney(player.contract.purchase_value) },
