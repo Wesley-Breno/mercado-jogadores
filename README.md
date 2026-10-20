@@ -70,6 +70,7 @@ se o `.env` não existir. Para executar fora do Docker, os modelos são [`backen
 | `VITE_API_URL` | `frontend` | Endereço da API com `/api/v1`, usado pelo navegador; entra no build da interface |
 | `E2E_BASE_URL` | testes E2E | URL da interface testada pelo Playwright (padrão: `http://localhost:5173`) |
 | `E2E_API_URL` | testes E2E | Endereço da API, com `/api/v1`, usado para preparar os dados (padrão: `http://localhost:8000/api/v1`) |
+| `CONFORMANCE_API_URL` | suíte de conformidade | Endereço da API, com `/api/v1`, que a suíte testa por HTTP (padrão: `http://localhost:8000/api/v1`; no Compose, `http://backend:8000/api/v1`) |
 
 ## 5. Estrutura de pastas e bibliotecas
 
@@ -268,6 +269,8 @@ estados de carregamento, lista vazia e erro.
 - Toda recusa tem o corpo `{"message": "..."}` em português e `Content-Type: application/json`. Erros de validação do
   FastAPI, que por padrão seriam 422, respondem 400; um erro inesperado responde 500 com mensagem genérica, sem
   detalhes internos, e o detalhe vai só para o log da aplicação.
+- O Swagger (`/docs`) mostra em cada rota só os códigos que ela devolve, com os do enunciado (400, 404 e 409 no
+  formato `{"message": "..."}`); o 422 que o FastAPI documenta por padrão foi retirado, porque a API nunca o devolve.
 - Método não previsto num caminho existente responde 405 (o enunciado aceita 404 ou 405).
 - Corpo enviado sem `Content-Type: application/json` não é lido como JSON (padrão do FastAPI contra CSRF) e a
   requisição é recusada com 400 por falta do corpo.
@@ -452,7 +455,7 @@ estados de carregamento, lista vazia e erro.
 - Histórico (F09 e F10): tabela na ordem da API, com data e hora de Brasília, tipo, jogador, valor, taxa ou
   comissão, multa, lucro (`–` na compra) e variação do caixa com `+` e `-`; abaixo, os 5 totais do `summary`,
   sempre do mesmo pedido da tabela, então respeitam o filtro. Filtro de tipo com duas caixas (Compra e Venda):
-  as duas marcadas pedem o histórico sem `type`; desmarcar uma pede só a outra (`type=VENDA`), e a última
+  o pedido leva sempre os tipos marcados (`type=COMPRA,VENDA` com as duas, `type=VENDA` com uma), e a última
   marcada não pode ser desmarcada. O filtro de jogador lista os jogadores que aparecem no histórico do clube
   (com o nome mais recente) e envia `player_id`. Se a API recusar o filtro (jogador excluído → 404), a tela
   mostra "O filtro foi recusado" com o `message` e esconde tabela e totais. Os filtros ficam no endereço.
