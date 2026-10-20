@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react'
 import { type KeyboardEvent, type ReactNode, useId } from 'react'
 
 import { cn } from '../../lib/cn'
+import { FOCUS_RING } from './buttonStyles'
 
 type Tab<Key extends string> = {
   key: Key
@@ -64,7 +65,7 @@ export function Tabs<Key extends string>({
               onClick={() => onSelect(key)}
               className={cn(
                 '-mb-px inline-flex items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors',
-                'focus-visible:ring-3 focus-visible:ring-blue-600/30 focus-visible:outline-none',
+                FOCUS_RING,
                 isSelected
                   ? 'border-blue-600 text-zinc-950'
                   : 'border-transparent text-zinc-500 hover:text-zinc-950',

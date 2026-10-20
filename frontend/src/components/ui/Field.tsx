@@ -102,6 +102,21 @@ export function Fieldset({ legend, hint, error, children }: FieldsetProps) {
   )
 }
 
+/** Focus and error look shared by the text fields and the selects. */
+const CONTROL = cn(
+  'focus-visible:border-blue-600 focus-visible:ring-3 focus-visible:ring-blue-600/20 focus-visible:outline-none',
+  'aria-invalid:border-red-500 aria-invalid:ring-red-500/20 disabled:bg-zinc-50 disabled:text-zinc-500',
+)
+
+function LeadingIcon({ icon: Icon }: { icon: LucideIcon }) {
+  return (
+    <Icon
+      aria-hidden
+      className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-500"
+    />
+  )
+}
+
 type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   icon?: LucideIcon
 }
@@ -111,8 +126,7 @@ export function Input({ className, icon: Icon, ...props }: InputProps) {
     <input
       className={cn(
         'h-9 w-full min-w-0 rounded-lg border border-zinc-200 bg-white px-3 text-sm shadow-xs tabular-nums transition-colors placeholder:text-zinc-400',
-        'focus-visible:border-blue-600 focus-visible:ring-3 focus-visible:ring-blue-600/20 focus-visible:outline-none',
-        'aria-invalid:border-red-500 aria-invalid:ring-red-500/20 disabled:bg-zinc-50 disabled:text-zinc-500',
+        CONTROL,
         Icon && 'pl-9',
         className,
       )}
@@ -124,10 +138,7 @@ export function Input({ className, icon: Icon, ...props }: InputProps) {
   }
   return (
     <span className="relative block">
-      <Icon
-        aria-hidden
-        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-500"
-      />
+      <LeadingIcon icon={Icon} />
       {input}
     </span>
   )
@@ -141,17 +152,11 @@ type SelectProps = SelectHTMLAttributes<HTMLSelectElement> & {
 export function Select({ className, icon: Icon, children, ...props }: SelectProps) {
   return (
     <span className="relative block">
-      {Icon && (
-        <Icon
-          aria-hidden
-          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-zinc-500"
-        />
-      )}
+      {Icon && <LeadingIcon icon={Icon} />}
       <select
         className={cn(
           'h-9 w-full min-w-0 appearance-none rounded-lg border border-zinc-200 bg-white pr-9 pl-3 text-sm shadow-xs transition-colors',
-          'focus-visible:border-blue-600 focus-visible:ring-3 focus-visible:ring-blue-600/20 focus-visible:outline-none',
-          'aria-invalid:border-red-500 aria-invalid:ring-red-500/20 disabled:bg-zinc-50 disabled:text-zinc-500',
+          CONTROL,
           Icon && 'pl-9',
           className,
         )}

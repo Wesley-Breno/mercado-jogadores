@@ -1,4 +1,5 @@
 import { cn } from '../../lib/cn'
+import { FOCUS_RING } from './buttonStyles'
 
 type Segment<Value> = {
   value: Value
@@ -35,7 +36,7 @@ export function SegmentedControl<Value>({
             onClick={() => onSelect(segment.value)}
             className={cn(
               'inline-flex h-8 items-center gap-1.5 rounded-md px-2.5 text-sm font-medium transition-colors',
-              'focus-visible:ring-3 focus-visible:ring-blue-600/30 focus-visible:outline-none',
+              FOCUS_RING,
               'disabled:cursor-not-allowed disabled:opacity-50',
               isSelected ? 'bg-white text-zinc-950 shadow-xs' : 'text-zinc-600 hover:text-zinc-950',
             )}

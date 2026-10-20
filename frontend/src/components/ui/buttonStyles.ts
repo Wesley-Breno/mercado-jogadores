@@ -3,6 +3,16 @@ import { cn } from '../../lib/cn'
 export type ButtonVariant = 'primary' | 'outline' | 'ghost' | 'destructive'
 type ButtonSize = 'sm' | 'md'
 
+/** Focus ring of every button-like control. */
+export const FOCUS_RING =
+  'focus-visible:ring-3 focus-visible:ring-blue-600/30 focus-visible:outline-none'
+
+/** Disabled look and icon size shared by buttons and the popover trigger. */
+export const BUTTON_BASE = cn(
+  FOCUS_RING,
+  'disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
+)
+
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: 'bg-blue-600 text-white shadow-xs hover:bg-blue-700',
   outline: 'border border-zinc-200 bg-white text-zinc-900 shadow-xs hover:bg-zinc-50',
@@ -23,8 +33,7 @@ export function buttonStyles(
 ): string {
   return cn(
     'inline-flex shrink-0 items-center justify-center rounded-lg text-sm font-medium whitespace-nowrap transition-colors',
-    'focus-visible:ring-3 focus-visible:ring-blue-600/30 focus-visible:outline-none',
-    'disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
+    BUTTON_BASE,
     VARIANTS[variant],
     SIZES[size],
     className,

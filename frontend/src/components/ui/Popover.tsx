@@ -3,6 +3,7 @@ import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState 
 import { createPortal } from 'react-dom'
 
 import { cn } from '../../lib/cn'
+import { BUTTON_BASE } from './buttonStyles'
 
 type PopoverProps = {
   label: string
@@ -115,8 +116,7 @@ export function Popover({
         onClick={(event) => setPlace(open ? null : panelPlace(event.currentTarget, align))}
         className={cn(
           'inline-flex items-center rounded-lg text-sm font-medium transition-colors',
-          'focus-visible:ring-3 focus-visible:ring-blue-600/30 focus-visible:outline-none',
-          'disabled:pointer-events-none disabled:opacity-50 [&_svg]:size-4 [&_svg]:shrink-0',
+          BUTTON_BASE,
           iconOnly
             ? 'size-8 justify-center text-zinc-500 hover:bg-zinc-100 hover:text-zinc-950'
             : 'h-9 max-w-full gap-2 border border-zinc-200 bg-white px-3 shadow-xs hover:bg-zinc-50',
