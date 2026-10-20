@@ -47,7 +47,7 @@ export function slotsOf(formation: Formation): Slot[] {
   return [{ key: 'GOL-0', sector: 'GOL' }, ...outfield]
 }
 
-export function fitsSlot(player: Player, slot: Slot): boolean {
+function fitsSlot(player: Player, slot: Slot): boolean {
   return SECTOR_OF[player.position] === slot.sector
 }
 

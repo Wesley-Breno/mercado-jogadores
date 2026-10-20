@@ -26,7 +26,7 @@ export function toggleType(filters: TransactionFilters, type: TransactionType): 
   return { ...filters, type: checkedTypes(filters)[type] ? other : undefined }
 }
 
-export type HistoryPlayer = {
+type HistoryPlayer = {
   id: number
   name: string
 }

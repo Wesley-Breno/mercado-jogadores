@@ -1,12 +1,12 @@
 import { ListOrdered, Shield, Swords, Users, type LucideIcon } from 'lucide-react'
 
-export type NavigationItem = {
+type NavigationItem = {
   label: string
   path: string
   icon: LucideIcon
 }
 
-export type NavigationSection = {
+type NavigationSection = {
   label: string
   items: NavigationItem[]
 }
