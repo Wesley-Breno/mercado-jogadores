@@ -473,6 +473,12 @@ estados de carregamento, lista vazia e erro.
   placar, formações, resultado e os 6 duelos, separados pelo clube que ataca, com atacante, defensor, posição,
   condição do momento, atributo, valor (já com o efeito da condição) e gol, todos como a API devolveu. Clube sem
   escalação completa é recusado pela API (409), e o `message` aparece no diálogo.
+- Em campo na partida (extra do mockup): acima dos duelos, um campo mostra os 5 titulares de cada clube na formação
+  da partida, montados a partir dos 6 duelos gravados: nome, posição, condição e os valores de ataque e de defesa
+  que a API devolveu, com a bola em quem fez gol. A numeração de linha segue a tabela da RN20 (os 3 ataques vêm do
+  4º, do 3º e do 2º jogador de linha, contra o goleiro, o 1º e o 2º do adversário); nenhum valor é recalculado. A
+  partir de 1280 px o campo fica deitado, com o mandante à esquerda; em telas menores fica de pé, com o mandante
+  embaixo. O campo da escalação usa o mesmo desenho.
 - Histórico de partidas (parte do F14): tabela com data e hora, mandante, placar, visitante e resultado, na
   ordem da API (da mais recente para a mais antiga), filtro por clube no endereço (`/partidas?club_id=2`, que
   envia `GET /matches?club_id=2`) e "Ver duelos" em cada partida, que abre a partida com `GET /matches/{id}`.
