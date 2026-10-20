@@ -88,7 +88,10 @@ backend/
                   (overall, valor base e valor de mercado)
     models/       modelos do ORM: tabelas e colunas em português, atributos em inglês
   migrations/     migrations do Alembic (versions/ guarda cada versão do schema)
-  tests/          testes automatizados (pytest): api/ (HTTP) e db/ (schema e restrições)
+  tests/          testes automatizados (pytest): domain/ (regras puras e tabelas do enunciado),
+                  api/ (HTTP) e db/ (schema e restrições)
+  conformance/    suíte de conformidade: os itens B01 a B22 conferidos de fora, por HTTP, contra a
+                  aplicação no ar
 frontend/
   src/
     app/          providers (React Query e rotas), layout, menu lateral e as rotas das telas
@@ -185,6 +188,18 @@ Eles preparam pela API só o que cada item não verifica na tela e, se o banco n
 começar com a instrução de recriá-lo. Na integração contínua, o job `compose-e2e` sobe a aplicação com os
 comandos da seção 3 em Ubuntu 24.04 e roda esses testes.
 
+Suíte de conformidade da API: repete os itens B01 a B22 do roteiro da API de fora, só por HTTP, contra a
+aplicação no ar e com o **banco recriado** (seção 2), como o script da banca; na raiz do repositório:
+
+```bash
+docker compose --profile test run --rm --build -e CONFORMANCE_API_URL=http://backend:8000/api/v1 backend-test pytest conformance
+```
+
+Ela cria os próprios dados (inclusive o cenário do exemplo da RN20, conferido duelo a duelo), enche a liga até os
+20 clubes no último teste e, se o banco não estiver vazio, para antes de começar. O `pytest` sem argumentos roda só
+a suíte de `tests/`. Na integração contínua, o job `compose-e2e` roda a conformidade, recria o banco e roda os
+testes de ponta a ponta.
+
 Alternativa no host para o backend (Python 3.12 com `venv`), com o banco no ar (`docker compose up -d db`),
 na pasta `backend`:
 
@@ -218,7 +233,9 @@ documentação interativa da API fica em http://localhost:8000/docs.
 | B21 e B22 | Partida, histórico de partidas e classificação (RN20 e RN21) | `domain/match_engine.py`, `domain/standings.py`, `services/matches.py` | `tests/api/test_matches.py`, `test_standings.py`, `tests/domain/test_match_engine.py`, `test_standings.py` |
 | Banco | 7 tabelas, chaves e unicidades | `models/`, `migrations/versions/` | `tests/db/test_schema.py` |
 
-Os caminhos acima são relativos a `backend/app` e `backend/tests`.
+Os caminhos acima são relativos a `backend/app` e `backend/tests`. Além desses testes, a suíte
+`backend/conformance` repete os itens B01 a B22 contra a aplicação no ar, com um arquivo por grupo de itens
+(seção 6).
 
 ### Roteiro da interface (F1)
 
