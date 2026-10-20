@@ -34,7 +34,7 @@ type ClubCellProps = {
   onBuy: () => void
 }
 
-/** Club name and acronym, or "Livre" with the button that starts the purchase (F06). */
+/** Club name and acronym, or "Livre" with the button that starts the purchase. */
 function ClubCell({ player, club, onBuy }: ClubCellProps) {
   if (player.club_id === null) {
     return (

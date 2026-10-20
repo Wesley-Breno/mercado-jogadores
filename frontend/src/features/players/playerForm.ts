@@ -45,7 +45,7 @@ function indicator(missing: string) {
 }
 
 /**
- * Limits of each field only (F2). Rules that cross fields, such as the sum of the attributes or the
+ * Limits of each field only. Rules that cross fields, such as the sum of the attributes or the
  * potential against the age, stay with the API, and its `message` is shown in the form.
  */
 export const playerCreateSchema = z.object({
@@ -82,7 +82,7 @@ export const EMPTY_PLAYER: DefaultValues<PlayerCreateFields> = {
 }
 
 /**
- * J09: only name, position, age and agility change. The age cannot go down, a refusal the screen
+ * RN08: only name, position, age and agility change. The age cannot go down, a refusal the screen
  * may prevent with the data it already has.
  */
 export function playerEditSchema(current: Player) {

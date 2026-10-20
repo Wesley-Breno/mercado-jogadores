@@ -58,7 +58,7 @@ type ClubsTableProps = {
   empty: ReactNode
 }
 
-/** F05: name, acronym, cash, squad value and net worth, in the order the API returned. */
+/** Name, acronym, cash, squad value and net worth, in the order the API returned (RN11). */
 export function ClubsTable({ clubs, isUpdating, error, onRetry, empty }: ClubsTableProps) {
   return (
     <DataTable

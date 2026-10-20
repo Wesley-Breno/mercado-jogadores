@@ -82,7 +82,7 @@ type StandingsTableProps = {
   onRetry: () => void
 }
 
-/** F14: every club, in the order returned by GET /standings, nothing sorted on screen. */
+/** RN21: every club, in the order returned by GET /standings, nothing sorted on screen. */
 export function StandingsTable({ rows, clubs, error, onRetry }: StandingsTableProps) {
   return (
     <DataTable

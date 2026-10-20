@@ -16,7 +16,7 @@ type NewMatchDialogProps = {
   onPlayed: (match: Match) => void
 }
 
-/** L02: a club without the 5 starters is refused by the API (409), and its `message` shows (L04). */
+/** RN20: a club without the 5 starters is refused by the API (409), and its `message` shows. */
 export function NewMatchDialog({ onClose, onPlayed }: NewMatchDialogProps) {
   const formId = useId()
   const clubs = useClubs()

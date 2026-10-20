@@ -9,7 +9,7 @@ function toneOf(rate: number): BadgeTone {
   return rate >= 20 ? 'danger' : 'warning'
 }
 
-/** The % of penalty the API returned, colored like the mockup: 0% green, 5–10% amber, 20% red. */
+/** The % of penalty the API returned (RN15): 0% green, 5–10% amber, 20% red. */
 export function PenaltyBadge({ rate }: { rate: number }) {
   return (
     <Badge tone={toneOf(rate)}>

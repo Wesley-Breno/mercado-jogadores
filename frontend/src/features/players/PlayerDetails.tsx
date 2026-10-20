@@ -19,7 +19,7 @@ type PlayerDetailsProps = {
   onAction: (kind: Exclude<PlayerAction['kind'], 'details' | 'delete'>) => void
 }
 
-/** J12: everything the API returned for the player, on a side panel, with his actions. */
+/** Everything the API returned for the player, on a side panel, with his actions. */
 export function PlayerDetails({ player, club, onClose, onAction }: PlayerDetailsProps) {
   const isFree = player.club_id === null
   return (

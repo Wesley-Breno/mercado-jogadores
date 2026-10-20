@@ -45,7 +45,7 @@ export function dateTimeParts(value: string): { date: string; time: string } {
   return { date: date.format(instant), time: time.format(instant) }
 }
 
-/** "07/11/2026 10:30", as in the mockup. */
+/** "07/11/2026 10:30", in Brasília time. */
 export function formatDateTime(value: string): string {
   const parts = dateTimeParts(value)
   return `${parts.date} ${parts.time}`

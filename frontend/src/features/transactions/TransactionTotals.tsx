@@ -19,7 +19,7 @@ type Total = {
   hint: string
 }
 
-/** F10: the `summary` of the API below the table, for the same filters as the table. */
+/** RN17: the `summary` of the API below the table, for the same filters as the table. */
 export function TransactionTotals({ summary }: { summary: TransactionSummary }) {
   const totals: Total[] = [
     {

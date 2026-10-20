@@ -19,7 +19,7 @@ type SellPlayerDialogProps = {
   onSold: (sale: Sale, wasStarter: boolean) => void
 }
 
-/** V01: the contract as the club page shows it now; the sale itself is valued by the API. */
+/** The contract as the club page shows it now; the sale itself is valued by the API. */
 export function SellPlayerDialog({ player, clubName, onClose, onSold }: SellPlayerDialogProps) {
   const sellPlayer = useSellPlayer()
   const isStarter = useIsStarter(player)

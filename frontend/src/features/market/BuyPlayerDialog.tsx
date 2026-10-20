@@ -21,8 +21,8 @@ type BuyPlayerDialogProps = {
 }
 
 /**
- * M01: the buying club and the end of loyalty. Refusals such as more than 50% of the cash, a full
- * squad or a buy back come from the API (409) and are shown here (M04).
+ * The buying club and the end of loyalty. Refusals such as more than 50% of the cash, a full squad
+ * or a buy back come from the API (409, RN12 to RN14) and are shown here.
  */
 export function BuyPlayerDialog({ player, onClose, onBought }: BuyPlayerDialogProps) {
   const formId = useId()

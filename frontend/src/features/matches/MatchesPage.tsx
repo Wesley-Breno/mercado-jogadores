@@ -14,7 +14,7 @@ import { Scoreboard } from './Scoreboard'
 
 const POSITIVE_INTEGER = /^[1-9][0-9]*$/
 
-/** F13 and F14: play a match and browse the history, filtered by club (kept in the address). */
+/** Play a match and browse the history, filtered by club (kept in the address). */
 export function MatchesPage() {
   const [params, setParams] = useSearchParams()
   const rawClubId = params.get('club_id') ?? ''

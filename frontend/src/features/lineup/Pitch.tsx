@@ -14,7 +14,7 @@ type PitchProps = {
 }
 
 /**
- * C06: the chosen starters drawn on a pitch, from the attack (top) to the goalkeeper (bottom). It
+ * The chosen starters drawn on a pitch, from the attack (top) to the goalkeeper (bottom). It
  * follows the choices on screen, before saving; an empty place shows the sector it is waiting for.
  */
 export function Pitch({ formation, starterOf }: PitchProps) {

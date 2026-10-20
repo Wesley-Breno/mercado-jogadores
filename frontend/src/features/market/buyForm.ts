@@ -5,7 +5,7 @@ import { isRealDate, isRealTime, toLocalDateTime } from '../../lib/dateInput'
 import { toApiDateTime } from '../../lib/format'
 
 /**
- * F06: the club and the end of loyalty, typed in Brasília time and sent with -03:00 (RN01). The
+ * The club and the end of loyalty, typed in Brasília time and sent with -03:00 (RN01). The
  * window "after now and up to 1.095 days" depends on the moment, so the API checks it.
  */
 export const buySchema = z

@@ -12,7 +12,7 @@ type DeletePlayerDialogProps = {
   onClose: () => void
 }
 
-/** J13: RN09 logical deletion; the list is fetched again and the player leaves it. */
+/** RN09: logical deletion; the list is fetched again and the player leaves it. */
 export function DeletePlayerDialog({ player, onClose }: DeletePlayerDialogProps) {
   const toast = useToast()
   const deletePlayer = useDeletePlayer()

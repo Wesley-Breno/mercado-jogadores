@@ -71,7 +71,7 @@ type MatchesTableProps = {
   empty: ReactNode
 }
 
-/** F14: date, home, score and away, from the newest to the oldest, as the API returned. */
+/** RN21: date, home, score and away, from the newest to the oldest, as the API returned. */
 export function MatchesTable({ matches, isUpdating, error, onRetry, empty }: MatchesTableProps) {
   return (
     <DataTable

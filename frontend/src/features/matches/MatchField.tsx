@@ -91,7 +91,7 @@ function FieldSide({ side, players, home }: FieldSideProps) {
   )
 }
 
-/** L03: the starters of both clubs on the pitch, with the values the API recorded in the duels. */
+/** The starters of both clubs on the pitch, with the values the API recorded in the duels. */
 export function MatchField({ match }: { match: Match }) {
   return (
     <Card aria-label="Em campo" className="mb-5 p-4">

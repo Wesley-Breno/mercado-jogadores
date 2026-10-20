@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 import type { MatchRequest } from '../../api/types'
 
-/** F2: both clubs are required; the same club on both sides is also refused by the API (400). */
+/** Both clubs are required; the same club on both sides is also refused by the API (400). */
 export const matchSchema = z
   .object({
     home_club_id: z.string().min(1, 'Escolha o mandante.'),

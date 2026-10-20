@@ -29,7 +29,7 @@ function SideDuels({ match, side, role }: { match: Match; side: MatchSide; role:
   )
 }
 
-/** F13 and F14: the match with the 6 duels returned by the API (L03), without recalculating. */
+/** The match with the 6 duels returned by the API (RN20), without recalculating. */
 export function MatchPage() {
   const { matchId = '' } = useParams()
   const match = useMatch(matchId)

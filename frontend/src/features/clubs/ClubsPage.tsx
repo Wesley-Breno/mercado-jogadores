@@ -12,7 +12,7 @@ import { CreateClub } from './CreateClub'
 import { CLUB_SORTS, CLUB_SORT_LABELS, MAX_CLUBS } from './labels'
 import { useClubs } from './queries'
 
-/** F05: the order chosen stays in the address (`/clubes?sort=net_worth_desc`). */
+/** RN11: the order chosen stays in the address (`/clubes?sort=net_worth_desc`). */
 export function ClubsPage() {
   const [params, setParams] = useSearchParams()
   const sort = CLUB_SORTS.find((value) => value === params.get('sort')) ?? 'name'

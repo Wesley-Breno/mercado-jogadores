@@ -80,7 +80,7 @@ export function candidatesFor(slot: Slot, squad: Player[], choices: Choices): Pl
   )
 }
 
-/** F2: a starter in each of the 5 places before sending. */
+/** A starter in each of the 5 places before sending. */
 export function missingSlots(formation: Formation, choices: Choices): string[] {
   return slotsOf(formation)
     .filter((slot) => choices[slot.key] === undefined)

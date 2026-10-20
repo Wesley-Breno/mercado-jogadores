@@ -9,7 +9,7 @@ import { CreateClubDialog } from './CreateClubDialog'
 
 /**
  * "Novo clube": the header button and the one of the empty list open the same form. After saving,
- * the new club's page opens (C04).
+ * the new club's page opens.
  */
 type CreateClubProps = {
   variant?: 'primary' | 'outline'

@@ -25,7 +25,7 @@ function CalculatedField({ label, hint }: { label: string; hint: string }) {
   )
 }
 
-/** J05: the button stays disabled while the request runs, so a double click sends one request. */
+/** The button stays disabled while the request runs, so a double click sends one request. */
 export function PlayerCreateDialog({ onClose, onCreated }: PlayerCreateDialogProps) {
   const formId = useId()
   const createPlayer = useCreatePlayer()

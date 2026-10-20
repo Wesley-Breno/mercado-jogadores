@@ -7,7 +7,7 @@ import { ATTRIBUTES, type PlayerCreateFields, typedIndicator } from './playerFor
 
 const WATCHED = [...ATTRIBUTES.map((attribute) => attribute.name), 'potential'] as const
 
-/** J05: draws the numbers being typed; overall and base value only come from the API. */
+/** Draws the numbers being typed; overall and base value only come from the API. */
 type AttributePreviewProps = {
   control: Control<PlayerCreateFields, unknown, PlayerCreate>
 }

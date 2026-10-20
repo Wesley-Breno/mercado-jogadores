@@ -75,7 +75,7 @@ function TableOrder() {
   )
 }
 
-/** F14: the standings as GET /standings returns them, with the recent matches beside. */
+/** RN21: the standings as GET /standings returns them, with the recent matches beside. */
 export function StandingsPage() {
   const standings = useStandings()
   const clubs = useClubs()

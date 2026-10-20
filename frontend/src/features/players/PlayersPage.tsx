@@ -44,7 +44,7 @@ const AVAILABILITY_LABELS: Record<Availability, string> = {
   owned: 'Em clubes',
 }
 
-/** F01 and F02: the filters live in the address, so going back and reloading keep them. */
+/** RN07: the filters live in the address, so going back and reloading keep them. */
 export function PlayersPage() {
   const [params, setParams] = useSearchParams()
   const query = readPlayerQuery(params)

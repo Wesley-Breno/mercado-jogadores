@@ -15,7 +15,7 @@ type CreateClubDialogProps = {
   onCreated: (club: Club) => void
 }
 
-/** C02: a repeated name or acronym and the 21st club are refused by the API (C03). */
+/** RN10: a repeated name or acronym and the 21st club are refused by the API. */
 export function CreateClubDialog({ onClose, onCreated }: CreateClubDialogProps) {
   const formId = useId()
   const createClub = useCreateClub()

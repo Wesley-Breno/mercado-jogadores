@@ -81,7 +81,7 @@ type SquadTableProps = {
   empty: ReactNode
 }
 
-/** F07: the squad in the order of the API (RN11) with the contract columns. */
+/** The squad in the order of the API (RN11), with the contract columns. */
 export function SquadTable({ players, onSell, error, onRetry, empty }: SquadTableProps) {
   return (
     <DataTable

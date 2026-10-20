@@ -84,7 +84,7 @@ type TransactionsTableProps = {
   empty: ReactNode
 }
 
-/** F09: the club history in the order of the API, with the cash change signed. */
+/** RN17: the club history in the order of the API, with the cash change signed. */
 export function TransactionsTable(props: TransactionsTableProps) {
   return (
     <DataTable

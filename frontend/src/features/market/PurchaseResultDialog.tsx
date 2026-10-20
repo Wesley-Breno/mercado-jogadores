@@ -15,7 +15,7 @@ type PurchaseResultDialogProps = {
 }
 
 /**
- * M05: every value comes from the API response; the only sum on screen is the total cost
+ * Every value comes from the API response; the only sum on screen is the total cost
  * (value + fee), which the statement allows.
  */
 export function PurchaseResultDialog({ purchase, clubName, onClose }: PurchaseResultDialogProps) {

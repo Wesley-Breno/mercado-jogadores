@@ -11,7 +11,7 @@ type SellPlayerProps = {
   onShowHistory: () => void
 }
 
-/** F08: the confirmation and, once the API accepts, every value of the sale. */
+/** The confirmation and, once the API accepts, every value of the sale. */
 export function SellPlayer({ player, clubName, onClose, onShowHistory }: SellPlayerProps) {
   const [result, setResult] = useState<{ sale: Sale; wasStarter: boolean } | null>(null)
 

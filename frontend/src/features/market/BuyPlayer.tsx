@@ -9,7 +9,7 @@ type BuyPlayerProps = {
   onClose: () => void
 }
 
-/** F06: the confirmation and, once the API accepts, the result of the purchase. */
+/** The purchase form and, once the API accepts, the result of the purchase. */
 export function BuyPlayer({ player, onClose }: BuyPlayerProps) {
   const [result, setResult] = useState<{ purchase: Purchase; clubName: string } | null>(null)
 

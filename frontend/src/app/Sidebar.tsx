@@ -19,7 +19,7 @@ function linkClasses(isActive: boolean): string {
 }
 
 /**
- * The menu of the mockup: sections with counters, the clubs (desktop only) and a summary of the
+ * The main menu: sections with counters, the clubs (desktop only) and a summary of the
  * league with the last match. Counters and summary are optional extras; while they load or if the
  * API is down they are simply left out.
  */

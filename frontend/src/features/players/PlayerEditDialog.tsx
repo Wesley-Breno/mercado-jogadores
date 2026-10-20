@@ -17,7 +17,7 @@ type PlayerEditDialogProps = {
   onClose: () => void
 }
 
-/** J09: PUT /players/{id} with name, position, age and agility. */
+/** RN08: PUT /players/{id} with name, position, age and agility. */
 export function PlayerEditDialog({ player, onClose }: PlayerEditDialogProps) {
   const formId = useId()
   const toast = useToast()

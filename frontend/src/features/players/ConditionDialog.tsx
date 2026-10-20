@@ -32,8 +32,8 @@ type ConditionDialogProps = {
 }
 
 /**
- * J10: from DOENTE straight to APTO is refused by the API, so that option is disabled. J16: a
- * starter who becomes DOENTE leaves the lineup, and the dialog says so before saving.
+ * From DOENTE straight to APTO is refused by the API, so that option is disabled. A starter who
+ * becomes DOENTE leaves the lineup (RN19), and the dialog says so before saving.
  */
 export function ConditionDialog({ player, onClose }: ConditionDialogProps) {
   const formId = useId()

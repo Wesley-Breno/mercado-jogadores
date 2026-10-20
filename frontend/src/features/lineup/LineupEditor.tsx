@@ -59,7 +59,7 @@ type LineupEditorProps = {
 }
 
 /**
- * F12: formation and one starter per place, chosen among squad players who are not DOENTE. It
+ * RN19: formation and one starter per place, chosen among squad players who are not DOENTE. It
  * starts from the saved lineup and, after saving, shows the one returned by the API.
  */
 export function LineupEditor({ club, saved }: LineupEditorProps) {

@@ -25,7 +25,7 @@ type DataTableProps<Row> = {
 const SKELETON_ROWS = 5
 
 /**
- * The table of every list screen, with the loading, empty and error states built in (F3).
+ * The table of every list screen, with the loading, empty and error states built in.
  * Without rows yet it shows a skeleton; while new rows load, the old ones stay dimmed.
  */
 export function DataTable<Row>({

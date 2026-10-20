@@ -103,7 +103,7 @@ function ClubStats({ club }: { club: ClubDetail | undefined }) {
   )
 }
 
-/** F07: cash, squad value and net worth from GET /clubs/{id}, and the squad with contracts. */
+/** Cash, squad value and net worth from GET /clubs/{id}, and the squad with the contracts. */
 export function ClubPage() {
   const { clubId = '' } = useParams()
   const club = useClub(clubId)

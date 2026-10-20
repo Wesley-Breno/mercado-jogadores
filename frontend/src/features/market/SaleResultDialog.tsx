@@ -24,7 +24,7 @@ function describe(sale: Sale, wasStarter: boolean): string {
 }
 
 /**
- * V02/V03: every value is the one returned by POST /players/{id}/sell; the hints only explain
+ * Every value is the one returned by POST /players/{id}/sell; the hints only explain
  * them (RN15 and RN16), nothing is calculated on screen.
  */
 export function SaleResultDialog({

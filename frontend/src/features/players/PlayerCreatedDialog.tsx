@@ -13,7 +13,7 @@ type PlayerCreatedDialogProps = {
   onShowDetails: () => void
 }
 
-/** J07: the values come from the API response, as they were calculated when saving. */
+/** The values come from the API response, as they were calculated when saving (RN06). */
 export function PlayerCreatedDialog({ player, onClose, onShowDetails }: PlayerCreatedDialogProps) {
   const situation = player.club_id === null ? 'livre' : 'com clube'
   return (

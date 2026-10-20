@@ -57,7 +57,7 @@ const COLUMNS: Column<Duel>[] = [
   },
 ]
 
-/** F13: the duels of one side as the API returned them, values already with the condition. */
+/** RN20: the duels of one side as the API returned them, values already with the condition. */
 export function DuelsTable({ label, duels }: { label: string; duels: Duel[] }) {
   return (
     <DataTable
