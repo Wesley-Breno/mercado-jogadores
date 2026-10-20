@@ -1,7 +1,6 @@
 import type { Formation, Player } from '../../api/types'
-import { initials } from '../../lib/initials'
-import { cn } from '../../lib/cn'
 import { type Sector, SECTOR_LABELS, slotsOf } from './lineupSlots'
+import { PitchMarker, PitchSurface } from './PitchSurface'
 
 const ROWS_FROM_ATTACK: Sector[] = ['ATA', 'MEI', 'DEF', 'GOL']
 
@@ -25,20 +24,7 @@ export function Pitch({ formation, starterOf }: PitchProps) {
 
   return (
     <figure className="m-0">
-      <div className="relative grid gap-6 overflow-hidden rounded-lg bg-green-700 px-3 py-6 bg-[repeating-linear-gradient(0deg,transparent_0_2.5rem,rgb(255_255_255/0.05)_2.5rem_5rem)]">
-        <span
-          aria-hidden
-          className="absolute top-0 left-1/2 h-12 w-32 -translate-x-1/2 border border-t-0 border-white/30"
-        />
-        <span aria-hidden className="absolute inset-x-0 top-1/2 h-px bg-white/30" />
-        <span
-          aria-hidden
-          className="absolute top-1/2 left-1/2 size-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/30"
-        />
-        <span
-          aria-hidden
-          className="absolute bottom-0 left-1/2 h-12 w-32 -translate-x-1/2 border border-b-0 border-white/30"
-        />
+      <PitchSurface className="grid gap-6 px-3 py-6">
         {rows.map((row) => (
           <ul key={row[0].sector} className="relative flex justify-around">
             {row.map((slot) => {
@@ -47,20 +33,16 @@ export function Pitch({ formation, starterOf }: PitchProps) {
               const unfit = player?.condition === 'MAL_CONDICIONADO'
               return (
                 <li key={slot.key} className="grid w-20 justify-items-center gap-1 text-center">
-                  <span
-                    aria-hidden
-                    className={cn(
-                      'relative grid size-10 place-items-center rounded-full text-xs font-semibold',
-                      player
-                        ? 'bg-blue-600 text-white ring-2 ring-white'
-                        : 'border-2 border-dashed border-white/60 text-white/80',
-                    )}
-                  >
-                    {player ? initials(player.name) : '+'}
-                    {unfit && (
-                      <span className="absolute -top-0.5 -right-0.5 size-3 rounded-full bg-amber-400 ring-2 ring-green-700" />
-                    )}
-                  </span>
+                  {player ? (
+                    <PitchMarker name={player.name} unfit={unfit} />
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="grid size-10 place-items-center rounded-full border-2 border-dashed border-white/60 text-xs font-semibold text-white/80"
+                    >
+                      +
+                    </span>
+                  )}
                   <span aria-hidden className="max-w-full truncate text-xs font-medium text-white">
                     {player ? lastName(player.name) : sector}
                   </span>
@@ -74,7 +56,7 @@ export function Pitch({ formation, starterOf }: PitchProps) {
             })}
           </ul>
         ))}
-      </div>
+      </PitchSurface>
       <figcaption className="mt-2 text-xs text-zinc-500">
         Na partida, atacam os 3 jogadores de linha mais avançados e defendem o goleiro e os 2 mais
         recuados. É gol quando o ataque é maior que a defesa.
