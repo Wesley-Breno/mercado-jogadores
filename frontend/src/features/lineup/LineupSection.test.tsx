@@ -171,7 +171,8 @@ describe('Escalação', () => {
     await user.click(screen.getByRole('radio', { name: /3-1/ }))
 
     const selects = screen.getAllByRole('combobox')
-    expect(screen.getAllByText('Defesa')).toHaveLength(3)
+    const starters = screen.getByRole('region', { name: 'Titulares' })
+    expect(within(starters).getAllByText('Defesa')).toHaveLength(3)
     expect(selects.map((select) => (select as HTMLSelectElement).value)).toEqual([
       '1',
       '2',
@@ -179,6 +180,28 @@ describe('Escalação', () => {
       '',
       '6',
     ])
+  })
+
+  it('mostra em campo os titulares escolhidos e, nas reservas, quem ficou de fora', async () => {
+    const user = userEvent.setup()
+    renderLineup({ ...FULL, complete: false, players: [BRUNO, FELIPE, DIEGO, SAVIO] })
+    const pitch = await screen.findByRole('region', { name: 'Em campo' })
+    const reserves = screen.getByRole('region', { name: 'Reservas' })
+
+    expect(within(pitch).getByText('Goleiro: Bruno Tavares')).toBeInTheDocument()
+    expect(within(pitch).getByText('Defesa: Diego Ramos, mal condicionado')).toBeInTheDocument()
+    expect(within(pitch).getByText('Ataque: vaga vazia')).toBeInTheDocument()
+    expect(within(pitch).getByText(/A vaga vazia fica tracejada/)).toBeInTheDocument()
+    const reserveItems = within(reserves).getAllByRole('listitem')
+    expect(reserveItems).toHaveLength(3)
+    expect(reserveItems[1]).toHaveTextContent('João Silva')
+    expect(reserveItems[2]).toHaveTextContent(/Lucas Ferraz.*Doente não pode ser escalado\./)
+
+    await pick(user, 4, 'João Silva (ATA)')
+
+    expect(within(pitch).getByText('Ataque: João Silva')).toBeInTheDocument()
+    expect(within(pitch).queryByText(/A vaga vazia fica tracejada/)).not.toBeInTheDocument()
+    expect(within(reserves).queryByText('João Silva')).not.toBeInTheDocument()
   })
 
   it('mostra o message da API e mantém as escolhas quando a escalação é recusada', async () => {
