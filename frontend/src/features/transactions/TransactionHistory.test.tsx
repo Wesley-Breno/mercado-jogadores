@@ -118,6 +118,17 @@ describe('Histórico de transações', () => {
     }
   })
 
+  it('com as duas caixas marcadas, pede os dois tipos à API', async () => {
+    const fetchMock = fakeHistory()
+    renderWithProviders(<AppRoutes />, '/clubes/1?aba=historico')
+
+    await screen.findByRole('row', { name: /Compra/ })
+
+    expect(screen.getByRole('checkbox', { name: 'Compra' })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: 'Venda' })).toBeChecked()
+    expect(historyUrls(fetchMock)).toContain('?type=COMPRA,VENDA')
+  })
+
   it('filtra por um tipo e mostra os totais desse filtro', async () => {
     const user = userEvent.setup()
     const fetchMock = fakeHistory([{ path: '/clubs/1/transactions?type=VENDA', body: ONLY_SALES }])
@@ -138,20 +149,22 @@ describe('Histórico de transações', () => {
 
   it('filtra por um jogador que aparece no histórico', async () => {
     const user = userEvent.setup()
-    const fetchMock = fakeHistory([{ path: '/clubs/1/transactions?player_id=2', body: EVERYTHING }])
+    const fetchMock = fakeHistory([
+      { path: '/clubs/1/transactions?type=COMPRA,VENDA&player_id=2', body: EVERYTHING },
+    ])
     renderWithProviders(<AppRoutes />, '/clubes/1?aba=historico')
     await screen.findByRole('row', { name: /Compra/ })
 
     await user.selectOptions(screen.getByLabelText('Jogador'), 'Meia Lua')
 
-    await waitFor(() => expect(historyUrls(fetchMock)).toContain('?player_id=2'))
+    await waitFor(() => expect(historyUrls(fetchMock)).toContain('?type=COMPRA,VENDA&player_id=2'))
     expect(screen.getByRole('button', { name: 'Limpar filtros' })).toBeInTheDocument()
   })
 
   it('mostra o message da API quando o filtro é recusado', async () => {
     fakeHistory([
       {
-        path: '/clubs/1/transactions?player_id=2',
+        path: '/clubs/1/transactions?type=COMPRA,VENDA&player_id=2',
         status: 404,
         body: { message: 'Jogador não encontrado.' },
       },
@@ -216,9 +229,9 @@ describe('Exportar CSV', () => {
   it('mostra o message da API quando a exportação é recusada', async () => {
     const user = userEvent.setup()
     fakeHistory([
-      { path: '/clubs/1/transactions?player_id=9', body: EVERYTHING },
+      { path: '/clubs/1/transactions?type=COMPRA,VENDA&player_id=9', body: EVERYTHING },
       {
-        path: '/clubs/1/transactions/export?player_id=9',
+        path: '/clubs/1/transactions/export?type=COMPRA,VENDA&player_id=9',
         status: 404,
         body: { message: 'Jogador não encontrado.' },
       },

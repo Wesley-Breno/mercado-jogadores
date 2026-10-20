@@ -128,7 +128,7 @@ export type TransactionHistory = {
 
 /** Filters of the history and of the CSV; without `type` both kinds come. */
 export type TransactionFilters = {
-  type?: TransactionType
+  type?: TransactionType[]
   player_id?: number
 }
 

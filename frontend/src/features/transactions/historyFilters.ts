@@ -1,29 +1,37 @@
 import type { Transaction, TransactionFilters, TransactionType } from '../../api/types'
 
 const POSITIVE_INTEGER = /^[1-9][0-9]*$/
-const TYPES: TransactionType[] = ['COMPRA', 'VENDA']
+export const TYPES: TransactionType[] = ['COMPRA', 'VENDA']
 
-/** `type` and `player_id` from the address, with the names of the API; invalid ones are left out. */
+/**
+ * `type` and `player_id` from the address, with the names of the API; invalid ones are left out.
+ * Without `type` in the address both boxes are checked, and the request still names both types.
+ */
 export function readHistoryFilters(params: URLSearchParams): TransactionFilters {
   const playerId = params.get('player_id')
+  const named = params.get('type')?.split(',') ?? []
+  const types = TYPES.filter((type) => named.includes(type))
   return {
-    type: TYPES.find((type) => type === params.get('type')),
+    type: types.length > 0 ? types : TYPES,
     player_id: playerId !== null && POSITIVE_INTEGER.test(playerId) ? Number(playerId) : undefined,
   }
 }
 
-/** Checked type boxes: no `type` means both. */
-export function checkedTypes(filters: TransactionFilters): Record<TransactionType, boolean> {
-  return {
-    COMPRA: filters.type !== 'VENDA',
-    VENDA: filters.type !== 'COMPRA',
-  }
+/** The address keeps `type` only while one box is unchecked. */
+export function typeParam(filters: TransactionFilters): string | undefined {
+  return filters.type && filters.type.length < TYPES.length ? filters.type.join(',') : undefined
 }
 
-/** Unchecking one box leaves only the other; checking it back shows both again. */
+export function checkedTypes(filters: TransactionFilters): Record<TransactionType, boolean> {
+  const checked = filters.type ?? TYPES
+  return { COMPRA: checked.includes('COMPRA'), VENDA: checked.includes('VENDA') }
+}
+
+/** Unchecking one box leaves only the other; the last checked box cannot be unchecked. */
 export function toggleType(filters: TransactionFilters, type: TransactionType): TransactionFilters {
-  const other = type === 'COMPRA' ? 'VENDA' : 'COMPRA'
-  return { ...filters, type: checkedTypes(filters)[type] ? other : undefined }
+  const checked = checkedTypes(filters)
+  const next = TYPES.filter((each) => (each === type ? !checked[each] : checked[each]))
+  return next.length > 0 ? { ...filters, type: next } : filters
 }
 
 type HistoryPlayer = {

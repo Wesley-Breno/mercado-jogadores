@@ -7,7 +7,13 @@ import { Select } from '../../components/ui/Field'
 import { EmptyState } from '../../components/ui/States'
 import { cn } from '../../lib/cn'
 import { ExportCsvButton } from './ExportCsvButton'
-import { checkedTypes, playersInHistory, readHistoryFilters, toggleType } from './historyFilters'
+import {
+  checkedTypes,
+  playersInHistory,
+  readHistoryFilters,
+  toggleType,
+  typeParam,
+} from './historyFilters'
 import { useTransactions } from './queries'
 import { TransactionsTable } from './TransactionsTable'
 import { TransactionTotals } from './TransactionTotals'
@@ -15,7 +21,7 @@ import { TransactionTotals } from './TransactionTotals'
 const TYPE_LABELS: Record<TransactionType, string> = { COMPRA: 'Compra', VENDA: 'Venda' }
 
 /**
- * F09 to F11: the history of the club with the filters by type and by player, kept in the address,
+ * RN17 and RN18: the history of the club with the filters by type and by player, kept in the address,
  * and the CSV with the same filters. A refused filter (a deleted player, for example) shows the
  * `message` of the API.
  */
@@ -26,15 +32,21 @@ export function TransactionHistory({ clubId }: { clubId: string }) {
   const everything = useTransactions(clubId, {})
   const players = playersInHistory(everything.data?.data ?? [])
   const checked = checkedTypes(filters)
-  const isFiltered = filters.type !== undefined || filters.player_id !== undefined
+  const isFiltered = typeParam(filters) !== undefined || filters.player_id !== undefined
 
-  function update(next: TransactionFilters) {
+  function isOnlyType(type: TransactionType): boolean {
+    return checked[type] && typeParam(filters) !== undefined
+  }
+
+  function update(changes: TransactionFilters) {
+    const next = { ...filters, ...changes }
     const changed = new URLSearchParams(params)
-    for (const [key, value] of Object.entries(next)) {
+    const values = { type: typeParam(next), player_id: next.player_id?.toString() }
+    for (const [key, value] of Object.entries(values)) {
       if (value === undefined) {
         changed.delete(key)
       } else {
-        changed.set(key, String(value))
+        changed.set(key, value)
       }
     }
     setParams(changed, { replace: true })
@@ -72,8 +84,8 @@ export function TransactionHistory({ clubId }: { clubId: string }) {
               <input
                 type="checkbox"
                 checked={checked[type]}
-                disabled={filters.type === type}
-                title={filters.type === type ? 'Fica pelo menos um tipo marcado.' : undefined}
+                disabled={isOnlyType(type)}
+                title={isOnlyType(type) ? 'Fica pelo menos um tipo marcado.' : undefined}
                 onChange={() => update(toggleType(filters, type))}
                 className="accent-blue-600"
               />

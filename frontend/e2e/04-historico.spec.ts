@@ -66,7 +66,11 @@ test('F09 e F10: histórico com variação do caixa com sinal e os totais do sum
 })
 
 test('F09 e F10: filtro por tipo e por jogador, com os totais do filtro', async ({ page }) => {
+  const bothTypes = page.waitForRequest((request) =>
+    request.url().endsWith(`/clubs/${epsilon.id}/transactions?type=COMPRA,VENDA`),
+  )
   await page.goto(`/clubes/${epsilon.id}?aba=historico`)
+  await bothTypes
   await expect(page.getByLabel('Totais do histórico')).toBeVisible()
 
   await page.getByRole('checkbox', { name: 'Compra' }).click()

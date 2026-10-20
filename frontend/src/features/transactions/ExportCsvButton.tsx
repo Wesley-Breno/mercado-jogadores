@@ -12,7 +12,7 @@ const TYPE_NAMES = { COMPRA: 'Compra', VENDA: 'Venda' } as const
 
 function describeFilters(filters: TransactionFilters, playerName: string | undefined): string {
   const applied = [
-    filters.type && `tipo ${TYPE_NAMES[filters.type]}`,
+    filters.type?.length === 1 && `tipo ${TYPE_NAMES[filters.type[0]]}`,
     filters.player_id !== undefined && `jogador ${playerName ?? `nº ${filters.player_id}`}`,
   ].filter(Boolean)
   return applied.length ? `com o filtro de ${applied.join(' e ')} aplicado` : 'sem filtros'
@@ -24,7 +24,7 @@ type ExportCsvButtonProps = {
   playerName: string | undefined
 }
 
-/** F11: downloads the file returned by the API (RN18), asked with the filters of the screen. */
+/** RN18: downloads the file returned by the API, asked with the filters of the screen. */
 export function ExportCsvButton({ clubId, filters, playerName }: ExportCsvButtonProps) {
   const toast = useToast()
   const { run, isPending, error } = useSingleAction()
