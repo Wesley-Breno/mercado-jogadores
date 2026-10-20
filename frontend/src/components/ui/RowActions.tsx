@@ -1,8 +1,8 @@
 import { Ellipsis, type LucideIcon } from 'lucide-react'
-import { useEffect, useId, useRef } from 'react'
+import { useId } from 'react'
 
 import { cn } from '../../lib/cn'
-import { focusFirstItem, moveFocusWithArrows } from './menuFocus'
+import { MENU_ITEM, Menu } from './Menu'
 import { Popover } from './Popover'
 
 type RowAction = {
@@ -21,24 +21,10 @@ type ActionListProps = {
 }
 
 function ActionList({ title, actions, onPick }: ActionListProps) {
-  const menuRef = useRef<HTMLDivElement>(null)
   const menuId = useId()
 
-  useEffect(() => {
-    focusFirstItem(menuRef.current)
-  }, [])
-
   return (
-    <div
-      ref={menuRef}
-      role="menu"
-      aria-label={title}
-      onKeyDown={moveFocusWithArrows}
-      className="p-1"
-    >
-      <p aria-hidden className="truncate px-2 py-1.5 text-xs text-zinc-500">
-        {title}
-      </p>
+    <Menu title={title}>
       {actions.map((action, index) => (
         <div
           key={action.label}
@@ -51,7 +37,8 @@ function ActionList({ title, actions, onPick }: ActionListProps) {
             aria-describedby={action.note ? `${menuId}-${index}` : undefined}
             onClick={() => onPick(action)}
             className={cn(
-              'flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
+              MENU_ITEM,
+              'disabled:pointer-events-none disabled:opacity-50',
               action.danger && 'text-red-600',
             )}
           >
@@ -68,7 +55,7 @@ function ActionList({ title, actions, onPick }: ActionListProps) {
           )}
         </div>
       ))}
-    </div>
+    </Menu>
   )
 }
 

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 
 import type { Club, Condition, PlayerQuery, Position } from '../../api/types'
 import { Card } from '../../components/ui/Card'
-import { type Choice, ChoiceMenu } from '../../components/ui/ChoiceMenu'
+import { type Choice, ChoiceButton } from '../../components/ui/ChoiceMenu'
 import { Input } from '../../components/ui/Field'
 import { Popover } from '../../components/ui/Popover'
 import { formatMoney } from '../../lib/format'
@@ -85,64 +85,34 @@ export function PlayerFilters({ query, clubs, active, onChange }: PlayerFiltersP
             onChange={(event) => onChange({ search: event.target.value }, { replace: true })}
           />
         </label>
-        <Popover
+        <ChoiceButton
           icon={Shirt}
           label={withPrefix('Posição', query.position && POSITION_LABELS[query.position])}
           active={query.position !== undefined}
-          popup="menu"
-          panelLabel="Posição"
-        >
-          {(close) => (
-            <ChoiceMenu
-              title="Posição"
-              choices={POSITION_CHOICES}
-              selected={query.position}
-              onSelect={(position) => {
-                close()
-                onChange({ position })
-              }}
-            />
-          )}
-        </Popover>
-        <Popover
+          title="Posição"
+          choices={POSITION_CHOICES}
+          selected={query.position}
+          onSelect={(position) => onChange({ position })}
+        />
+        <ChoiceButton
           icon={HeartPulse}
           label={withPrefix('Condição', query.condition && CONDITION_LABELS[query.condition])}
           active={query.condition !== undefined}
-          popup="menu"
-          panelLabel="Condição"
-        >
-          {(close) => (
-            <ChoiceMenu
-              title="Condição"
-              choices={CONDITION_CHOICES}
-              selected={query.condition}
-              onSelect={(condition) => {
-                close()
-                onChange({ condition })
-              }}
-            />
-          )}
-        </Popover>
-        <Popover
+          title="Condição"
+          choices={CONDITION_CHOICES}
+          selected={query.condition}
+          onSelect={(condition) => onChange({ condition })}
+        />
+        <ChoiceButton
           icon={Shield}
           label={withPrefix('Clube', selectedClub?.name)}
           active={query.club_id !== undefined}
           disabled={isFreeOnly}
-          popup="menu"
-          panelLabel="Clube"
-        >
-          {(close) => (
-            <ChoiceMenu
-              title="Clube"
-              choices={clubChoices}
-              selected={query.club_id}
-              onSelect={(clubId) => {
-                close()
-                onChange({ club_id: clubId })
-              }}
-            />
-          )}
-        </Popover>
+          title="Clube"
+          choices={clubChoices}
+          selected={query.club_id}
+          onSelect={(clubId) => onChange({ club_id: clubId })}
+        />
         <Popover
           icon={User}
           label={withPrefix('Idade', ageLabel(query))}

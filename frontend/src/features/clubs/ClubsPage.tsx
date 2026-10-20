@@ -3,9 +3,8 @@ import { useSearchParams } from 'react-router'
 
 import { Badge } from '../../components/ui/Badge'
 import { Card } from '../../components/ui/Card'
-import { ChoiceMenu } from '../../components/ui/ChoiceMenu'
+import { ChoiceButton } from '../../components/ui/ChoiceMenu'
 import { PageHeader } from '../../components/ui/PageHeader'
-import { Popover } from '../../components/ui/Popover'
 import { EmptyState } from '../../components/ui/States'
 import { lowerFirst } from '../../lib/text'
 import { ClubsTable } from './ClubsTable'
@@ -38,25 +37,15 @@ export function ClubsPage() {
               </Badge>
             )}
           </p>
-          <Popover
+          <ChoiceButton
             icon={ArrowUpDown}
             label={`Ordenar: ${lowerFirst(CLUB_SORT_LABELS[sort])}`}
             align="end"
-            popup="menu"
-            panelLabel="Ordenar por"
-          >
-            {(close) => (
-              <ChoiceMenu
-                title="Ordenar por"
-                choices={CLUB_SORTS.map((value) => ({ value, label: CLUB_SORT_LABELS[value] }))}
-                selected={sort}
-                onSelect={(value) => {
-                  close()
-                  setParams({ sort: value })
-                }}
-              />
-            )}
-          </Popover>
+            title="Ordenar por"
+            choices={CLUB_SORTS.map((value) => ({ value, label: CLUB_SORT_LABELS[value] }))}
+            selected={sort}
+            onSelect={(value) => setParams({ sort: value })}
+          />
         </div>
         <ClubsTable
           clubs={clubs.data}

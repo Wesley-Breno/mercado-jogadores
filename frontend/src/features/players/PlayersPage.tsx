@@ -6,10 +6,9 @@ import { toSearchParams } from '../../api/searchParams'
 import type { PlayerQuery } from '../../api/types'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
-import { ChoiceMenu } from '../../components/ui/ChoiceMenu'
+import { ChoiceButton } from '../../components/ui/ChoiceMenu'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { Pagination } from '../../components/ui/Pagination'
-import { Popover } from '../../components/ui/Popover'
 import { SegmentedControl } from '../../components/ui/SegmentedControl'
 import { EmptyState } from '../../components/ui/States'
 import { useDebouncedValue } from '../../hooks/useDebouncedValue'
@@ -124,25 +123,15 @@ export function PlayersPage() {
               }
             })}
           />
-          <Popover
+          <ChoiceButton
             icon={ArrowUpDown}
             label={`Ordenar: ${lowerFirst(SORT_LABELS[sort])}`}
             align="end"
-            popup="menu"
-            panelLabel="Ordenar por"
-          >
-            {(close) => (
-              <ChoiceMenu
-                title="Ordenar por"
-                choices={SORTS.map((value) => ({ value, label: SORT_LABELS[value] }))}
-                selected={sort}
-                onSelect={(value) => {
-                  close()
-                  update({ sort: value })
-                }}
-              />
-            )}
-          </Popover>
+            title="Ordenar por"
+            choices={SORTS.map((value) => ({ value, label: SORT_LABELS[value] }))}
+            selected={sort}
+            onSelect={(value) => update({ sort: value })}
+          />
         </div>
         <PlayersTable
           players={players.data?.data}

@@ -1,8 +1,8 @@
-import { Check } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import { Check, type LucideIcon } from 'lucide-react'
 
 import { cn } from '../../lib/cn'
-import { focusFirstItem, moveFocusWithArrows } from './menuFocus'
+import { MENU_ITEM, Menu } from './Menu'
+import { Popover } from './Popover'
 
 export type Choice<Value> = {
   value: Value
@@ -17,24 +17,9 @@ type ChoiceMenuProps<Value> = {
 }
 
 /** Single-choice menu for a Popover: arrows move between the options, Enter picks one. */
-export function ChoiceMenu<Value>({ title, choices, selected, onSelect }: ChoiceMenuProps<Value>) {
-  const menuRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    focusFirstItem(menuRef.current)
-  }, [])
-
+function ChoiceMenu<Value>({ title, choices, selected, onSelect }: ChoiceMenuProps<Value>) {
   return (
-    <div
-      ref={menuRef}
-      role="menu"
-      aria-label={title}
-      onKeyDown={moveFocusWithArrows}
-      className="max-h-80 overflow-y-auto p-1"
-    >
-      <p aria-hidden className="px-2 py-1.5 text-xs text-zinc-500">
-        {title}
-      </p>
+    <Menu title={title} className="max-h-80 overflow-y-auto">
       {choices.map((choice) => (
         <button
           key={choice.label}
@@ -42,7 +27,7 @@ export function ChoiceMenu<Value>({ title, choices, selected, onSelect }: Choice
           role="menuitemradio"
           aria-checked={choice.value === selected}
           onClick={() => onSelect(choice.value)}
-          className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm hover:bg-zinc-100 focus-visible:bg-zinc-100 focus-visible:outline-none"
+          className={MENU_ITEM}
         >
           <Check
             aria-hidden
@@ -51,6 +36,49 @@ export function ChoiceMenu<Value>({ title, choices, selected, onSelect }: Choice
           {choice.label}
         </button>
       ))}
-    </div>
+    </Menu>
+  )
+}
+
+type ChoiceButtonProps<Value> = ChoiceMenuProps<Value> & {
+  label: string
+  icon: LucideIcon
+  active?: boolean
+  disabled?: boolean
+  align?: 'start' | 'end'
+}
+
+/** Button that opens a single-choice menu; picking an option closes it. */
+export function ChoiceButton<Value>({
+  label,
+  icon,
+  active,
+  disabled,
+  align,
+  title,
+  onSelect,
+  ...menu
+}: ChoiceButtonProps<Value>) {
+  return (
+    <Popover
+      icon={icon}
+      label={label}
+      active={active}
+      disabled={disabled}
+      align={align}
+      popup="menu"
+      panelLabel={title}
+    >
+      {(close) => (
+        <ChoiceMenu
+          {...menu}
+          title={title}
+          onSelect={(value) => {
+            close()
+            onSelect(value)
+          }}
+        />
+      )}
+    </Popover>
   )
 }
