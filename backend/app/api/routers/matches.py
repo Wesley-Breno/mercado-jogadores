@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response, status
 
 from app.api.deps import MatchId, MatchServiceDep
 from app.api.params import match_club_filter
+from app.api.schemas.errors import error_responses
 from app.api.schemas.matches import MatchRequest, MatchResponse, MatchSummaryResponse
 
 router = APIRouter(prefix="/matches", tags=["Liga"])
@@ -13,6 +14,7 @@ router = APIRouter(prefix="/matches", tags=["Liga"])
     "",
     status_code=status.HTTP_201_CREATED,
     summary="Joga uma partida: 6 duelos pelos atributos dos titulares, sem sorteio (RN20)",
+    responses=error_responses(400, 404, 409),
 )
 def play_match(
     payload: MatchRequest, request: Request, response: Response, service: MatchServiceDep
@@ -24,13 +26,22 @@ def play_match(
     return MatchResponse.from_view(played)
 
 
-@router.get("", summary="Histórico de partidas, da mais recente para a mais antiga (RN21)")
+@router.get(
+    "",
+    summary="Histórico de partidas, da mais recente para a mais antiga (RN21)",
+    responses=error_responses(400, 404),
+)
 def list_matches(
     club_id: Annotated[int | None, Depends(match_club_filter)], service: MatchServiceDep
 ) -> list[MatchSummaryResponse]:
     return [MatchSummaryResponse.from_view(view) for view in service.list_matches(club_id)]
 
 
-@router.get("/{match_id}", name="get_match", summary="Partida com os 6 duelos (RN21)")
+@router.get(
+    "/{match_id}",
+    name="get_match",
+    summary="Partida com os 6 duelos (RN21)",
+    responses=error_responses(404),
+)
 def get_match(match_id: MatchId, service: MatchServiceDep) -> MatchResponse:
     return MatchResponse.from_view(service.get(match_id))

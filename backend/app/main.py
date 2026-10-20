@@ -1,6 +1,9 @@
+from functools import partial
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.openapi import build_openapi
 from app.api.router import api_router
 from app.core.config import Settings
 from app.core.database import create_session_factory
@@ -27,4 +30,5 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         expose_headers=["Location", "Content-Disposition"],
     )
     app.include_router(api_router)
+    app.openapi = partial(build_openapi, app)
     return app

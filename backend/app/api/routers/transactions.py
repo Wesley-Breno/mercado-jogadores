@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Response
 
 from app.api.deps import ClubId, TransactionServiceDep
 from app.api.params import transaction_filters
+from app.api.schemas.errors import error_responses
 from app.api.schemas.transactions import TransactionHistoryResponse
 from app.api.transactions_csv import render_transactions_csv
 from app.domain.transaction_filters import TransactionFilters
@@ -16,6 +17,7 @@ Filters = Annotated[TransactionFilters, Depends(transaction_filters)]
 @router.get(
     "/{club_id}/transactions",
     summary="Histórico de compras e vendas do clube, com summary (RN17)",
+    responses=error_responses(400, 404),
 )
 def list_transactions(
     club_id: ClubId, filters: Filters, service: TransactionServiceDep
@@ -27,7 +29,10 @@ def list_transactions(
     "/{club_id}/transactions/export",
     summary="Histórico do clube em CSV, com os mesmos filtros (RN18)",
     response_class=Response,
-    responses={200: {"content": {"text/csv": {}}, "description": "Arquivo CSV"}},
+    responses={
+        200: {"content": {"text/csv": {}}, "description": "Arquivo CSV"},
+        **error_responses(400, 404),
+    },
 )
 def export_transactions(
     club_id: ClubId, filters: Filters, service: TransactionServiceDep
