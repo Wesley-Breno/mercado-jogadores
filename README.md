@@ -212,6 +212,14 @@ cp .env.example .env
 .venv/bin/uvicorn app.main:create_app --factory --reload --no-access-log
 ```
 
+E a interface no host (Node.js 22), com essa API no ar, na pasta `frontend`; ela abre em http://localhost:5173:
+
+```bash
+cp .env.example .env
+npm ci
+npm run dev
+```
+
 ## 7. Guia para a avaliação
 
 Mapa de onde está cada item dos roteiros, para conferir no código e nos testes. Com a aplicação no ar, a
