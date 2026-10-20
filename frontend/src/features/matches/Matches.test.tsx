@@ -156,12 +156,35 @@ describe('Partida', () => {
 
     expect(within(home).getAllByRole('row')).toHaveLength(4)
     expect(within(away).getAllByRole('row')).toHaveLength(4)
-    const first = within(home).getByRole('row', { name: /Atacante 1/ })
+    const first = within(home).getByRole('row', { name: /Otto Rangel/ })
     expect(within(first).getByText('Finalização')).toBeInTheDocument()
-    expect(within(first).getByText('71')).toBeInTheDocument()
+    expect(within(first).getByText('75')).toBeInTheDocument()
     expect(within(first).getByText('Gol')).toBeInTheDocument()
-    expect(within(home).getByText('ATA · Mal condicionado')).toBeInTheDocument()
+    expect(within(home).getByText('LAT · Mal condicionado')).toBeInTheDocument()
     expect(screen.getByLabelText('Você está em')).toHaveTextContent('Águias FC 1 × 2 Delta FC')
+  })
+
+  it('desenha em campo os titulares dos dois clubes com os valores gravados nos duelos', async () => {
+    fakeRoutes([{ path: '/matches/1', body: AGUIAS_DELTA }])
+    renderWithProviders(<AppRoutes />, '/partidas/1')
+
+    const home = await screen.findByRole('region', {
+      name: 'Titulares do Águias FC, mandante, no 2-1-1',
+    })
+    const away = screen.getByRole('region', { name: 'Titulares do Delta FC, visitante, no 2-1-1' })
+
+    expect(within(home).getAllByRole('listitem')).toHaveLength(5)
+    expect(within(away).getAllByRole('listitem')).toHaveLength(5)
+    expect(within(home).getByText('Rui Prado, GOL: defesa 77')).toBeInTheDocument()
+    expect(
+      within(home).getByText('Davi Lins, LAT, 2º de linha, mal condicionado: drible 63, defesa 56'),
+    ).toBeInTheDocument()
+    expect(
+      within(home).getByText('Otto Rangel, ATA, 4º de linha: finalização 75 (gol)'),
+    ).toBeInTheDocument()
+    expect(
+      within(away).getByText('Lino Matos, LAT, 2º de linha: drible 79 (gol), defesa 63'),
+    ).toBeInTheDocument()
   })
 
   it('avisa quando a partida não existe', async () => {

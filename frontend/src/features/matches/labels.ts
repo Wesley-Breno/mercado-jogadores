@@ -19,3 +19,10 @@ export const ATTRIBUTE_LABELS: Record<DuelAttribute, string> = {
   dribbling: 'Drible',
   defending: 'Defesa',
 }
+
+export const ATTRIBUTE_SHORT_LABELS: Record<DuelAttribute, string> = {
+  shooting: 'Fin',
+  passing: 'Pas',
+  dribbling: 'Dri',
+  defending: 'Def',
+}

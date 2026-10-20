@@ -7,6 +7,7 @@ import { useBreadcrumbTail } from '../../app/breadcrumbContext'
 import { ButtonLink } from '../../components/ui/ButtonLink'
 import { Card } from '../../components/ui/Card'
 import { EmptyState, ErrorState } from '../../components/ui/States'
+import { MatchField } from './MatchField'
 import { useMatch } from './queries'
 import { Scoreboard } from './Scoreboard'
 import { DuelsTable } from './DuelsTable'
@@ -72,6 +73,7 @@ export function MatchPage() {
             <h1 className="sr-only">{title}</h1>
             <Scoreboard match={match.data} />
           </Card>
+          <MatchField match={match.data} />
           <Card>
             <div className="px-4 py-3">
               <h2 className="font-semibold">Duelos</h2>

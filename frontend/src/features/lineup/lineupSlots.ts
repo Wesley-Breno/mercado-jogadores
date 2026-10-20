@@ -27,7 +27,7 @@ export const SECTOR_LABELS: Record<Sector, { name: string; positions: string }> 
   ATA: { name: 'Ataque', positions: 'ATA' },
 }
 
-const SECTOR_OF: Record<Position, Sector> = {
+export const SECTOR_OF: Record<Position, Sector> = {
   GOL: 'GOL',
   ZAG: 'DEF',
   LAT: 'DEF',
