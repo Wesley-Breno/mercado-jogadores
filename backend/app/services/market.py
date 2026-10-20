@@ -14,7 +14,7 @@ from app.domain.market import (
     settle_sale,
 )
 from app.domain.money import format_brl
-from app.models import Contract, Transaction
+from app.models import Club, Contract, Player, Transaction
 from app.repositories.clubs import ClubRepository
 from app.repositories.contracts import ContractRepository
 from app.repositories.lineups import LineupRepository
@@ -49,14 +49,7 @@ class MarketService:
         club = self.clubs.find(data.club_id, for_update=True)
         if club is None:
             raise NotFoundError(CLUB_NOT_FOUND)
-        if player.club_id is not None:
-            raise ConflictError("O jogador não está livre: ele já pertence a um clube.")
-        if self.transactions.club_sold_player(club.id, player.id):
-            raise ConflictError(
-                "O clube não pode comprar de volta um jogador que ele mesmo vendeu."
-            )
-        if self.players.count_in_club(club.id) >= MAX_SQUAD_SIZE:
-            raise ConflictError(f"O elenco do clube já tem {MAX_SQUAD_SIZE} jogadores.")
+        self._check_can_join(player, club)
 
         price = value_player(player).market_value
         fee = purchase_fee(price)
@@ -95,6 +88,17 @@ class MarketService:
         )
         self.session.commit()
         return PurchaseResult(transaction, contract, club.cash)
+
+    def _check_can_join(self, player: Player, club: Club) -> None:
+        """RN12 and RN14: a free player, never sold by this club, into a squad below 12."""
+        if player.club_id is not None:
+            raise ConflictError("O jogador não está livre: ele já pertence a um clube.")
+        if self.transactions.club_sold_player(club.id, player.id):
+            raise ConflictError(
+                "O clube não pode comprar de volta um jogador que ele mesmo vendeu."
+            )
+        if self.players.count_in_club(club.id) >= MAX_SQUAD_SIZE:
+            raise ConflictError(f"O elenco do clube já tem {MAX_SQUAD_SIZE} jogadores.")
 
     def sell(self, player_id: int) -> SaleResult:
         """RN15 and RN16: sold by the current club, at the market value of this moment."""
