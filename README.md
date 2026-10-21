@@ -252,12 +252,12 @@ Os caminhos acima são relativos a `backend/app` e `backend/tests`. Além desses
 
 | Itens | Tela | Teste de ponta a ponta |
 | --- | --- | --- |
-| F01 a F04 | Jogadores (`/jogadores`): tabela, busca, filtros, ordenação, cadastro, edição, condição e exclusão | `frontend/e2e/01-jogadores.spec.ts` |
-| F05 | Clubes (`/clubes`): lista ordenável e criação | `frontend/e2e/02-clubes.spec.ts` |
-| F06 a F08 | Comprar na linha do jogador livre; página do clube (`/clubes/:id`) com Vender | `frontend/e2e/03-mercado.spec.ts` |
-| F09 a F11 | Aba Histórico do clube: filtros, totais e Exportar CSV | `frontend/e2e/04-historico.spec.ts` |
-| F12 | Aba Escalação do clube | `frontend/e2e/05-escalacao.spec.ts` |
-| F13 e F14 | Partidas (`/partidas`), partida com os duelos (`/partidas/:id`) e classificação (`/classificacao`) | `frontend/e2e/06-liga.spec.ts` |
+| F01 a F04 | Jogadores (`/jogadores`): tabela, busca, filtros, ordenação, cadastro, edição, condição e exclusão | `frontend/e2e/01-players.spec.ts` |
+| F05 | Clubes (`/clubes`): lista ordenável e criação | `frontend/e2e/02-clubs.spec.ts` |
+| F06 a F08 | Comprar na linha do jogador livre; página do clube (`/clubes/:id`) com Vender | `frontend/e2e/03-market.spec.ts` |
+| F09 a F11 | Aba Histórico do clube: filtros, totais e Exportar CSV | `frontend/e2e/04-history.spec.ts` |
+| F12 | Aba Escalação do clube | `frontend/e2e/05-lineup.spec.ts` |
+| F13 e F14 | Partidas (`/partidas`), partida com os duelos (`/partidas/:id`) e classificação (`/classificacao`) | `frontend/e2e/06-league.spec.ts` |
 
 Os testes de componente (Vitest) de cada tela ficam ao lado dela, em `frontend/src/features/`, e cobrem também os
 estados de carregamento, lista vazia e erro.
