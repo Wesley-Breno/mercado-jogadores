@@ -1,13 +1,26 @@
+import { type ComponentType, lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router'
 
-import { ClubPage } from '../features/clubs/ClubPage'
-import { ClubsPage } from '../features/clubs/ClubsPage'
-import { MatchesPage } from '../features/matches/MatchesPage'
-import { MatchPage } from '../features/matches/MatchPage'
-import { PlayersPage } from '../features/players/PlayersPage'
-import { StandingsPage } from '../features/standings/StandingsPage'
 import { AppLayout } from './AppLayout'
 import { NotFoundPage } from './NotFoundPage'
+
+/** Each screen is a separate file of the build, downloaded the first time the screen opens. */
+function lazyScreen<Name extends string>(
+  load: () => Promise<Record<Name, ComponentType>>,
+  name: Name,
+) {
+  return lazy(() => load().then((module) => ({ default: module[name] })))
+}
+
+const PlayersPage = lazyScreen(() => import('../features/players/PlayersPage'), 'PlayersPage')
+const ClubsPage = lazyScreen(() => import('../features/clubs/ClubsPage'), 'ClubsPage')
+const ClubPage = lazyScreen(() => import('../features/clubs/ClubPage'), 'ClubPage')
+const MatchesPage = lazyScreen(() => import('../features/matches/MatchesPage'), 'MatchesPage')
+const MatchPage = lazyScreen(() => import('../features/matches/MatchPage'), 'MatchPage')
+const StandingsPage = lazyScreen(
+  () => import('../features/standings/StandingsPage'),
+  'StandingsPage',
+)
 
 export function AppRoutes() {
   return (

@@ -1,12 +1,24 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { ChevronRight, RefreshCw } from 'lucide-react'
-import { type MouseEvent, useEffect, useRef, useState } from 'react'
+import { type MouseEvent, Suspense, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
 
 import { cn } from '../lib/cn'
 import { BreadcrumbContext } from './breadcrumbContext'
 import { breadcrumbFor, pageTitle } from './navigation'
 import { Sidebar } from './Sidebar'
+
+/** While the code of a screen downloads, the menu and the header stay, and only the content waits. */
+function ScreenLoading() {
+  return (
+    <>
+      <p role="status" className="sr-only">
+        Carregando a tela…
+      </p>
+      <span className="block h-64 animate-pulse rounded-xl bg-zinc-100" />
+    </>
+  )
+}
 
 export function AppLayout() {
   const { pathname } = useLocation()
@@ -77,7 +89,9 @@ export function AppLayout() {
             className="px-4 py-6 focus:outline-none lg:px-8 lg:py-7"
           >
             <BreadcrumbContext.Provider value={setTail}>
-              <Outlet />
+              <Suspense fallback={<ScreenLoading />}>
+                <Outlet />
+              </Suspense>
             </BreadcrumbContext.Provider>
           </main>
         </div>
