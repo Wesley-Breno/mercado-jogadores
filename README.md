@@ -18,24 +18,7 @@ histórico de transações, escalação, partidas e classificação.
 | Python | 3.12 | Imagem pública `python:3.12.15-slim-bookworm`; no host, só para desenvolvimento e testes |
 | Node.js (com npm) | 22 LTS | Imagem pública `node:22.23.3-alpine3.24` no build da interface; no host, para os testes, o lint e a formatação do frontend |
 
-## 2. Banco de dados
-
-PostgreSQL 16 em contêiner, com os dados no volume `db-data`. O banco é criado vazio pelos comandos da seção 3: ao
-subir, a API aplica as migrations versionadas do Alembic (`backend/migrations/versions`) antes de iniciar o servidor.
-Nenhum dado de exemplo é carregado.
-
-Para recriar do zero, apagando todos os dados e aplicando as migrations de novo, com a aplicação no ar (na raiz do
-repositório):
-
-```bash
-docker compose exec backend alembic downgrade base
-docker compose exec backend alembic upgrade head
-```
-
-A API continua no ar durante a recriação, e os ids voltam a começar em 1. Outra forma, que também apaga o volume:
-`docker compose down -v` seguido de `docker compose up -d --build`.
-
-## 3. Instalar e executar
+## 2. Instalar e executar
 
 Na raiz do repositório:
 
@@ -51,7 +34,24 @@ docker compose up -d --build
 | Documentação interativa (Swagger) | http://localhost:8000/docs |
 | Verificação de saúde da API | http://localhost:8000/api/v1/health |
 
-Para parar: `docker compose down`.
+Esses comandos também criam o banco (seção 3). Para parar: `docker compose down`.
+
+## 3. Banco de dados
+
+PostgreSQL 16 em contêiner, com os dados no volume `db-data`. O banco é criado vazio pelos comandos da seção 2: ao
+subir, a API aplica as migrations versionadas do Alembic (`backend/migrations/versions`) antes de iniciar o servidor.
+Nenhum dado de exemplo é carregado.
+
+Para recriar do zero, apagando todos os dados e aplicando as migrations de novo, com a aplicação no ar (depois dos
+comandos da seção 2), na raiz do repositório:
+
+```bash
+docker compose exec backend alembic downgrade base
+docker compose exec backend alembic upgrade head
+```
+
+A API continua no ar durante a recriação, e os ids voltam a começar em 1. Outra forma, que também apaga o volume:
+`docker compose down -v` seguido de `docker compose up -d --build`.
 
 ## 4. Variáveis de ambiente
 
@@ -179,7 +179,7 @@ npm run format:check
 ```
 
 Os três terminam sozinhos, sem modo de observação; o de formatação só verifica. Testes de ponta a ponta
-(Playwright), com a aplicação no ar (`docker compose up -d --build`) e o **banco recriado** (seção 2), porque
+(Playwright), com a aplicação no ar (`docker compose up -d --build`) e o **banco recriado** (seção 3), porque
 seguem o roteiro da interface a partir da liga vazia; na pasta `frontend`:
 
 ```bash
@@ -189,10 +189,10 @@ npm run test:e2e
 
 Eles preparam pela API só o que cada item não verifica na tela e, se o banco não estiver vazio, param antes de
 começar com a instrução de recriá-lo. Na integração contínua, o job `compose-e2e` sobe a aplicação com os
-comandos da seção 3 em Ubuntu 24.04 e roda esses testes.
+comandos da seção 2 em Ubuntu 24.04 e roda esses testes.
 
 Suíte de conformidade da API: repete os itens B01 a B22 do roteiro da API de fora, só por HTTP, contra a
-aplicação no ar e com o **banco recriado** (seção 2), como o script da banca; na raiz do repositório:
+aplicação no ar e com o **banco recriado** (seção 3), como o script da banca; na raiz do repositório:
 
 ```bash
 docker compose --profile test run --rm --build -e CONFORMANCE_API_URL=http://backend:8000/api/v1 backend-test pytest conformance
