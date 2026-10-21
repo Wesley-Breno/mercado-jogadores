@@ -109,7 +109,8 @@ frontend/
     lib/          formatação de moeda e data no padrão brasileiro e utilitários
     test/         configuração dos testes de componente (Vitest + Testing Library) e a API simulada
   e2e/            testes de ponta a ponta (Playwright) contra a aplicação no ar, um arquivo por
-                  módulo do roteiro da interface (F01 a F14), com a preparação pela API em support/
+                  módulo do roteiro da interface (F01 a F14), mais o clique duplo nas 9 ações e a
+                  tela de 375 px, com a preparação pela API em support/
   Dockerfile      build com Node e entrega dos arquivos estáticos com nginx
 docs/             enunciado, barema, glossário, ficha de exemplo, mockup e registro do uso de IA
 docker-compose.yml
@@ -261,6 +262,13 @@ Os caminhos acima são relativos a `backend/app` e `backend/tests`. Além desses
 | F09 a F11 | Aba Histórico do clube: filtros, totais e Exportar CSV | `frontend/e2e/04-history.spec.ts` |
 | F12 | Aba Escalação do clube | `frontend/e2e/05-lineup.spec.ts` |
 | F13 e F14 | Partidas (`/partidas`), partida com os duelos (`/partidas/:id`) e classificação (`/classificacao`) | `frontend/e2e/06-league.spec.ts` |
+
+Além do roteiro, dois arquivos conferem os pontos de usabilidade e de responsividade que dependem do navegador:
+
+| Critério | O que é conferido | Teste de ponta a ponta |
+| --- | --- | --- |
+| Mensagens (usabilidade) | Clique duplo no botão de cada uma das 9 ações (cadastrar, editar, alterar condição, excluir, criar clube, comprar, vender, escalar e jogar partida): a API recebe um só pedido e a tela mostra a mensagem de sucesso | `frontend/e2e/07-double-click.spec.ts` |
+| Responsividade | Lista de jogadores e página do clube com o histórico a 375 px: sem rolagem horizontal da página e com as ações abrindo dentro da tela | `frontend/e2e/08-mobile.spec.ts` |
 
 Os testes de componente (Vitest) de cada tela ficam ao lado dela, em `frontend/src/features/`, e cobrem também os
 estados de carregamento, lista vazia e erro.
