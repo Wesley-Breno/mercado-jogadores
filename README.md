@@ -82,7 +82,8 @@ backend/
     api/          rotas (routers/), schemas de entrada e saída (schemas/), validadores estritos,
                   leitura estrita dos query params (params.py) e dependências (sessão do banco, ids
                   da URL); sem regra de negócio
-    services/     casos de uso: orquestram repositórios e domínio e controlam a transação
+    services/     casos de uso: orquestram repositórios e domínio e controlam a transação; recebem
+                  argumentos próprios, sem depender dos schemas da API
     repositories/ consultas ao banco com o SQLAlchemy
     domain/       regras de negócio puras, sem framework nem banco: listas de valores, texto (V4, acentos,
                   ordem alfabética, busca), dinheiro (Decimal e arredondamento) e valores do jogador
@@ -90,7 +91,8 @@ backend/
     models/       modelos do ORM: tabelas e colunas em português, atributos em inglês
   migrations/     migrations do Alembic (versions/ guarda cada versão do schema)
   tests/          testes automatizados (pytest): domain/ (regras puras e tabelas do enunciado),
-                  api/ (HTTP) e db/ (schema e restrições)
+                  api/ (HTTP), db/ (schema e restrições) e test_layers.py (direção das dependências
+                  entre as camadas)
   conformance/    suíte de conformidade: os itens B01 a B22 conferidos de fora, por HTTP, contra a
                   aplicação no ar
 frontend/
@@ -387,6 +389,11 @@ estados de carregamento, lista vazia e erro.
   botão "+" para criar um clube e o cartão da liga com a última partida. Os números vêm da API
   (`meta.total_items`, `GET /clubs` e `GET /matches`) e são atualizados depois de cada ação; se a API estiver
   fora do ar, o menu continua funcionando sem eles. A lista de clubes e o cartão aparecem só em telas largas.
+- Navegação por teclado e leitor de tela: cada tela tem o próprio título na aba do navegador ("Jogadores · Passe",
+  "Águias FC · Passe"); o primeiro Tab mostra "Pular para o conteúdo"; e, ao trocar de tela, o foco vai para o
+  conteúdo da nova tela, como aconteceria ao carregar uma página.
+- No celular, o menu mostra as 4 telas em grade 2×2, sem rolagem lateral, e os 4 números do clube (caixa, valor do
+  elenco, patrimônio e elenco) também ficam em 2×2.
 
 ### Frontend: jogadores
 
