@@ -64,14 +64,14 @@ export function Tabs<Key extends string>({
               tabIndex={isSelected ? 0 : -1}
               onClick={() => onSelect(key)}
               className={cn(
-                '-mb-px inline-flex items-center gap-2 border-b-2 px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors',
+                '-mb-px inline-flex items-center gap-1.5 border-b-2 px-2 py-2 text-sm font-medium whitespace-nowrap transition-colors sm:gap-2 sm:px-3',
                 FOCUS_RING,
                 isSelected
                   ? 'border-blue-600 text-zinc-950'
                   : 'border-transparent text-zinc-500 hover:text-zinc-950',
               )}
             >
-              <Icon aria-hidden className="size-4" />
+              <Icon aria-hidden className="hidden size-4 sm:block" />
               {tabLabel}
               {count !== undefined && (
                 <span

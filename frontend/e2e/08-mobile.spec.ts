@@ -86,6 +86,8 @@ test('página do clube com o histórico a 375 px: sem rolagem horizontal e com a
     'Vender Rui Celular?',
   )
 
+  const tabs = page.getByRole('tablist')
+  expect(await tabs.evaluate((list) => list.scrollWidth <= list.clientWidth)).toBe(true)
   await page.getByRole('tab', { name: /Histórico/ }).click()
 
   await expect(
