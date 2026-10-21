@@ -411,6 +411,10 @@ estados de carregamento, lista vazia e erro.
 
 - Frontend servido por nginx a partir do build do Vite (arquivos estáticos), com todas as rotas apontando para o
   `index.html` (rotas da SPA). A URL da API entra no build (`VITE_API_URL`). A raiz `/` abre a lista de jogadores.
+- O código de cada tela é um arquivo próprio do build (`React.lazy`), baixado na primeira vez que a tela abre;
+  enquanto ele chega, o menu e o cabeçalho continuam na tela e o conteúdo mostra o estado de carregamento. O
+  arquivo principal caiu de 544 kB para 362 kB (113 kB comprimido), sem o aviso de tamanho do Vite, e a lista de
+  jogadores abre baixando 484 kB de JavaScript em vez de 544 kB.
 - Lint do frontend com o oxlint, que é o padrão do template oficial do Vite (`create-vite`), e formatação com o
   Prettier.
 - Diálogos com o elemento nativo `<dialog>` do navegador: o foco fica preso no diálogo, Esc fecha (menos durante
