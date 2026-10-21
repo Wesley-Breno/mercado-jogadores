@@ -432,7 +432,8 @@ estados de carregamento, lista vazia e erro.
   "Águias FC · Passe"); o primeiro Tab mostra "Pular para o conteúdo"; e, ao trocar de tela, o foco vai para o
   conteúdo da nova tela, como aconteceria ao carregar uma página.
 - No celular, o menu mostra as 4 telas em grade 2×2, sem rolagem lateral, e os 4 números do clube (caixa, valor do
-  elenco, patrimônio e elenco) também ficam em 2×2.
+  elenco, patrimônio e elenco) também ficam em 2×2. As abas do clube (Elenco, Escalação e Histórico) aparecem sem
+  ícone e com menos espaçamento abaixo de 640 px, para caberem a 375 px com os contadores de 2 dígitos.
 
 ### Frontend: jogadores
 
