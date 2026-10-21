@@ -1,8 +1,8 @@
+from datetime import datetime
 from decimal import Decimal
 
 from sqlalchemy.orm import Session
 
-from app.api.schemas.market import PurchaseRequest
 from app.core.clock import Clock
 from app.core.errors import BadRequestError, ConflictError, NotFoundError
 from app.domain.enums import ContractStatus, TransactionType
@@ -35,10 +35,10 @@ class MarketService:
         self.transactions = TransactionRepository(session)
         self.lineups = LineupRepository(session)
 
-    def buy(self, player_id: int, data: PurchaseRequest) -> PurchaseResult:
+    def buy(self, player_id: int, club_id: int, loyalty_until: datetime) -> PurchaseResult:
         """RN12 to RN14: one atomic operation; player and club rows stay locked until commit."""
         now = self.clock.now()
-        if not is_valid_loyalty_end(data.loyalty_until, now):
+        if not is_valid_loyalty_end(loyalty_until, now):
             raise BadRequestError(
                 "Campo 'loyalty_until': o fim da fidelidade deve ser depois do momento da compra "
                 "e até 1.095 dias depois dele."
@@ -46,7 +46,7 @@ class MarketService:
         player = self.players.find_active(player_id, for_update=True)
         if player is None:
             raise NotFoundError(PLAYER_NOT_FOUND)
-        club = self.clubs.find(data.club_id, for_update=True)
+        club = self.clubs.find(club_id, for_update=True)
         if club is None:
             raise NotFoundError(CLUB_NOT_FOUND)
         self._check_can_join(player, club)
@@ -67,7 +67,7 @@ class MarketService:
                 player_id=player.id,
                 club_id=club.id,
                 purchase_value=price,
-                loyalty_until=data.loyalty_until,
+                loyalty_until=loyalty_until,
                 status=ContractStatus.ACTIVE,
                 started_at=now,
             )

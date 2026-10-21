@@ -1,9 +1,8 @@
 from sqlalchemy.orm import Session
 
-from app.api.schemas.lineups import LineupRequest
 from app.core.clock import Clock
 from app.core.errors import ConflictError, NotFoundError
-from app.domain.enums import Condition
+from app.domain.enums import Condition, Formation
 from app.domain.lineup import fits_formation
 from app.domain.squad import squad_order_key
 from app.models import Club
@@ -23,11 +22,11 @@ class LineupService:
         self.players = PlayerRepository(session)
         self.lineups = LineupRepository(session)
 
-    def set_lineup(self, club_id: int, data: LineupRequest) -> LineupView:
+    def set_lineup(self, club_id: int, formation: Formation, player_ids: list[int]) -> LineupView:
         """RN19: replaces the whole lineup in one operation; refusals write nothing."""
-        players = self.players.find_active_many(data.player_ids)
+        players = self.players.find_active_many(player_ids)
         club = self.require_club(club_id, for_update=True)
-        if len(players) < len(data.player_ids):
+        if len(players) < len(player_ids):
             raise NotFoundError(PLAYER_NOT_FOUND)
         outsiders = [player.name for player in players.values() if player.club_id != club.id]
         if outsiders:
@@ -35,13 +34,13 @@ class LineupService:
         sick = [player.name for player in players.values() if player.condition is Condition.SICK]
         if sick:
             raise ConflictError(f"Jogador DOENTE não pode ser escalado: {', '.join(sick)}.")
-        if not fits_formation(data.formation, (player.position for player in players.values())):
+        if not fits_formation(formation, (player.position for player in players.values())):
             raise ConflictError(
-                f"As posições não fecham a formação {data.formation}: são precisos 1 GOL e os "
+                f"As posições não fecham a formação {formation}: são precisos 1 GOL e os "
                 "jogadores de linha de cada setor."
             )
-        self.lineups.replace(club.id, data.player_ids, self.clock.now())
-        club.formation = data.formation
+        self.lineups.replace(club.id, player_ids, self.clock.now())
+        club.formation = formation
         self.session.commit()
         return self.view(club)
 

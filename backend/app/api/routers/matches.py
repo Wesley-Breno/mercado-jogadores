@@ -19,7 +19,7 @@ router = APIRouter(prefix="/matches", tags=["Liga"])
 def play_match(
     payload: MatchRequest, request: Request, response: Response, service: MatchServiceDep
 ) -> MatchResponse:
-    played = service.play(payload)
+    played = service.play(payload.home_club_id, payload.away_club_id)
     response.headers["Location"] = str(
         request.app.url_path_for("get_match", match_id=str(played.match.id))
     )

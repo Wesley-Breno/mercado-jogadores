@@ -15,7 +15,9 @@ router = APIRouter(prefix="/players", tags=["Mercado"])
 def buy_player(
     player_id: PlayerId, payload: PurchaseRequest, service: MarketServiceDep
 ) -> PurchaseResponse:
-    return PurchaseResponse.from_result(service.buy(player_id, payload))
+    return PurchaseResponse.from_result(
+        service.buy(player_id, payload.club_id, payload.loyalty_until)
+    )
 
 
 @router.post(

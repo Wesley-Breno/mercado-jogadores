@@ -29,7 +29,7 @@ def list_clubs(
 def create_club(
     payload: ClubCreate, request: Request, response: Response, service: ClubServiceDep
 ) -> ClubResponse:
-    created = service.create(payload)
+    created = service.create(payload.name, payload.acronym)
     response.headers["Location"] = str(
         request.app.url_path_for("get_club", club_id=str(created.club.id))
     )

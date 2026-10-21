@@ -1,9 +1,7 @@
 from sqlalchemy.orm import Session
 
-from app.api.schemas.players import PlayerCreate, PlayerUpdate
 from app.core.clock import Clock
 from app.core.errors import ConflictError, NotFoundError
-from app.domain.attributes import AttributeSet
 from app.domain.enums import Condition
 from app.domain.pagination import page_items, total_pages
 from app.domain.player_listing import PlayerListQuery
@@ -14,6 +12,7 @@ from app.repositories.clubs import ClubRepository
 from app.repositories.lineups import LineupRepository
 from app.repositories.players import PlayerRepository
 from app.services.messages import CLUB_NOT_FOUND, PLAYER_NOT_FOUND
+from app.services.player_inputs import NewPlayer, PlayerEdit
 from app.services.player_listing import PlayerPage, matches_value_and_search, sort_players
 from app.services.valuation import ValuedPlayer, value_player
 
@@ -26,15 +25,15 @@ class PlayerService:
         self.clubs = ClubRepository(session)
         self.lineups = LineupRepository(session)
 
-    def register(self, data: PlayerCreate) -> ValuedPlayer:
-        attributes = AttributeSet(*data.attributes)
-        overall_at_registration = calculate_overall(data.position, attributes)
+    def register(self, new: NewPlayer) -> ValuedPlayer:
+        attributes = new.attributes
+        overall_at_registration = calculate_overall(new.position, attributes)
         player = Player(
-            name=data.name,
-            position=data.position,
-            agility=data.agility,
-            age=data.age,
-            base_value=calculate_base_value(overall_at_registration, data.potential, data.age),
+            name=new.name,
+            position=new.position,
+            agility=new.agility,
+            age=new.age,
+            base_value=calculate_base_value(overall_at_registration, new.potential, new.age),
             condition=Condition.FIT,
             club_id=None,
             pace=attributes.pace,
@@ -43,7 +42,7 @@ class PlayerService:
             dribbling=attributes.dribbling,
             defending=attributes.defending,
             physical=attributes.physical,
-            potential=data.potential,
+            potential=new.potential,
         )
         self.players.add(player)
         self.session.commit()
@@ -67,17 +66,17 @@ class PlayerService:
     def get(self, player_id: int) -> ValuedPlayer:
         return value_player(self.require_active(player_id))
 
-    def update(self, player_id: int, data: PlayerUpdate) -> ValuedPlayer:
+    def update(self, player_id: int, edit: PlayerEdit) -> ValuedPlayer:
         """RN08: base value and indicators stay; a player with a club keeps the position."""
         player = self.require_active(player_id, for_update=True)
-        if player.club_id is not None and data.position != player.position:
+        if player.club_id is not None and edit.position != player.position:
             raise ConflictError("Jogador com clube não pode mudar de posição.")
-        if data.age < player.age:
+        if edit.age < player.age:
             raise ConflictError(f"A idade não pode diminuir: a idade atual é {player.age}.")
-        player.name = data.name
-        player.position = data.position
-        player.agility = data.agility
-        player.age = data.age
+        player.name = edit.name
+        player.position = edit.position
+        player.agility = edit.agility
+        player.age = edit.age
         self.session.commit()
         return value_player(player)
 

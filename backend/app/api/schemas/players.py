@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field, model_validator
 
 from app.api.schemas.common import Money
 from app.api.validators import PlayerName, StrictInt
+from app.domain.attributes import AttributeSet
 from app.domain.enums import Condition, Position
 from app.domain.player_rules import (
     MAX_AGE,
@@ -17,6 +18,7 @@ from app.domain.player_rules import (
     VETERAN_AGILITY_AGE,
     VETERAN_MAX_AGILITY,
 )
+from app.services.player_inputs import NewPlayer, PlayerEdit
 from app.services.player_listing import PlayerPage
 from app.services.valuation import ValuedPlayer
 
@@ -72,6 +74,16 @@ class PlayerCreate(BaseModel):
         check_veteran_agility(self.age, self.agility)
         return self
 
+    def to_new_player(self) -> NewPlayer:
+        return NewPlayer(
+            name=self.name,
+            position=self.position,
+            agility=self.agility,
+            age=self.age,
+            attributes=AttributeSet(*self.attributes),
+            potential=self.potential,
+        )
+
 
 class PlayerUpdate(BaseModel):
     """RN08: only these four fields change; indicators, potential and base value stay (V7)."""
@@ -85,6 +97,11 @@ class PlayerUpdate(BaseModel):
     def check_rules_between_fields(self) -> Self:
         check_veteran_agility(self.age, self.agility)
         return self
+
+    def to_edit(self) -> PlayerEdit:
+        return PlayerEdit(
+            name=self.name, position=self.position, agility=self.agility, age=self.age
+        )
 
 
 class ConditionChange(BaseModel):

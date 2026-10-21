@@ -2,7 +2,6 @@ from collections.abc import Sequence
 
 from sqlalchemy.orm import Session
 
-from app.api.schemas.matches import MatchRequest
 from app.core.clock import Clock
 from app.core.errors import ConflictError, NotFoundError
 from app.domain.lineup import LINEUP_SIZE
@@ -52,10 +51,10 @@ class MatchService:
         self.lineups = LineupRepository(session)
         self.matches = MatchRepository(session)
 
-    def play(self, data: MatchRequest) -> MatchView:
+    def play(self, home_club_id: int, away_club_id: int) -> MatchView:
         """RN20: 404 for a missing club, then 409 for an incomplete lineup; one atomic save."""
-        home = self.clubs.find(data.home_club_id)
-        away = self.clubs.find(data.away_club_id)
+        home = self.clubs.find(home_club_id)
+        away = self.clubs.find(away_club_id)
         if home is None or away is None:
             raise NotFoundError(CLUB_NOT_FOUND)
         home_sheet, away_sheet = self.team_sheet(home), self.team_sheet(away)

@@ -37,7 +37,7 @@ def list_players(
 def create_player(
     payload: PlayerCreate, request: Request, response: Response, service: PlayerServiceDep
 ) -> PlayerResponse:
-    created = service.register(payload)
+    created = service.register(payload.to_new_player())
     response.headers["Location"] = str(
         request.app.url_path_for("get_player", player_id=str(created.player.id))
     )
@@ -62,7 +62,7 @@ def get_player(player_id: PlayerId, service: PlayerServiceDep) -> PlayerResponse
 def update_player(
     player_id: PlayerId, payload: PlayerUpdate, service: PlayerServiceDep
 ) -> PlayerResponse:
-    return PlayerResponse.from_valued(service.update(player_id, payload))
+    return PlayerResponse.from_valued(service.update(player_id, payload.to_edit()))
 
 
 @router.patch(

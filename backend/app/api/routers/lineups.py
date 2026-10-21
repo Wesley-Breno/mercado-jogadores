@@ -15,7 +15,9 @@ router = APIRouter(prefix="/clubs", tags=["Liga"])
 def set_lineup(
     club_id: ClubId, payload: LineupRequest, service: LineupServiceDep
 ) -> LineupResponse:
-    return LineupResponse.from_view(service.set_lineup(club_id, payload))
+    return LineupResponse.from_view(
+        service.set_lineup(club_id, payload.formation, payload.player_ids)
+    )
 
 
 @router.get(
