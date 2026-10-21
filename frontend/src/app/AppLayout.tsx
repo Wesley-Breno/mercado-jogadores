@@ -1,11 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { ChevronRight, RefreshCw } from 'lucide-react'
-import { useState } from 'react'
+import { type MouseEvent, useEffect, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
 
 import { cn } from '../lib/cn'
 import { BreadcrumbContext } from './breadcrumbContext'
-import { breadcrumbFor } from './navigation'
+import { breadcrumbFor, pageTitle } from './navigation'
 import { Sidebar } from './Sidebar'
 
 export function AppLayout() {
@@ -13,9 +13,36 @@ export function AppLayout() {
   const queryClient = useQueryClient()
   const [tail, setTail] = useState<string>()
   const breadcrumb = [...breadcrumbFor(pathname), ...(tail ? [tail] : [])]
+  const title = pageTitle(breadcrumb)
+  const mainRef = useRef<HTMLElement>(null)
+  const firstPath = useRef(pathname)
+
+  useEffect(() => {
+    document.title = title
+  }, [title])
+
+  // A new screen does not reload the page, so the focus goes to its content, as after a page load.
+  useEffect(() => {
+    if (pathname !== firstPath.current) {
+      firstPath.current = pathname
+      mainRef.current?.focus()
+    }
+  }, [pathname])
+
+  function skipToContent(event: MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault()
+    mainRef.current?.focus()
+  }
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[15rem_1fr]">
+      <a
+        href="#conteudo"
+        onClick={skipToContent}
+        className="sr-only rounded-lg bg-white text-sm font-medium text-blue-700 shadow-md ring-2 ring-blue-600 focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-3 focus:py-2 focus:outline-none"
+      >
+        Pular para o conteúdo
+      </a>
       <Sidebar />
       <div className="min-w-0 lg:p-2 lg:pl-0">
         <div className="min-h-screen bg-white lg:min-h-[calc(100vh-1rem)] lg:rounded-xl lg:border lg:border-zinc-200 lg:shadow-sm">
@@ -43,7 +70,12 @@ export function AppLayout() {
               <RefreshCw aria-hidden className="size-4" />
             </button>
           </header>
-          <main className="px-4 py-6 lg:px-8 lg:py-7">
+          <main
+            ref={mainRef}
+            id="conteudo"
+            tabIndex={-1}
+            className="px-4 py-6 focus:outline-none lg:px-8 lg:py-7"
+          >
             <BreadcrumbContext.Provider value={setTail}>
               <Outlet />
             </BreadcrumbContext.Provider>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { breadcrumbFor } from './navigation'
+import { breadcrumbFor, pageTitle } from './navigation'
 
 describe('breadcrumbFor', () => {
   it.each([
@@ -11,5 +11,15 @@ describe('breadcrumbFor', () => {
     ['/desconhecido', []],
   ])('%s', (pathname, expected) => {
     expect(breadcrumbFor(pathname)).toEqual(expected)
+  })
+})
+
+describe('pageTitle', () => {
+  it.each([
+    [['Mercado', 'Jogadores'], 'Jogadores · Passe'],
+    [['Mercado', 'Clubes', 'Águias FC'], 'Águias FC · Passe'],
+    [[], 'Página não encontrada · Passe'],
+  ])('%j', (breadcrumb, expected) => {
+    expect(pageTitle(breadcrumb)).toBe(expected)
   })
 })

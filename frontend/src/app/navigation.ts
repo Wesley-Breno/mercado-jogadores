@@ -38,3 +38,8 @@ export function breadcrumbFor(pathname: string): string[] {
   }
   return []
 }
+
+/** The browser tab names the screen, or the item it shows: "Águias FC · Passe". */
+export function pageTitle(breadcrumb: string[]): string {
+  return `${breadcrumb.at(-1) ?? 'Página não encontrada'} · Passe`
+}
