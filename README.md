@@ -120,8 +120,10 @@ docker-compose.yml
 | Biblioteca | Versão | Motivo |
 | --- | --- | --- |
 | FastAPI | 0.146.0 | Framework da API REST (opção 3 da stack), com OpenAPI e Swagger nativos |
+| Starlette | 1.9.0 | Base do FastAPI; usada direto só para responder no formato `{"message": ...}` os 404 e 405 do roteamento |
 | Uvicorn | 0.54.0 | Servidor ASGI que executa a API |
 | Pydantic | 2.14.1 | Validação declarativa dos corpos e serialização das respostas |
+| pydantic-core | 2.50.1 | Núcleo do Pydantic; usado direto para tratar campo vazio ou `null` como obrigatório nos validadores próprios |
 | pydantic-settings | 2.16.0 | Leitura da configuração a partir de variáveis de ambiente |
 | SQLAlchemy | 2.1.5 | ORM com consultas parametrizadas e transações |
 | Alembic | 1.20.0 | Migrations versionadas do banco |
@@ -140,6 +142,7 @@ As versões de todas as dependências, inclusive as transitivas, estão fixadas 
 | React e React DOM | 19.3.1 | Interface (exigido pela stack) |
 | Vite e @vitejs/plugin-react | 8.3.4 e 6.1.2 | Projeto criado com o template oficial `react-ts`; servidor de desenvolvimento e build |
 | TypeScript | 6.0.3 | Tipagem estrita (`strict: true`) do código da interface |
+| @types/react, @types/react-dom e @types/node | 19.3.0, 19.3.0 e 24.19.2 | Tipos do React para o TypeScript e tipos do Node.js para os arquivos de configuração e os testes de ponta a ponta (desenvolvimento) |
 | React Router | 8.4.0 | Navegação entre as telas, no modo declarativo (biblioteca), sem o modo framework |
 | TanStack Query | 5.104.4 | Busca e cache dos dados da API, estado de envio dos botões e atualização após cada ação |
 | React Hook Form | 7.90.0 | Formulários com validação antes do envio e mensagem junto ao campo |
