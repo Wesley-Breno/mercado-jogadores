@@ -63,7 +63,7 @@ function ClubHeader({ club }: { club: ClubDetail | undefined }) {
 function ClubStats({ club }: { club: ClubDetail | undefined }) {
   if (!club) {
     return (
-      <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {Array.from({ length: 4 }, (_, index) => (
           <span key={index} className="h-28 animate-pulse rounded-xl bg-zinc-100" />
         ))}
@@ -71,7 +71,7 @@ function ClubStats({ club }: { club: ClubDetail | undefined }) {
     )
   }
   return (
-    <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="mb-6 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
       <StatCard
         label="Caixa"
         icon={Wallet}

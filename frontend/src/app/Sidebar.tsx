@@ -40,9 +40,12 @@ export function Sidebar() {
         <Logo />
       </div>
       <div className="overflow-x-auto px-2 pb-2 lg:flex-1 lg:overflow-y-auto lg:px-3">
-        <nav aria-label="Menu principal" className="flex gap-1 lg:flex-col lg:gap-5">
+        <nav
+          aria-label="Menu principal"
+          className="grid grid-cols-2 gap-1 sm:flex lg:flex-col lg:gap-5"
+        >
           {NAVIGATION.map((section) => (
-            <div key={section.label} className="flex gap-1 lg:flex-col">
+            <div key={section.label} className="contents sm:flex sm:gap-1 lg:flex-col">
               <p className="hidden px-2 text-xs font-medium text-zinc-500 lg:block">
                 {section.label}
               </p>
