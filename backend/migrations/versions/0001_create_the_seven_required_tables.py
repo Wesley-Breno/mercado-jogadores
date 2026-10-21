@@ -1,4 +1,4 @@
-"""cria as sete tabelas do enunciado
+"""create the seven required tables
 
 Revision ID: 0001
 Revises:
