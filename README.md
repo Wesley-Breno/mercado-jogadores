@@ -8,6 +8,34 @@ histórico de transações, escalação, partidas e classificação.
 - `frontend/`: interface em React com TypeScript, criada com Vite.
 - `docs/`: enunciado, barema, glossário, mockup e registro do uso de IA.
 
+## Em resumo
+
+- **Execução:** um único comando do Docker Compose sobe o banco, a API e a interface (seção 2).
+- **Escopo:** os 19 endpoints do enunciado e as telas dos itens F01 a F14, sem funcionalidade pendente (seção 9).
+- **Regras de negócio:** funções puras em `backend/app/domain`, cada cálculo num único lugar, testadas com as
+  tabelas de exemplo do enunciado.
+- **Verificação:** uma suíte repete o roteiro da API (B01 a B22) por HTTP, e os testes de ponta a ponta seguem o
+  roteiro da interface (F01 a F14), o clique duplo e a tela de 375 px. A integração contínua roda tudo em
+  Ubuntu 24.04, subindo a aplicação com os comandos deste README.
+- **Onde conferir:** o mapa de cada item dos roteiros está na seção 7, e as decisões de interpretação, na seção 8.
+
+```mermaid
+flowchart LR
+  subgraph FE["frontend/ · React + Vite"]
+    Screens["features/<br/>telas e hooks do React Query"] --> Client["api/<br/>funções de cada recurso<br/>e o único fetch"]
+  end
+  subgraph BE["backend/ · FastAPI"]
+    Routes["api/<br/>rotas, schemas e validação"] --> Services["services/<br/>casos de uso e transação"]
+    Services --> Domain["domain/<br/>regras de negócio puras"]
+    Services --> Repositories["repositories/<br/>consultas com SQLAlchemy"]
+  end
+  Client -- "HTTP /api/v1<br/>JSON e CSV" --> Routes
+  Repositories --> DB[("PostgreSQL 16")]
+```
+
+As dependências apontam para dentro, como `backend/tests/test_layers.py` confere: o domínio não importa
+framework nem banco, os repositórios não importam serviços nem rotas, e os serviços não importam as rotas.
+
 ## 1. Pré-requisitos
 
 | Ferramenta | Versão | Uso |
