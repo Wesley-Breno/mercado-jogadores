@@ -1,4 +1,4 @@
-"""B09: criação de clube, caixa inicial, nome e sigla únicos e ordem por nome."""
+"""B09: club creation, initial cash, unique name and acronym, and order by name."""
 
 import httpx2
 import pytest

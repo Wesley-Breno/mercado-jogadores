@@ -1,4 +1,4 @@
-"""B20 a B22: escalação, partida com o exemplo da RN20, histórico de partidas e classificação."""
+"""B20 to B22: lineup, the RN20 example match, match history and standings."""
 
 import re
 import unicodedata

@@ -1,4 +1,4 @@
-"""B18 e B19: histórico com nome e valores do momento, filtros, summary e exportação CSV."""
+"""B18 and B19: history with the name and values of the moment, filters, summary and CSV export."""
 
 import httpx2
 import pytest

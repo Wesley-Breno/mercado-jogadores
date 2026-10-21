@@ -1,4 +1,4 @@
-"""B01 a B08: cadastro, convenções, edição, condição, valores do jogador, listagem e exclusão."""
+"""B01 to B08: registration, conventions, editing, condition, player values, listing, deletion."""
 
 import httpx2
 import pytest

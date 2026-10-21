@@ -1,4 +1,4 @@
-"""B10 a B17: compra, recusas, fidelidade, sequência de compras, multa, venda e recompra."""
+"""B10 to B17: purchase, refusals, loyalty, a sequence of purchases, penalty, sale and rebuy."""
 
 import httpx2
 import pytest

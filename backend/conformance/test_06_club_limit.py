@@ -1,4 +1,4 @@
-"""B09: a liga aceita no máximo 20 clubes (roda por último, porque enche a liga)."""
+"""B09: the league accepts at most 20 clubs (runs last, because it fills the league)."""
 
 import httpx2
 
