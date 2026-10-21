@@ -79,6 +79,7 @@ def change_condition(
 @router.delete(
     "/{player_id}",
     status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
     summary="Exclusão lógica de jogador livre (RN09)",
     responses=error_responses(404, 409),
 )

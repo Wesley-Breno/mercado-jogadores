@@ -179,6 +179,8 @@ def test_delete_is_logical_and_the_player_becomes_nonexistent(
 
     assert response.status_code == 204
     assert response.content == b""
+    assert "content-type" not in response.headers
+    assert response.headers.get("content-length", "0") == "0"
     assert client.get(player_url(player_id)).status_code == 404
     assert client.put(player_url(player_id), json=EDIT).status_code == 404
     assert (
